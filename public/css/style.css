@@ -27,12 +27,17 @@ body {
 
 .messages {
     padding: 0!important;
+    padding-bottom: 65px!important;
+    height: 100%;
 }
 
 #messages {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 #messages li:not(.join) {
