@@ -16,7 +16,7 @@ var handler = {
             socket.on('chat message', function (msg) {
                 var message = {
                     name: users[socket.id].name,
-                    messageText: correctSentence(msg)
+                    messageText: correctSentence(msg.trim())
                 };
                 io.emit('chat message', JSON.stringify(message));
             });

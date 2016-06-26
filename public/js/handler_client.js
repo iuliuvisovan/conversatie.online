@@ -25,7 +25,7 @@ $(document).ready(function () {
     });
     $messageBox.focus();
     do {
-        var person = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", randomNames[new Date().getTime() % 10]);
+        var person = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", randomNames[new Date().getTime() % 9]);
     } while (!person);
     // var person = 'Anuță';
     socket.emit('check-in', person);
