@@ -1,17 +1,20 @@
 var socket = io();
 
 var randomNames = ["Demi Lopato", "Emil Ciorap", "Anton Pat", "Paula Selinge", "Lady Gag", "Organ Freeman", "Brad Pittă",
-    "Hug Jackman", "Megan Ox"];
+    "Hug Jackman", "Megan Ox"
+];
 var $messageBox = $('#inputMessage');
 var $messageList = $('#messages');
 var newMessages = 0;
 var isWindowFocused = true;
+var lastMessageSenderId = '';
 
 $(document).ready(function () {
     $(window).focus(function () {
         isWindowFocused = true;
         newMessages = 0;
         $('title').html('d3i');
+        $('#favicon').attr('href', 'img/favicon_1.png');
     });
     $(window).blur(function () {
         isWindowFocused = false;
@@ -28,6 +31,7 @@ $(document).ready(function () {
         var person = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", randomNames[new Date().getTime() % 9]);
     } while (!person);
     // var person = 'Anuță';
+    $("#inputMessage").attr('placeholder', 'Ce le scriem țăranilor ăstora, ' + person + '?');
     socket.emit('check-in', person);
 
     socket.on('join', function (msg) {
@@ -40,13 +44,48 @@ $(document).ready(function () {
 
     socket.on('chat message', function (msg) {
         var messageObject = JSON.parse(msg);
-        var spanMessageWriter = $('<span>').addClass('message-author').text(messageObject.name);
+        var spanMessageAuthor = $('<span>')
+            .addClass('message-author')
+            .text(messageObject.socketId == socket.id ?
+                'Tu (' + messageObject.name + ')' :
+                messageObject.name);
         var spanMessageText = $('<span>').addClass('message-text').text(messageObject.messageText);
-        $messageList.append($('<li>').append(spanMessageWriter).append(spanMessageText));
+
+        var li = $('<li>');
+        var currentDate = new Date();
+        var currentDateString = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
+        if (messageObject.socketId == lastMessageSenderId) {
+            $('.message-time').last().text(currentDateString);
+            li.addClass('same-sender');
+        } else {
+            li.append($('<span>')
+                .addClass('message-time')
+                .text(currentDateString));
+        }
+
+        if (messageObject.socketId == socket.id) {
+            li.addClass('mine');
+        } else {
+            li.append($('<span>')
+                .addClass('message-time-individual')
+                .text(currentDateString));
+        }
+        li.append(spanMessageAuthor)
+        li.append(spanMessageText);
+        if (messageObject.socketId == socket.id) {
+            li.append($('<span>')
+                .addClass('message-time-individual')
+                .text(currentDateString));
+        }
+
+        $messageList.append(li);
         $messageList.scrollTop($messageList[0].scrollHeight);
-        if(!isWindowFocused) {
+        lastMessageSenderId = messageObject.socketId;
+        if (!isWindowFocused) {
             newMessages++;
             $('title').html('(' + newMessages + ') d3i');
+            var imageNumber = (newMessages >= 8 ? 7 : newMessages);
+            $('#favicon').attr('href', 'img/favicon_' + (imageNumber + 1) + '.png');
         }
     });
 
@@ -58,4 +97,3 @@ $(document).ready(function () {
         $messageList.scrollTop($messageList[0].scrollHeight);
     });
 });
-
