@@ -42,6 +42,9 @@ body {
 #messages li {
     position: relative;
 }
+#messages li:last-of-type {
+    padding-bottom: 10px!important;
+}
 
 #messages li:not(.join) {
     padding: 5px 20px;

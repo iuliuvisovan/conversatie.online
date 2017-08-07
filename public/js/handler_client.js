@@ -9,6 +9,10 @@ var newMessages = 0;
 var isWindowFocused = true;
 var lastMessageSenderId = '';
 
+window.onbeforeunload = function() {
+    return "I am a message";
+};
+
 $(document).ready(function () {
     $(window).focus(function () {
         isWindowFocused = true;
