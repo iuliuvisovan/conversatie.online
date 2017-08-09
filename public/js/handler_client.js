@@ -1,7 +1,44 @@
 var socket = io();
 
-var randomNames = ["Demi Lopato", "Emil Ciorap", "Anton Pat", "Paula Selinge", "Lady Gag", "Organ Freeman", "Brad Pittă",
-    "Hug Jackman", "Megan Ox"
+var randomNames = ["Strut Modest",
+    "Supplexa Onac Memoranda",
+    "Intuneric Steluta Luminita",
+    "Rămurica Pastrama",
+    "Sfecla Geniloni",
+    "Gigel Potrivitu",
+    "Rudolf Pufulete",
+    "Branza William",
+    "Andaluzia Posirca",
+    "Lacrima Renato",
+    "Dicusara Tuduce Dorule",
+    "Trita Fanita",
+    "Raiu Viorica Speranta",
+    "Artaxerxe Bubulac",
+    "Exacustodian Pausescu",
+    "Amorel Vatamanescu",
+    "Marcelon Bunica",
+    "Fridolin Boacsa",
+    "Momcilo Luburici",
+    "Georgian Elvis Gagiu",
+    "Tolea Ciumac",
+    "Salomeea Guinea",
+    "Dumbrava Codrut",
+    "Hopulele Mariana",
+    "Maer Enola Fotini Analena",
+    "Eugen Catalin Prefacutu Timpau",
+    "Joaca-Bine Mirel",
+    "Sava Superman",
+    "Bred Pit",
+    "Voda Bogdan",
+    "Gheorghe Bettjinio Diamant",
+    "Adonis Bunghis",
+    "Aristotel Argentina",
+    "Daniel Mai-Mihai",
+    "Duru Marin Cervantes",
+    "Venera Balta",
+    "Leopoldina Balanuta",
+    "Vasile San Siro Ciocoi",
+    "Bizdoaca Nicu"
 ];
 var $messageBox = $('#inputMessage');
 var $messageList = $('#messages');
@@ -9,21 +46,19 @@ var newMessages = 0;
 var isWindowFocused = true;
 var lastMessageSenderId = '';
 
-window.onbeforeunload = function() {
+window.onbeforeunload = function () {
     return "I am a message";
 };
 
-$(document).ready(function () {
-    $(window).focus(function () {
+$(document).ready(() => {
+    $(window).focus(() => {
         isWindowFocused = true;
         newMessages = 0;
         $('title').html('d3i');
         $('#favicon').attr('href', 'img/favicon_1.png');
     });
-    $(window).blur(function () {
-        isWindowFocused = false;
-    });
-    $("#inputMessage").keyup(function (e) {
+    $(window).blur(() => isWindowFocused = false);
+    $("#inputMessage").keyup(e => {
         if (e.keyCode == 13) {
             $messageBox.val() && socket.emit('chat message', $messageBox.val());
             $messageBox.val('');
@@ -32,13 +67,13 @@ $(document).ready(function () {
     });
     $messageBox.focus();
     do {
-        var person = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", randomNames[new Date().getTime() % 9]);
+        var person = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", randomNames[new Date().getTime() % 38]);
     } while (!person);
     // var person = 'Anuță';
     $("#inputMessage").attr('placeholder', 'Ce le scriem țăranilor ăstora, ' + person + '?');
     socket.emit('check-in', person);
 
-    socket.on('join', function (msg) {
+    socket.on('join', msg => {
         var messageObject = JSON.parse(msg);
         var spanMessageWriter = $('<span>').addClass('join-author').text(messageObject.name);
         var spanMessageText = $('<span>').addClass('join-text').text(messageObject.messageText);
@@ -46,14 +81,16 @@ $(document).ready(function () {
         $messageList.scrollTop($messageList[0].scrollHeight);
     });
 
-    socket.on('chat message', function (msg) {
+    socket.on('chat message', msg => {
         var messageObject = JSON.parse(msg);
         var spanMessageAuthor = $('<span>')
             .addClass('message-author')
             .text(messageObject.socketId == socket.id ?
                 'Tu (' + messageObject.name + ')' :
                 messageObject.name);
-        var spanMessageText = $('<span>').addClass('message-text').text(messageObject.messageText);
+        var spanMessageText = $('<span>')
+                            .addClass('message-text')
+                            .html(replaceWithEmojis(messageObject.messageText));
 
         var li = $('<li>');
         var currentDate = new Date();
@@ -73,6 +110,9 @@ $(document).ready(function () {
             li.append($('<span>')
                 .addClass('message-time-individual')
                 .text(currentDateString));
+            let first = new Audio('/sounds/chatMessage.mp3');
+            first.loop = false;
+            first.play();
         }
         li.append(spanMessageAuthor)
         li.append(spanMessageText);
@@ -93,7 +133,7 @@ $(document).ready(function () {
         }
     });
 
-    socket.on('leave', function (msg) {
+    socket.on('leave', msg => {
         var messageObject = JSON.parse(msg);
         var spanMessageWriter = $('<span>').addClass('join-author').text(messageObject.name);
         var spanMessageText = $('<span>').addClass('join-text').text(messageObject.messageText);

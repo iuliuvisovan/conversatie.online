@@ -11,7 +11,9 @@ var handler = {
                 var message = {
                     name: msg,
                     isFemale: isFemaleName(msg),
-                    messageText: isFemaleName(msg) ? " a venit după pulă." : " a venit la pizde."
+                    messageText: isFemaleName(msg) ?
+                        " ni s-a alăturat! Ce faci drăguțo? 😏" :
+                        " a venit la distracție. Salut bos! 😎"
                 };
                 io.emit('join', JSON.stringify(message));
             });
@@ -46,13 +48,10 @@ function isFemaleName(name) {
         'Dora', 'Amelia', 'Cezara', 'Dumitra', 'Ana', 'Clarisa', 'Anca', 'Codrina', 'Codruta', 'Anda', 'Corina', 'Andreea',
         'Crenguta', 'Anemona', 'Cristina', 'Anica', 'Anuta', 'Aura', 'Roxana', 'Carmen', 'Cora', 'Lari'
     ];
-    //The name might contain more words
-    name.split(' ').forEach(function (name) {
-        if (hardcoded.indexOf(name) >= 0)
-            isFemale = true;
-        if (name[name.length - 1] == 'a' || name[name.length - 1] == 'ă')
-            isFemale = true;
-    });
+    if (hardcoded.indexOf(name) >= 0)
+        isFemale = true;
+    if (name[name.length - 1] == 'a' || name[name.length - 1] == 'ă')
+        isFemale = true;
     return isFemale;
 }
 
