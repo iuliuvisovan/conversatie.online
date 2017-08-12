@@ -1,56 +1,164 @@
+//TODO
+//YT link share
+//File send
+//Message search
+
 var socket = io();
 
-var randomNames = ["Strut Modest",
-    "Supplexa Onac Memoranda",
-    "Intuneric Steluta Luminita",
-    "Rămurica Pastrama",
-    "Sfecla Geniloni",
-    "Gigel Potrivitu",
-    "Rudolf Pufulete",
-    "Branza William",
-    "Andaluzia Posirca",
-    "Lacrima Renato",
-    "Dicusara Tuduce Dorule",
-    "Trita Fanita",
-    "Raiu Viorica Speranta",
-    "Artaxerxe Bubulac",
-    "Exacustodian Pausescu",
-    "Amorel Vatamanescu",
-    "Marcelon Bunica",
-    "Fridolin Boacsa",
-    "Momcilo Luburici",
-    "Georgian Elvis Gagiu",
-    "Tolea Ciumac",
-    "Salomeea Guinea",
-    "Dumbrava Codrut",
-    "Hopulele Mariana",
-    "Maer Enola Fotini Analena",
-    "Eugen Catalin Prefacutu Timpau",
-    "Joaca-Bine Mirel",
-    "Sava Superman",
-    "Bred Pit",
-    "Voda Bogdan",
-    "Gheorghe Bettjinio Diamant",
-    "Adonis Bunghis",
-    "Aristotel Argentina",
-    "Daniel Mai-Mihai",
-    "Duru Marin Cervantes",
-    "Venera Balta",
-    "Leopoldina Balanuta",
-    "Vasile San Siro Ciocoi",
-    "Bizdoaca Nicu"
-];
 var $messageBox = $('#inputMessage');
 var $messageList = $('#messages');
 var newMessages = 0;
 var isWindowFocused = true;
 var lastMessageSenderId = '';
+var personName = '';
+var personColor = '';
+var chatMessageSound = new Audio('/sounds/chatMessage.mp3');
+chatMessageSound.loop = false;
 
 window.onbeforeunload = function () {
+    socket.emit('disconnect');
     return "I am a message";
 };
 
 $(document).ready(() => {
+    handleWindowFocus();
+    getPersonName();
+
+    $messageBox.focus();
+    $messageBox.attr('placeholder', 'Ce le scriem ăstora, ' + personName + '?');
+    socket.emit('check-in', personName);
+
+    handleJoinEvent();
+    handleChatMessageEvent();
+    handleLeaveEvent();
+    handleOptions();
+});
+
+function handleLeaveEvent() {
+    socket.on('leave', msg => {
+        console.log('leave');
+        var messageObject = JSON.parse(msg);
+        var spanMessageAuthor = $('<span>').addClass('join-author').text(messageObject.name);
+        var spanMessageText = $('<span>').addClass('join-text').text(messageObject.messageText);
+        var leaveLi = $('<li>')
+            .addClass('leave')
+            .css('color', messageObject.color)
+            .append(spanMessageAuthor)
+            .append(spanMessageText);
+        $messageList.append(leaveLi);
+        fixScroll();
+    });
+}
+
+function handleChatMessageEvent() {
+    socket.on('chat message', msg => {
+        var messageObject = JSON.parse(msg);
+        var spanMessageAuthor = $('<span>')
+            .addClass('message-author')
+            .text(messageObject.socketId == socket.id ?
+                'Tu' : messageObject.name);
+        var spanMessageText = $('<span>')
+            .addClass('message-text')
+            .css('background', messageObject.color)
+            .html(replaceWithEmojis(messageObject.messageText));
+
+        console.log(messageObject.color);
+
+        var li = $('<li>');
+        li.css('border-color', messageObject.color)
+        var currentDate = new Date();
+        var currentDateString = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
+        if (messageObject.socketId == lastMessageSenderId) {
+            li.addClass('same-sender');
+        }
+
+        if (messageObject.socketId == socket.id) {
+            li.addClass('mine');
+        } else {
+            chatMessageSound.play();
+        }
+        li.append(spanMessageAuthor)
+        li.append(spanMessageText);
+        if (messageObject.socketId == socket.id) {
+            li.append($('<span>')
+                .addClass('message-time-individual')
+                .text(currentDateString));
+        }
+
+        $messageList.append(li);
+        fixScroll();
+        lastMessageSenderId = messageObject.socketId;
+        if (!isWindowFocused) {
+            newMessages++;
+            $('title').html('(' + newMessages + ') d3i');
+            var imageNumber = (newMessages >= 8 ? 7 : newMessages);
+            $('#favicon').attr('href', 'img/favicon_' + (imageNumber + 1) + '.png');
+        }
+    });
+}
+
+function fixScroll() {
+    setTimeout(() => {
+        $messageList.scrollTop($messageList[0].scrollHeight + 50);
+    }, 100);
+}
+
+function handleJoinEvent() {
+    socket.on('join', msg => {
+        var messageObject = JSON.parse(msg);
+
+        if (!messageObject.oldName) {
+            var spanMessageAuthor = $('<span>').addClass('join-author').text(messageObject.name);
+            var spanMessageText = $('<span>').addClass('join-text').text(messageObject.messageText);
+        } else {
+            var spanMessageAuthor = $('<span>').addClass('join-author-old').text(messageObject.oldName);
+            var spanMessageText = $('<span>').addClass('join-text').text(messageObject.messageText);
+            var spanMessageAuthorNew = $('<span>').addClass('join-author').text(messageObject.name);
+        }
+
+        if (messageObject.socketId == socket.id) {
+            (spanMessageAuthorNew || spanMessageAuthor)
+            .on('click', changePersonName)
+                .attr('title', 'Schimbă-ți numele');
+
+            $('.footer').css('border-color', messageObject.color);
+            $('#options').css('color', messageObject.color);
+        }
+        console.log(messageObject.color);
+        var joinLi = $('<li>')
+            .addClass('join')
+            .addClass(messageObject.socketId == socket.id ? 'me' : '')
+            .css('color', messageObject.color)
+            .append(spanMessageAuthor)
+            .append(spanMessageText)
+            .append(spanMessageAuthorNew);
+
+        $messageList.append(joinLi);
+        fixScroll();
+    });
+}
+
+function changePersonName() {
+    if (sessionStorage.sessionNameChanges > 3)
+        return;
+    localStorage.personName = '';
+    getPersonName();
+    sessionStorage.sessionNameChanges = (+sessionStorage.sessionNameChanges || 0) + 1;
+    socket.emit('check-in', personName);
+}
+
+function getPersonName() {
+    personName = localStorage.personName;
+    if (!personName) {
+        do {
+            personName = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)",
+                randomNames[new Date().getTime() % 38]);
+        } while (!personName);
+        localStorage.personName = personName;
+    }
+}
+
+function handleWindowFocus() {
     $(window).focus(() => {
         isWindowFocused = true;
         newMessages = 0;
@@ -65,79 +173,15 @@ $(document).ready(() => {
             return false;
         }
     });
-    $messageBox.focus();
-    do {
-        var person = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", randomNames[new Date().getTime() % 38]);
-    } while (!person);
-    // var person = 'Anuță';
-    $("#inputMessage").attr('placeholder', 'Ce le scriem țăranilor ăstora, ' + person + '?');
-    socket.emit('check-in', person);
+}
 
-    socket.on('join', msg => {
-        var messageObject = JSON.parse(msg);
-        var spanMessageWriter = $('<span>').addClass('join-author').text(messageObject.name);
-        var spanMessageText = $('<span>').addClass('join-text').text(messageObject.messageText);
-        $messageList.append($('<li>').addClass('join').addClass(messageObject.isFemale ? 'girl' : 'guy').append(spanMessageWriter).append(spanMessageText));
-        $messageList.scrollTop($messageList[0].scrollHeight);
+function handleOptions() {
+    $("#options").change(function () {
+        switch (this.value) {
+            case 'change-name':
+                changePersonName();
+                break;
+        }
+        $("#options").val(0);
     });
-
-    socket.on('chat message', msg => {
-        var messageObject = JSON.parse(msg);
-        var spanMessageAuthor = $('<span>')
-            .addClass('message-author')
-            .text(messageObject.socketId == socket.id ?
-                'Tu (' + messageObject.name + ')' :
-                messageObject.name);
-        var spanMessageText = $('<span>')
-                            .addClass('message-text')
-                            .html(replaceWithEmojis(messageObject.messageText));
-
-        var li = $('<li>');
-        var currentDate = new Date();
-        var currentDateString = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
-        if (messageObject.socketId == lastMessageSenderId) {
-            $('.message-time').last().text(currentDateString);
-            li.addClass('same-sender');
-        } else {
-            li.append($('<span>')
-                .addClass('message-time')
-                .text(currentDateString));
-        }
-
-        if (messageObject.socketId == socket.id) {
-            li.addClass('mine');
-        } else {
-            li.append($('<span>')
-                .addClass('message-time-individual')
-                .text(currentDateString));
-            let first = new Audio('/sounds/chatMessage.mp3');
-            first.loop = false;
-            first.play();
-        }
-        li.append(spanMessageAuthor)
-        li.append(spanMessageText);
-        if (messageObject.socketId == socket.id) {
-            li.append($('<span>')
-                .addClass('message-time-individual')
-                .text(currentDateString));
-        }
-
-        $messageList.append(li);
-        $messageList.scrollTop($messageList[0].scrollHeight);
-        lastMessageSenderId = messageObject.socketId;
-        if (!isWindowFocused) {
-            newMessages++;
-            $('title').html('(' + newMessages + ') d3i');
-            var imageNumber = (newMessages >= 8 ? 7 : newMessages);
-            $('#favicon').attr('href', 'img/favicon_' + (imageNumber + 1) + '.png');
-        }
-    });
-
-    socket.on('leave', msg => {
-        var messageObject = JSON.parse(msg);
-        var spanMessageWriter = $('<span>').addClass('join-author').text(messageObject.name);
-        var spanMessageText = $('<span>').addClass('join-text').text(messageObject.messageText);
-        $messageList.append($('<li>').addClass('leave').addClass(messageObject.isFemale ? 'girl' : 'guy').append(spanMessageWriter).append(spanMessageText));
-        $messageList.scrollTop($messageList[0].scrollHeight);
-    });
-});
+}

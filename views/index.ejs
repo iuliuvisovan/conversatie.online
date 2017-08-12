@@ -4,7 +4,6 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>d3i</title>
     <link rel='stylesheet' href='css/style.css'/>
-    <link rel='stylesheet' href='css/bootstrap.min.css'/>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800,300italic' rel='stylesheet'
           type='text/css'>
     <!--Favicon-->
@@ -16,13 +15,19 @@
         <ul id="messages"></ul>
     </div>
     <div class="footer">
-        <input class="form-control" title="Scrie un mesaj" placeholder="Scrie" id="inputMessage" autocomplete="off"/>
+        <input title="Scrie un mesaj" placeholder="Scrie" id="inputMessage" autocomplete="off"/>
+        <select id="options" class="button-options" title="Opțiuni" type="button">
+            <option value='0' selected>...</option>
+            <option value='change-name'>Schimbă-ți numele</option>
+        </select>
     </div>
 </div>
 
 
 <script src="js/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="js/randomNames.js"></script>
+<script src="js/emojiList.js"></script>
 <script src="js/emojiHandler.js"></script>
 <script src="js/handler_client.js"></script>
 
