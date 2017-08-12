@@ -2,6 +2,7 @@ body {
     font-family: 'Open Sans', sans-serif;
     overflow-x: hidden;
     transition: 0.2s all ease-in-out;
+    margin: 0;
 }
 
 .app {
