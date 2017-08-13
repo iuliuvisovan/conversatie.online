@@ -7,12 +7,17 @@ body {
 
 .app {
     position: fixed;
+    left: 0;
+    right: 0;
+    margin: auto;
     height: 100%;
+    max-width: 670px;
     width: 100%;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
 .footer {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
@@ -108,7 +113,7 @@ body {
     border-right: none;
 }
 
-#messages li:not(.join):not(.leave)+li {
+#messages li+li {
     padding: 3px 15px;
 }
 
