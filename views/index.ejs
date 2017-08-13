@@ -15,12 +15,13 @@
     <div class="messages col-md-12">
         <ul id="messages"></ul>
     </div>
+    <select id="options" class="button-options" title="Opțiuni" type="button">
+        <option value='0' selected>...</option>
+        <option value='change-name'>Schimbă-ți numele</option>
+    </select>
     <div class="footer">
-        <input title="Scrie un mesaj" placeholder="Scrie" id="inputMessage" autocomplete="off"/>
-        <select id="options" class="button-options" title="Opțiuni" type="button">
-            <option value='0' selected>...</option>
-            <option value='change-name'>Schimbă-ți numele</option>
-        </select>
+        <input title="Scrie un mesaj" placeholder="✏️" id="inputMessage" autocomplete="off"/>
+        <input title="Trimite" id="inputSend" type="button" value="👌" onclick="sendMessage()"/>
     </div>
 </div>
 

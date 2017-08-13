@@ -25,13 +25,14 @@ $(document).ready(() => {
     getPersonName();
 
     $messageBox.focus();
-    $messageBox.attr('placeholder', 'Ce le scriem ăstora, ' + personName + '?');
+    // $messageBox.attr('placeholder', 'Ce le scriem ăstora, ' + personName + '?');
     socket.emit('check-in', personName);
 
     handleJoinEvent();
     handleChatMessageEvent();
     handleLeaveEvent();
     handleOptions();
+    fixKeyboardOpen();
 });
 
 function handleLeaveEvent() {
@@ -53,10 +54,12 @@ function handleLeaveEvent() {
 function handleChatMessageEvent() {
     socket.on('chat message', msg => {
         var messageObject = JSON.parse(msg);
-        var spanMessageAuthor = $('<span>')
-            .addClass('message-author')
-            .text(messageObject.socketId == socket.id ?
-                'Tu' : messageObject.name);
+        if (messageObject.socketId != lastMessageSenderId) {
+            var spanMessageAuthor = $('<span>')
+                .addClass('message-author')
+                .text(messageObject.socketId == socket.id ?
+                    'Tu' : messageObject.name);
+        }
         var spanMessageText = $('<span>')
             .addClass('message-text')
             .css('background', messageObject.color)
@@ -99,8 +102,12 @@ function handleChatMessageEvent() {
 
 function fixScroll() {
     setTimeout(() => {
-        $messageList.scrollTop($messageList[0].scrollHeight + 50);
+        $('.messages')[0].scrollTop = $('.messages')[0].scrollHeight;
     }, 100);
+}
+
+function fixKeyboardOpen() {
+    $(window).on('resize', fixScroll);
 }
 
 function handleJoinEvent() {
@@ -123,6 +130,7 @@ function handleJoinEvent() {
 
             $('.footer').css('border-color', messageObject.color);
             $('#options').css('color', messageObject.color);
+            $('#inputSend').css('border-color', messageObject.color);
         }
         console.log(messageObject.color);
         var joinLi = $('<li>')
@@ -168,11 +176,16 @@ function handleWindowFocus() {
     $(window).blur(() => isWindowFocused = false);
     $("#inputMessage").keyup(e => {
         if (e.keyCode == 13) {
-            $messageBox.val() && socket.emit('chat message', $messageBox.val());
-            $messageBox.val('');
+            sendMessage();
             return false;
         }
     });
+
+}
+
+function sendMessage() {
+    $messageBox.val() && socket.emit('chat message', $messageBox.val());
+    $messageBox.val('');
 }
 
 function handleOptions() {
