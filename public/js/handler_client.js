@@ -43,9 +43,11 @@ function handleLeaveEvent() {
         var spanMessageText = $('<span>').addClass('join-text').text(messageObject.messageText);
         var leaveLi = $('<li>')
             .addClass('leave')
+            .css('border-color', messageObject.color)
             .css('color', messageObject.color)
             .append(spanMessageAuthor)
             .append(spanMessageText);
+
         $messageList.append(leaveLi);
         fixScroll();
     });
@@ -128,7 +130,6 @@ function handleJoinEvent() {
             .on('click', changePersonName)
                 .attr('title', 'Schimbă-ți numele');
 
-            $('.footer').css('border-color', messageObject.color);
             $('#options').css('color', messageObject.color);
             $('#inputSend').css('border-color', messageObject.color);
         }
@@ -136,6 +137,7 @@ function handleJoinEvent() {
         var joinLi = $('<li>')
             .addClass('join')
             .addClass(messageObject.socketId == socket.id ? 'me' : '')
+            .css('border-color', messageObject.color)
             .css('color', messageObject.color)
             .append(spanMessageAuthor)
             .append(spanMessageText)
@@ -175,6 +177,11 @@ function handleWindowFocus() {
     });
     $(window).blur(() => isWindowFocused = false);
     $("#inputMessage").keyup(e => {
+        if ($("#inputMessage").val().trim().length)
+            $('#inputSend').removeClass('opaque');
+        else
+            $('#inputSend').addClass('opaque');
+
         if (e.keyCode == 13) {
             sendMessage();
             return false;
@@ -186,6 +193,8 @@ function handleWindowFocus() {
 function sendMessage() {
     $messageBox.val() && socket.emit('chat message', $messageBox.val());
     $messageBox.val('');
+    $("#inputMessage").focus();
+    $('#inputSend').addClass('opaque');
 }
 
 function handleOptions() {

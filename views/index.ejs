@@ -1,37 +1,41 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>d3i</title>
-    <link rel='stylesheet' href='css/style.css'/>
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800,300italic' rel='stylesheet'
-          type='text/css'>
+    <link rel='stylesheet' href='css/style.css' />
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800,300italic' rel='stylesheet' type='text/css'>
     <!--Favicon-->
     <link id="favicon" rel="icon" href="img/favicon_1.png" type="image/png" sizes="16x16">
     <meta name="theme-color" content="#fff">
 </head>
+
 <body>
-<div class="app">
-    <div class="messages col-md-12">
-        <ul id="messages"></ul>
-    </div>
-    <select id="options" class="button-options" title="Opțiuni" type="button">
+    <div class="app">
+        <div class="messages col-md-12">
+            <ul id="messages"></ul>
+        </div>
+        <select id="options" class="button-options" title="Opțiuni" type="button">
         <option value='0' selected>...</option>
         <option value='change-name'>Schimbă-ți numele</option>
     </select>
-    <div class="footer">
-        <input title="Scrie un mesaj" placeholder="✏️" id="inputMessage" autocomplete="off"/>
-        <input title="Trimite" id="inputSend" type="button" value="👌" onclick="sendMessage()"/>
+        <div class="footer">
+            <input title="Scrie un mesaj" placeholder="Scrie..." id="inputMessage" autocomplete="off" />
+            <button title="Trimite" class="opaque" id="inputSend" type="button" value="👌" onclick="sendMessage()">        
+                <img style="height: 30px;" src="http://cdn.onlinewebfonts.com/svg/img_542962.svg"/>
+            </button>
+        </div>
     </div>
-</div>
 
 
-<script src="js/socket.io.js"></script>
-<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-<script src="js/randomNames.js"></script>
-<script src="js/emojiList.js"></script>
-<script src="js/emojiHandler.js"></script>
-<script src="js/handler_client.js"></script>
+    <script src="js/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="js/randomNames.js"></script>
+    <script src="js/emojiList.js"></script>
+    <script src="js/emojiHandler.js"></script>
+    <script src="js/handler_client.js"></script>
 
 </body>
+
 </html>

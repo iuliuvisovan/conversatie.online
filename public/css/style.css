@@ -17,13 +17,13 @@ body {
     left: 0;
     right: 0;
     margin: auto;
-    padding: 0 10px;
-    border-top: 1px solid #00BCD4;
+    padding: 0 8px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
     overflow: hidden;
 }
 
 #inputMessage {
-    width: 100%;
+    width: calc(100% - 75px);
     padding: 3px 10px;
     border: none;
     outline: none;
@@ -38,16 +38,14 @@ body {
 
 #inputSend {
     position: absolute;
-    right: 3px;
-    bottom: 3px;
-    height: 40px;
-    width: 65px;
+    height: 38px;
+    width: 70px;
+    bottom: 4px;
+    bottom: 1px;
+    cursor: pointer;
     background: transparent;
     outline: none;
     border: none;
-    font-size: 18px;
-    border: 1px solid black;
-    border-radius: 10px 5px;
 }
 
 .messages {
@@ -89,7 +87,7 @@ body {
 }
 
 #messages li:last-of-type {
-    padding-bottom: 20px!important;
+    padding-bottom: 15px!important;
 }
 
 #messages li {
@@ -100,17 +98,18 @@ body {
 
 
 #messages li.join.me {
-    padding: 0 15px;
     text-align: left;
+    border-right: none;
+    border-left: 3px solid white;
 } 
 
-#messages li:not(.join).mine {
+#messages li.mine {
     border-left: 3px solid white;
     border-right: none;
 }
 
-#messages li:not(.join)+li {
-    padding: 5px 15px;
+#messages li:not(.join):not(.leave)+li {
+    padding: 3px 15px;
 }
 
 #messages li:not(.join):hover .message-time-individual {
@@ -133,13 +132,12 @@ body {
 
 #messages li:not(.same-sender):not(.join):not(.leave) {
     padding-top: 15px;
-    padding-bottom: 10px;
-    margin-top: 20px;
+    padding-bottom: 5px;
 }
 
 .message-author {
     position: absolute;
-    top: -10px;
+    top: -2px;
     border-radius: 30px;
     padding: 0 8px;
     font-weight: 300;
@@ -194,15 +192,20 @@ body {
 .button-options {
     position: absolute;
     left: 0;
+    top: -10px;
     right: 0;
     margin: auto;
-    bottom: 55px;
     background: transparent;
     outline: none;
     border: none;
     font-size: 30px;
-    width: 48px;
+    width: 25px;
     cursor: pointer;
     -webkit-appearance: button;
     font-family: 'Open Sans', sans-serif;
+}
+
+.opaque {
+    opacity: 0.4;
+    pointer-events: none;
 }
