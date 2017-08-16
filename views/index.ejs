@@ -16,10 +16,22 @@
         <div class="messages col-md-12">
             <ul id="messages"></ul>
         </div>
-        <select id="options" class="button-options" title="Opțiuni" type="button">
-        <option value='0' selected>...</option>
-        <option value='change-name'>Schimbă-ți numele</option>
-    </select>
+        <select id="options" class="button-options" title="Opțiuni">
+            <option value='0' selected>...</option>
+            <option value='change-name'>Schimbă-ți numele</option>
+        </select>
+        <div id="btnAddPwa">
+            <div class="mobile">
+                <span class="title">Te rog adaugă la ecranul de start</span>
+                <span>Notificări, acces instant și toate funcționalitățile disponibile cu un simplu click.</span>
+                <span class="button-add" onclick="subscribeUser(); $(this).addClass('disabled')">Adaugă aplicația</span>
+            </div>
+            <div class="desktop">
+                <span class="title">Te rog să vrei notificări</span>
+                <span>Notificări cool și folositoare, cu simplu click.</span>
+                <span class="button-add" onclick="subscribeUser(); $(this).addClass('disabled')">Bine, vreau notificări</span>
+            </div>
+        </div>
         <div class="footer">
             <input title="Scrie un mesaj" placeholder="Scrie..." id="inputMessage" autocomplete="off" />
             <button title="Trimite" class="opaque" id="inputSend" type="button" value="👌" onclick="sendMessage()">        
@@ -28,14 +40,12 @@
         </div>
     </div>
 
-
     <script src="js/socket.io.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-    <script src="js/randomNames.js"></script>
-    <script src="js/emojiList.js"></script>
-    <script src="js/emojiHandler.js"></script>
-    <script src="js/handler_client.js"></script>
-
+    <script src="js/name-list.js"></script>
+    <script src="js/emoji-list.js"></script>
+    <script src="js/emoji-manager.js"></script>
+    <script src="js/app.js"></script>
 </body>
 
 </html>

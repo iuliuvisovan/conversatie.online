@@ -13,7 +13,7 @@ body {
     height: 100%;
     max-width: 670px;
     width: 100%;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .footer {
@@ -23,7 +23,7 @@ body {
     right: 0;
     margin: auto;
     padding: 0 8px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
     overflow: hidden;
 }
 
@@ -43,10 +43,9 @@ body {
 
 #inputSend {
     position: absolute;
-    height: 38px;
+    height: 55px;
     width: 70px;
-    bottom: 4px;
-    bottom: 1px;
+    bottom: -5px;
     cursor: pointer;
     background: transparent;
     outline: none;
@@ -101,12 +100,11 @@ body {
     border-right: 3px solid white;
 }
 
-
 #messages li.join.me {
     text-align: left;
     border-right: none;
     border-left: 3px solid white;
-} 
+}
 
 #messages li.mine {
     border-left: 3px solid white;
@@ -170,7 +168,8 @@ body {
     font-weight: 700;
 }
 
-.join, .leave {
+.join,
+.leave {
     padding: 10px;
     border: none;
     text-align: center;
@@ -213,4 +212,65 @@ body {
 .opaque {
     opacity: 0.4;
     pointer-events: none;
+}
+
+#btnAddPwa {
+    position: absolute;
+    display: block;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 250px;
+    height: 120px;
+    padding: 30px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+#btnAddPwa .title {
+    display: block;
+    width: 100%;
+    color: #E91E63;
+    text-align: left;
+    margin-top: -10px;
+    margin-bottom: 5px;
+}
+
+#btnAddPwa .button-add {
+    background: #E91E63;
+    color: white;
+    font-weight: 500;
+    border-radius: 30px;
+    padding: 5px 10px;
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 15px;
+    box-shadow: -2px 4px 7px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+}
+
+#btnAddPwa .button-add.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+#btnAddPwa .button-add:hover {
+    box-shadow: -2px 4px 7px rgba(0, 0, 0, 0.3);
+}
+
+#btnAddPwa .mobile {
+    display: none;
+}
+
+@media(max-width: 1024px) {
+    #btnAddPwa .desktop {
+        display: none;
+    }
+
+    #btnAddPwa .mobile {
+        display: block;
+    }
 }

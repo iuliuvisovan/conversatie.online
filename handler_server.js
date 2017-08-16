@@ -1,8 +1,11 @@
 var users = {};
+var mongoose = require('mongoose');
+var webpush = require('web-push');
+var models = require('./models/models.js');
 
 var handler = {
-    init: function (io) {
-        io.on('connection', function (socket) {
+    init: (io) => {
+        io.on('connection', socket => {
             socket.on('check-in', function (msg) {
                 console.log('connect');
                 if (!msg)
@@ -25,7 +28,7 @@ var handler = {
                 users[socket.id].color = message.color;
                 io.emit('join', JSON.stringify(message));
             });
-            socket.on('chat message', function (msg) {
+            socket.on('chat message', msg => {
                 var message = {
                     socketId: socket.id.slice(2),
                     name: users[socket.id].name,
@@ -34,9 +37,32 @@ var handler = {
                 };
                 io.emit('chat message', JSON.stringify(message));
             });
+            socket.on('subscribe', subscription => {
+                var userId = JSON.parse(subscription).userId;
+                var pushMessageSubscription = JSON.parse(subscription).pushMessageSubscription;
+                addOrUpdateModel(new models.pushMessageSubscription({
+                    userId: userId,
+                    subscription: JSON.stringify(pushMessageSubscription)
+                }), 'pushMessageSubscription', {})
+
+                console.log(JSON.stringify(pushMessageSubscription));
+
+                users[socket.id].userId = userId;
+
+                models.pushMessageSubscription.find({}, (error, subscriptions) => {
+                    subscriptions.forEach(subscription => {
+                        var subscription = subscription.subscription.replace(/\\/g, '');
+                        var subscription = JSON.parse(subscription);
+                        
+                        console.log("#############");
+                        console.log(subscription.endpoint);
+                        console.log("#############");
+                        webpush.sendNotification(subscription, '');
+                    })
+                })
+            });
             socket.on('disconnect', function () {
                 try {
-                    console.log('disconnect');
                     var msg = users[socket.id];
                     var message = {
                         name: msg.name,
@@ -101,6 +127,37 @@ function correctSentence(sentence) {
         sentence += ".";
     }
     return sentence;
+}
+
+function addOrUpdateModel(model, modelName) {
+    // console.log("Attempting to save object: \n " + model);
+    var query = {
+        '_id': model._id
+    };
+    mongoose.model(modelName).findOneAndUpdate(query, model, {
+        upsert: true
+    }, function (error, doc) {
+        if (error) {
+            // console.log("Error occured when trying to add / update! " + error);
+        } else {
+            // console.log("Successfullly added / updated model to database.");
+        }
+    });
+}
+
+function removeById(modelName, id, response) {
+    console.log("Attempting to remove " + modelName + " with ID " + id);
+    mongoose.model(modelName).find({
+        _id: id
+    }).remove(function (error) {
+        if (error) {
+            console.log("Error removing item from database: " + error);
+            response.status(500).send(error);
+        } else {
+            console.log("Success removing item from database.");
+            response.status(200).send("Successfully removed model from database: id: " + id);
+        }
+    });
 }
 
 module.exports = handler;
