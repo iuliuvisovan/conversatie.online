@@ -198,7 +198,7 @@ function handleWriteEvent() {
         clearInterval(removeWritingTimeout);
         removeWritingTimeout = setTimeout(() => {
             $(".writing[data-sender-socketid='" + messageObject.socketId + "']").remove();
-        }, 30000);
+        }, 3000);
 
         fixScroll();
     });
