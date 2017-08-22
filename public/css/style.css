@@ -90,7 +90,7 @@ body {
     }
 }
 
-#messages li:last-of-type {
+#messages li:last-of-type:not(.writing) {
     padding-bottom: 15px!important;
 }
 
@@ -194,6 +194,7 @@ body {
 }
 
 .button-options {
+    -moz-appearance: none;
     position: absolute;
     left: 0;
     top: -10px;

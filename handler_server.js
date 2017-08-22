@@ -28,6 +28,15 @@ var handler = {
                 users[socket.id].color = message.color;
                 io.emit('join', JSON.stringify(message));
             });
+            socket.on('i am writing', () => {
+                var message = {
+                    socketId: socket.id.slice(2),
+                    name: users[socket.id].name,
+                    color: users[socket.id].color,
+                    messageText: '...'
+                };
+                io.emit('user is writing', JSON.stringify(message));
+            });
             socket.on('chat message', msg => {
                 var message = {
                     socketId: socket.id.slice(2),

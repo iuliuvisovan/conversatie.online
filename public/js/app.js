@@ -7,6 +7,9 @@ var isWindowFocused = true;
 var lastMessageSenderId = '';
 var personName = '';
 var personColor = '';
+var lastWriteEventDispatchTimestamp = new Date();
+lastWriteEventDispatchTimestamp.setSeconds(new Date().getSeconds() - 5);
+var removeWritingTimeout;
 var chatMessageSound = new Audio('/sounds/chatMessage.mp3');
 var applicationServerPublicKey = "BMEi_ez0hgDxewidO83qBFenXDfkie8kQmfPnj1AJBsZ9EqgywI5Oo3yK5i6Xp0DMYlHNCEBvF0ayUk2f1PUsD0";
 chatMessageSound.loop = false;
@@ -17,16 +20,16 @@ window.onbeforeunload = function () {
 };
 
 $(document).ready(() => {
-    managePwa();
+    // managePwa();
 
     handleWindowFocus();
     getPersonName();
 
     $messageBox.focus();
-    // $messageBox.attr('placeholder', 'Ce le scriem ăstora, ' + personName + '?');
     socket.emit('check-in', personName);
 
     handleJoinEvent();
+    handleWriteEvent();
     handleChatMessageEvent();
     handleLeaveEvent();
     handleOptions();
@@ -64,30 +67,38 @@ function handleChatMessageEvent() {
             .css('background', messageObject.color)
             .html(replaceWithEmojis(messageObject.messageText));
 
-        var li = $('<li>');
-        li.css('border-color', messageObject.color)
+        var $li = $('<li>');
+        $li.css('border-color', messageObject.color)
         var currentDate = new Date();
         var currentDateString = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
         if (messageObject.socketId == lastMessageSenderId) {
-            li.addClass('same-sender');
+            $li.addClass('same-sender');
         }
 
         if (messageObject.socketId == socket.id) {
-            li.addClass('mine');
+            $li.addClass('mine');
         } else {
             chatMessageSound.play();
         }
-        li.append(spanMessageAuthor)
-        li.append(spanMessageText);
+        $li.append(spanMessageAuthor)
+        $li.append(spanMessageText);
         if (messageObject.socketId == socket.id) {
-            li.append($('<span>')
+            $li.append($('<span>')
                 .addClass('message-time-individual')
                 .text(currentDateString));
         }
 
-        $messageList.append(li);
+        $messageList.append($li);
         fixScroll();
         lastMessageSenderId = messageObject.socketId;
+
+        if ($(".writing[data-sender-socketid='" + messageObject.socketId + "']").length) {
+            clearInterval(removeWritingTimeout);
+            $(".writing[data-sender-socketid='" + messageObject.socketId + "']").remove();
+            lastWriteEventDispatchTimestamp.setSeconds(new Date().getSeconds() - 5);
+            return;
+        }
+
         if (!isWindowFocused) {
             newMessages++;
             $('title').html('(' + newMessages + ') d3i');
@@ -142,6 +153,58 @@ function handleJoinEvent() {
     });
 }
 
+function handleWriteEvent() {
+    socket.on('user is writing', msg => {
+
+        var messageObject = JSON.parse(msg);
+
+        if (messageObject.socketId != lastMessageSenderId) {
+            var spanMessageAuthor = $('<span>')
+                .addClass('message-author')
+                .text(messageObject.socketId == socket.id ?
+                    'Tu' : messageObject.name);
+        }
+
+        var $writingLi = $('<li>')
+            .attr('data-sender-socketid', messageObject.socketId)
+            .addClass('writing');
+        var spanMessageText = $('<span>')
+            .addClass('message-text')
+            .css('color', messageObject.color)
+            .text('...');
+
+        $writingLi.css('border-color', messageObject.color)
+        var currentDate = new Date();
+        var currentDateString = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
+        if (messageObject.socketId == lastMessageSenderId) {
+            $writingLi.addClass('same-sender');
+        }
+
+        if (messageObject.socketId == socket.id) {
+            $writingLi.addClass('mine');
+        }
+        $writingLi.append(spanMessageAuthor)
+        $writingLi.append(spanMessageText);
+        if (messageObject.socketId == socket.id) {
+            $writingLi.append($('<span>')
+                .addClass('message-time-individual')
+                .text(currentDateString));
+        }
+
+        if (!$(".writing[data-sender-socketid='" + messageObject.socketId + "']").length) {
+            $messageList.append($writingLi);
+        }
+
+        clearInterval(removeWritingTimeout);
+        removeWritingTimeout = setTimeout(() => {
+            $(".writing[data-sender-socketid='" + messageObject.socketId + "']").remove();
+        }, 30000);
+
+        fixScroll();
+    });
+
+}
+
 function changePersonName() {
     if (sessionStorage.sessionNameChanges > 3)
         return;
@@ -181,13 +244,22 @@ function handleWindowFocus() {
             return false;
         }
     });
+}
 
+function IAmWriting() {
+    if (Math.abs(new Date().getSeconds() - lastWriteEventDispatchTimestamp.getSeconds()) > 1) {
+        socket.emit('i am writing');
+        lastWriteEventDispatchTimestamp = new Date();
+    }
 }
 
 function sendMessage() {
-    $messageBox.val() && socket.emit('chat message', $messageBox.val());
-    $messageBox.val('');
-    $("#inputMessage").focus();
+    var message = $messageBox.val();
+    if (message) {
+        $messageBox.val('');
+        socket.emit('chat message', message);
+    }
+    $('#inputMessage').focus();
     $('#inputSend').addClass('opaque');
 }
 
