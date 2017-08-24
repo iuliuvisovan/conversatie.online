@@ -7,6 +7,7 @@ var isWindowFocused = true;
 var lastMessageSenderId = '';
 var personName = '';
 var personColor = '';
+var lastSentMessage = '';
 var lastWriteEventDispatchTimestamp = new Date();
 lastWriteEventDispatchTimestamp.setSeconds(new Date().getSeconds() - 5);
 var removeWritingTimeout;
@@ -34,6 +35,7 @@ $(document).ready(() => {
     handleLeaveEvent();
     handleOptions();
     fixKeyboardOpen();
+    handleAccessLastMessage();
 });
 
 function handleLeaveEvent() {
@@ -260,7 +262,18 @@ function handleWindowFocus() {
     });
 }
 
-function IAmWriting() {
+function handleAccessLastMessage() {
+    $messageBox.keyup(e => {
+        if(e.keyCode == 38) {
+            $messageBox.val(lastSentMessage);
+        }
+        if(e.keyCode == 40) {
+            $messageBox.val('');
+        }
+    });
+}
+
+function iAmWriting() {
     if (Math.abs(new Date().getSeconds() - lastWriteEventDispatchTimestamp.getSeconds()) > 1) {
         socket.emit('i am writing');
         lastWriteEventDispatchTimestamp = new Date();
@@ -268,10 +281,11 @@ function IAmWriting() {
 }
 
 function sendMessage() {
-    var message = $('<div/>').html($messageBox.val()).text();
+    var message = $('<div/>').html($messageBox.val()).text().trim();
     if (message) {
         $messageBox.val('');
         socket.emit('chat message', message);
+        lastSentMessage = message;
     }
     $('#inputMessage').focus();
     $('#inputSend').addClass('opaque');
