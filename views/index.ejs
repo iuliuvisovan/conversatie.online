@@ -33,7 +33,7 @@
             </div>
         </div>
         <div class="footer">
-            <input title="Scrie un mesaj" onkeydown="IAmWriting()" placeholder="Scrie..." id="inputMessage" autocomplete="off" />
+            <input title="Scrie un mesaj" onkeydown="event.keyCode >= 32 && IAmWriting()" placeholder="Scrie..." id="inputMessage" autocomplete="off" />
             <button title="Trimite" class="opaque" id="inputSend" type="button" value="👌" onclick="sendMessage()">        
                 <img style="height: 30px;" src="http://cdn.onlinewebfonts.com/svg/img_542962.svg"/>
             </button>

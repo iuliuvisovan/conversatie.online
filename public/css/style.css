@@ -71,11 +71,12 @@ body {
 }
 
 #messages li {
-    will-change: padding;
+    will-change: padding opacity;
     position: relative;
     animation-name: fresh;
     animation-duration: 0.5s;
     font-family: 'Open Sans', sans-serif;
+    transition: opacity 1s ease-in-out;
 }
 
 
@@ -274,4 +275,16 @@ body {
     #btnAddPwa .mobile {
         display: block;
     }
+}
+
+.writing.mine {
+    display: none;
+}
+
+::-webkit-scrollbar { 
+    display: none; 
+}
+
+.seen-on-focus {
+    opacity: 0.5;
 }

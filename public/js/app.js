@@ -2,7 +2,7 @@ var socket = io();
 
 var $messageBox = $('#inputMessage');
 var $messageList = $('#messages');
-var newMessages = 0;
+var unseenMessageCount = 0;
 var isWindowFocused = true;
 var lastMessageSenderId = '';
 var personName = '';
@@ -69,6 +69,8 @@ function handleChatMessageEvent() {
 
         var $li = $('<li>');
         $li.css('border-color', messageObject.color)
+        if (!isWindowFocused)
+            $li.addClass('not-seen');
         var currentDate = new Date();
         var currentDateString = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
         if (messageObject.socketId == lastMessageSenderId) {
@@ -79,6 +81,9 @@ function handleChatMessageEvent() {
             $li.addClass('mine');
         } else {
             chatMessageSound.play();
+            $li.append($('<span>')
+                .addClass('message-time-individual')
+                .text(currentDateString));
         }
         $li.append(spanMessageAuthor)
         $li.append(spanMessageText);
@@ -92,18 +97,18 @@ function handleChatMessageEvent() {
         fixScroll();
         lastMessageSenderId = messageObject.socketId;
 
+        if (!isWindowFocused) {
+            unseenMessageCount++;
+            $('title').text('(' + unseenMessageCount + ') d3i');
+            var imageNumber = (unseenMessageCount >= 8 ? 7 : unseenMessageCount);
+            $('#favicon').attr('href', 'img/favicon_' + (imageNumber + 1) + '.png');
+        }
+
         if ($(".writing[data-sender-socketid='" + messageObject.socketId + "']").length) {
             clearInterval(removeWritingTimeout);
             $(".writing[data-sender-socketid='" + messageObject.socketId + "']").remove();
             lastWriteEventDispatchTimestamp.setSeconds(new Date().getSeconds() - 5);
             return;
-        }
-
-        if (!isWindowFocused) {
-            newMessages++;
-            $('title').html('(' + newMessages + ') d3i');
-            var imageNumber = (newMessages >= 8 ? 7 : newMessages);
-            $('#favicon').attr('href', 'img/favicon_' + (imageNumber + 1) + '.png');
         }
     });
 }
@@ -227,10 +232,19 @@ function getPersonName() {
 
 function handleWindowFocus() {
     $(window).focus(() => {
+        if (unseenMessageCount) {
+            $("li:not(.not-seen)").addClass('seen-on-focus');
+            $(".not-seen").removeClass('not-seen');
+            setTimeout(() => {
+                $("li:not(.not-seen)").removeClass('seen-on-focus');
+            }, 7000);
+        }
+
         isWindowFocused = true;
-        newMessages = 0;
+        unseenMessageCount = 0;
         $('title').html('d3i');
         $('#favicon').attr('href', 'img/favicon_1.png');
+       
     });
     $(window).blur(() => isWindowFocused = false);
     $("#inputMessage").keyup(e => {
@@ -254,7 +268,7 @@ function IAmWriting() {
 }
 
 function sendMessage() {
-    var message = $messageBox.val();
+    var message = $('<div/>').html($messageBox.val()).text();
     if (message) {
         $messageBox.val('');
         socket.emit('chat message', message);

@@ -92,14 +92,15 @@ var handler = {
 
 function isFemaleName(name) {
     var isFemale;
-    var hardcoded = ['Demi', 'Paula', 'Lady', 'Megan', 'Ada', 'Bianca', 'Camelia', 'Daciana', 'Adina', 'Bogdana', 'Casiana', 'Dana',
+    name = name.toLowerCase().trim();
+    var hardcoded = ['Zoe', 'Mimi',  'Beatrice', 'Alice', 'Gyongy', 'Cami', 'Demi', 'Paula', 'Lady', 'Megan', 'Ada', 'Bianca', 'Camelia', 'Daciana', 'Adina', 'Bogdana', 'Casiana', 'Dana',
         'Adriana', 'Brandusa', 'Catinca', 'Daria', 'Agata', 'Catrinel', 'Delia', 'Alida', 'Catalina', 'Doina', 'Alina', 'Celia',
         'Dora', 'Amelia', 'Cezara', 'Dumitra', 'Ana', 'Clarisa', 'Anca', 'Codrina', 'Codruta', 'Anda', 'Corina', 'Andreea',
         'Lolo', 'Crenguta', 'Anemona', 'Cristina', 'Anica', 'Anuta', 'Aura', 'Roxana', 'Roxy', 'Rox', 'Carmen', 'Cora', 'Lari'
     ];
-    if (hardcoded.indexOf(name) >= 0)
+    if (hardcoded.some(x => x.toLowerCase() == name))
         isFemale = true;
-    if (name[name.length - 1] == 'a' || name[name.length - 1] == 'ă')
+    if (name[name.length - 1] == 'a' || name[name.length - 1] == 'ă' || name[name.length - 1] == 'i')
         isFemale = true;
     return isFemale;
 }

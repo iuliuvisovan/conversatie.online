@@ -1,4 +1,12 @@
 var emojiMatchPairs = [
+    ...Array.from(new Array(9)).map((x, i) => {
+        return {
+            emojiChars: ':o3' + '3'.repeat(i),
+            emoji: '🐶',
+            sizeIncrease: i * 5,
+            emojiTitle: 'cățăl'
+        }
+    }).reverse(),
     {
         emojiChars: ':caca',
         emoji: '💩',
@@ -83,30 +91,6 @@ var emojiMatchPairs = [
             emojiTitle: 'zâmbet cu dinți'
         }
     }).reverse(),
-    {
-        emojiChars: ':)',
-        emoji: '🙂',
-        sizeIncrease: 0,
-        emojiTitle: 'zâmbet (ironic / inocent)'
-    },
-    {
-        emojiChars: ':\'D',
-        emoji: '😅',
-        sizeIncrease: 0,
-        emojiTitle: 'zâmbet cu dinți și sudoarea frunții'
-    },
-    {
-        emojiChars: '=)',
-        emoji: '😊',
-        sizeIncrease: 0,
-        emojiTitle: 'zâmbet drăguț'
-    },
-    {
-        emojiChars: 'O)',
-        emoji: '😇',
-        sizeIncrease: 0,
-        emojiTitle: 'zâmbet cu AURĂ DE ÎNGER'
-    },
     {
         emojiChars: 'O:)',
         emoji: '😇',
@@ -325,5 +309,29 @@ var emojiMatchPairs = [
         emoji: '😈',
         sizeIncrease: 0,
         emojiTitle: 'muahaha'
+    },
+    {
+        emojiChars: ':)',
+        emoji: '🙂',
+        sizeIncrease: 0,
+        emojiTitle: 'zâmbet (ironic / inocent)'
+    },
+    {
+        emojiChars: ':\'D',
+        emoji: '😅',
+        sizeIncrease: 0,
+        emojiTitle: 'zâmbet cu dinți și sudoarea frunții'
+    },
+    {
+        emojiChars: '=)',
+        emoji: '😊',
+        sizeIncrease: 0,
+        emojiTitle: 'zâmbet drăguț'
+    },
+    {
+        emojiChars: 'O)',
+        emoji: '😇',
+        sizeIncrease: 0,
+        emojiTitle: 'zâmbet cu AURĂ DE ÎNGER'
     },
 ]
