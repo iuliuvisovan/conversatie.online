@@ -95,7 +95,7 @@ a {
     }
 }
 
-#messages li:last-of-type:not(.writing) {
+#messages li:last-of-type {
     padding-bottom: 15px!important;
 }
 
@@ -231,7 +231,7 @@ a {
     width: 250px;
     height: 120px;
     padding: 30px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     display: none;
 }
 
@@ -278,10 +278,6 @@ a {
     #btnAddPwa .mobile {
         display: block;
     }
-}
-
-.writing.mine {
-    display: none;
 }
 
 ::-webkit-scrollbar {

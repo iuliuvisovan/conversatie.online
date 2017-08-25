@@ -198,7 +198,8 @@ function handleWriteEvent() {
                 .text(currentDateString));
         }
 
-        if (!$(".writing[data-sender-socketid='" + messageObject.socketId + "']").length) {
+        if (messageObject.socketId != socket.id &&
+            !$(".writing[data-sender-socketid='" + messageObject.socketId + "']").length) {
             $messageList.append($writingLi);
         }
 
@@ -213,12 +214,10 @@ function handleWriteEvent() {
 }
 
 function changePersonName() {
-    if (sessionStorage.sessionNameChanges > 3)
-        return;
     localStorage.personName = '';
     getPersonName();
-    sessionStorage.sessionNameChanges = (+sessionStorage.sessionNameChanges || 0) + 1;
     socket.emit('check-in', personName);
+    $('#inputMessage').focus();
 }
 
 function getPersonName() {
@@ -246,7 +245,7 @@ function handleWindowFocus() {
         unseenMessageCount = 0;
         $('title').html('d3i');
         $('#favicon').attr('href', 'img/favicon_1.png');
-       
+
     });
     $(window).blur(() => isWindowFocused = false);
     $("#inputMessage").keyup(e => {
@@ -264,10 +263,10 @@ function handleWindowFocus() {
 
 function handleAccessLastMessage() {
     $messageBox.keyup(e => {
-        if(e.keyCode == 38) {
+        if (e.keyCode == 38) {
             $messageBox.val(lastSentMessage);
         }
-        if(e.keyCode == 40) {
+        if (e.keyCode == 40) {
             $messageBox.val('');
         }
     });

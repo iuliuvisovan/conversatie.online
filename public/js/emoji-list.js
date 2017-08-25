@@ -8,6 +8,18 @@ var emojiMatchPairs = [
         }
     }).reverse(),
     {
+        emojiChars: '<3',
+        emoji: '💗',
+        sizeIncrease: 0,
+        emojiTitle: 'inimă'
+    },
+    {
+        emojiChars: '(n)',
+        emoji: '👎',
+        sizeIncrease: 0,
+        emojiTitle: 'nu-mi place'
+    },
+    {
         emojiChars: ':caca',
         emoji: '💩',
         sizeIncrease: 0,

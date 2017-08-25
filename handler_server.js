@@ -20,12 +20,14 @@ var handler = {
                     name: msg,
                     oldName: users[socket.id].name,
                     isFemale: isFemaleName(msg),
-                    color: getRandomColor(isFemaleName(msg)),
                     messageText: isNameChange ?
                         " a devenit " : " ni s-a alăturat!"
                 };
                 users[socket.id].name = msg;
+                users[socket.id].isFemale = message.isFemale;
+                message.color = getUserColor(message.isFemale);
                 users[socket.id].color = message.color;
+
                 io.emit('join', JSON.stringify(message));
             });
             socket.on('i am writing', () => {
@@ -62,7 +64,7 @@ var handler = {
                     subscriptions.forEach(subscription => {
                         var subscription = subscription.subscription.replace(/\\/g, '');
                         var subscription = JSON.parse(subscription);
-                        
+
                         console.log("#############");
                         console.log(subscription.endpoint);
                         console.log("#############");
@@ -82,6 +84,7 @@ var handler = {
                     io.emit('leave', JSON.stringify(message));
                     delete users[socket.id];
                 } catch (e) {
+                    delete users[socket.id];
                     console.log(e);
                 }
             });
@@ -93,7 +96,7 @@ var handler = {
 function isFemaleName(name) {
     var isFemale;
     name = name.toLowerCase().trim();
-    var hardcoded = ['Zoe', 'Mimi',  'Beatrice', 'Alice', 'Gyongy', 'Cami', 'Demi', 'Paula', 'Lady', 'Megan', 'Ada', 'Bianca', 'Camelia', 'Daciana', 'Adina', 'Bogdana', 'Casiana', 'Dana',
+    var hardcoded = ['Zoe', 'Mimi', 'Beatrice', 'Alice', 'Gyongy', 'Cami', 'Demi', 'Paula', 'Lady', 'Megan', 'Ada', 'Bianca', 'Camelia', 'Daciana', 'Adina', 'Bogdana', 'Casiana', 'Dana',
         'Adriana', 'Brandusa', 'Catinca', 'Daria', 'Agata', 'Catrinel', 'Delia', 'Alida', 'Catalina', 'Doina', 'Alina', 'Celia',
         'Dora', 'Amelia', 'Cezara', 'Dumitra', 'Ana', 'Clarisa', 'Anca', 'Codrina', 'Codruta', 'Anda', 'Corina', 'Andreea',
         'Lolo', 'Crenguta', 'Anemona', 'Cristina', 'Anica', 'Anuta', 'Aura', 'Roxana', 'Roxy', 'Rox', 'Carmen', 'Cora', 'Lari'
@@ -105,24 +108,19 @@ function isFemaleName(name) {
     return isFemale;
 }
 
-var femaleColors = ['#f44336', '#e91e63', '#9c27b0', '#03a9f4', '#f9a825', '#ff8a65'];
-var maleColors = ['#3f51b5', '#4885a3 ', '#009688', '#43A047'];
+var femaleColors = ['#E91E63', '#03A9F4', '#F44336'];
+var maleColors = ['#00BCD4', '#4CAF50', '#7CB342'];
 
-function getRandomColor(isFemale) {
-    if (isFemale) {
-        var color = femaleColors[new Date() % femaleColors.length];
-        if (isColorUsed(color))
-            color = femaleColors[new Date() % femaleColors.length];
-        if (isColorUsed(color))
-            color = femaleColors[new Date() % femaleColors.length];
-        return color;
-    }
-    var color = maleColors[new Date() % maleColors.length];
-    if (isColorUsed(color))
-        color = maleColors[new Date() % maleColors.length];
-    if (isColorUsed(color))
-        color = maleColors[new Date() % maleColors.length];
-    return color;
+function getUserColor(isFemale) {
+    var usersOfGenderCount = Object.keys(users).filter(x => users[x].isFemale == isFemale).length;
+    console.log("User gender: " + (isFemale ? 'female' : 'male'));
+    console.log("Users of gender: " + usersOfGenderCount);
+    console.log("Total users: " + Object.keys(users).length);
+
+    usersOfGenderCount -= 1;
+    if (isFemale)
+        return femaleColors[usersOfGenderCount % femaleColors.length];
+    return maleColors[usersOfGenderCount % maleColors.length];
 }
 
 function isColorUsed(color) {
