@@ -101,8 +101,11 @@ function isFemaleName(name) {
         'Dora', 'Amelia', 'Cezara', 'Dumitra', 'Ana', 'Clarisa', 'Anca', 'Codrina', 'Codruta', 'Anda', 'Corina', 'Andreea',
         'Lolo', 'Crenguta', 'Anemona', 'Cristina', 'Anica', 'Anuta', 'Aura', 'Roxana', 'Roxy', 'Rox', 'Carmen', 'Cora', 'Lari'
     ];
+    var hardcodedMale = ['Andrei', 'Vali', 'Muri', 'Danci'];
     if (hardcoded.some(x => x.toLowerCase() == name))
         isFemale = true;
+    if (hardcodedMale.some(x => x.toLowerCase() == name))
+        return false;
     if (name[name.length - 1] == 'a' || name[name.length - 1] == 'ă' || name[name.length - 1] == 'i')
         isFemale = true;
     return isFemale;
