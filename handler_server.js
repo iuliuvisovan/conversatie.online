@@ -108,8 +108,8 @@ function isFemaleName(name) {
     return isFemale;
 }
 
-var femaleColors = ['#E91E63', '#03A9F4', '#F44336'];
-var maleColors = ['#00BCD4', '#4CAF50', '#7CB342'];
+var femaleColors = ['#ec7ebd', '#f5c33b', '#d696bb'];
+var maleColors = ['#54c7ec', '#a3ce71', '#7596c8'];
 
 function getUserColor(isFemale) {
     var usersOfGenderCount = Object.keys(users).filter(x => users[x].isFemale == isFemale).length;
