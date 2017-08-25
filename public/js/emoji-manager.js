@@ -1,7 +1,7 @@
 function replaceWithEmojis(input) {
     if(isValidURL(input)) {
         input = input.slice(0, input.length - 1);
-        return `<a target='_blank' href='${input.toLowerCase()}'>${input.toLowerCase()}</a>`;
+        return `<a target='_blank' href='${input}'>${input}</a>`;
     }
 
     emojiMatchPairs.forEach(matchPair => {
