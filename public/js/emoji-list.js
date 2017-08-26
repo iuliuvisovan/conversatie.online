@@ -23,7 +23,7 @@ var emojiMatchPairs = [
     }).reverse(),
     ...Array.from(new Array(9)).map((x, i) => {
         return {
-            emojiChars: ':X' + ':X'.repeat(i),
+            emojiChars: ':XX' + 'X'.repeat(i),
             emoji: '😍',
             sizeIncrease: i * 5,
             emojiTitle: 'iubeste'
@@ -31,7 +31,7 @@ var emojiMatchPairs = [
     }).reverse(),
     ...Array.from(new Array(9)).map((x, i) => {
         return {
-            emojiChars: ':X' + 'X'.repeat(i),
+            emojiChars: ':X' + ':X'.repeat(i),
             emoji: '😍',
             sizeIncrease: i * 5,
             emojiTitle: 'iubeste'
