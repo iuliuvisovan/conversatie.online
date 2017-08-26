@@ -40,8 +40,10 @@ module.exports = {
     },
     validateUserName: (userName, users, socketId) => {
         var existingUsersWithUsernameCount = 1;
+        var myRoom = users[socketId].room;
         while (Object.keys(users).some(x => users[x].name &&
                 users[x].name.toLowerCase().trim() == userName.toLowerCase().trim() &&
+                users[x].room == myRoom &&
                 users[x].socketId != socketId)) {
             userName = userName.replace(`(${existingUsersWithUsernameCount - 1}) `, '');
             userName = `(${existingUsersWithUsernameCount}) ` + userName;

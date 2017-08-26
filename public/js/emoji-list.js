@@ -1,6 +1,20 @@
 var emojiMatchPairs = [
     ...Array.from(new Array(9)).map((x, i) => {
         return {
+            emojiChars: '>:D<' + '<'.repeat(i),
+            emoji: '🤗',
+            sizeIncrease: i * 5,
+            emojiTitle: 'HUUUG'
+        }
+    }).reverse(),
+    {
+        emojiChars: '>:D',
+        emoji: '🤗',
+        sizeIncrease: 0,
+        emojiTitle: 'HUG'
+    },
+    ...Array.from(new Array(9)).map((x, i) => {
+        return {
             emojiChars: ':o3' + '3'.repeat(i),
             emoji: '🐶',
             sizeIncrease: i * 5,
@@ -191,12 +205,6 @@ var emojiMatchPairs = [
         emoji: '🤑',
         sizeIncrease: 0,
         emojiTitle: 'ii plac banii'
-    },
-    {
-        emojiChars: '🤗',
-        emoji: '>:D',
-        sizeIncrease: 0,
-        emojiTitle: 'HUG'
     },
     {
         emojiChars: '8)',
