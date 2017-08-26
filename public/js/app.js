@@ -92,7 +92,7 @@ $(document).ready(() => {
             if (!messageObject.oldName) {
                 var spanMessageText = $('<span>').addClass('join-text').text(messageObject.messageText);
                 var messageText = messageObject.name + '!';
-                if (messageObject.socketId == socket.id)
+                if (messageObject.socketId == socket.id && userTopic != 'start')
                     messageText += ` (#${userTopic})`;
                 var spanMessageAuthor = $('<span>')
                     .addClass('join-author')
