@@ -75,6 +75,10 @@ $(document).ready(() => {
                         .addClass('online-user')
                         .css('background', onlineUser.color)
                         .css('float', onlineUser.socketId.split('#')[1] == socket.id ? 'left' : '')
+                        .css('text-decoration', 'underline')
+                        .css('cursor', 'pointer')
+                        .on('click', changeUserName)
+                        .attr('title', 'Schimbă-ți numele')
                         .text(onlineUser.name)
                     );
                 });
@@ -100,6 +104,9 @@ $(document).ready(() => {
             }
 
             if (messageObject.socketId == socket.id) {
+                if (!spanMessageAuthorOld)
+                    $messageList.children().remove();
+                $messageList
                 spanMessageAuthor
                     .on('click', changeUserName)
                     .attr('title', 'Schimbă-ți numele');
