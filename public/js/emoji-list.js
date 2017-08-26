@@ -7,15 +7,49 @@ var emojiMatchPairs = [
             emojiTitle: 'cățăl'
         }
     }).reverse(),
-    {
-        emojiChars: '<3',
-        emoji: '💗',
-        sizeIncrease: 0,
-        emojiTitle: 'inimă'
-    },
+    ...Array.from(new Array(9)).map((x, i) => {
+        return {
+            emojiChars: ':X' + ':X'.repeat(i),
+            emoji: '😍',
+            sizeIncrease: i * 5,
+            emojiTitle: 'iubeste'
+        }
+    }).reverse(),
+    ...Array.from(new Array(9)).map((x, i) => {
+        return {
+            emojiChars: ':X' + 'X'.repeat(i),
+            emoji: '😍',
+            sizeIncrease: i * 5,
+            emojiTitle: 'iubeste'
+        }
+    }).reverse(),
+    ...Array.from(new Array(9)).map((x, i) => {
+        return {
+            emojiChars: ';*' + '*'.repeat(i),
+            emoji: '😘',
+            sizeIncrease: i * 5,
+            emojiTitle: 'pup CU inimioara!!'
+        }
+    }).reverse(),
+    ...Array.from(new Array(9)).map((x, i) => {
+        return {
+            emojiChars: ':OO' + 'O'.repeat(i),
+            emoji: '😱',
+            sizeIncrease: i * 5,
+            emojiTitle: 'SPERIAT RAU DE TOT'
+        }
+    }).reverse(),
+    ...Array.from(new Array(9)).map((x, i) => {
+        return {
+            emojiChars: '<3' + '3'.repeat(i),
+            emoji: '💖',
+            sizeIncrease: i * 5,
+            emojiTitle: 'inimă strălucindă'
+        }
+    }).reverse(),
     {
         emojiChars: '(n)',
-        emoji: '👎',
+        emoji: '👎',    
         sizeIncrease: 0,
         emojiTitle: 'nu-mi place'
     },
@@ -122,22 +156,10 @@ var emojiMatchPairs = [
         emojiTitle: 'face cu ochiu'
     },
     {
-        emojiChars: ':X',
-        emoji: '😍',
-        sizeIncrease: 0,
-        emojiTitle: 'are ochii rosii'
-    },
-    {
         emojiChars: ':*',
         emoji: '😗',
         sizeIncrease: 0,
         emojiTitle: 'pup fara INIMIOARA!'
-    },
-    {
-        emojiChars: ';*',
-        emoji: '😘',
-        sizeIncrease: 0,
-        emojiTitle: 'pup CU inimioara!! :DD'
     },
     {
         emojiChars: ':3',
@@ -249,12 +271,6 @@ var emojiMatchPairs = [
         emoji: '😳',
         sizeIncrease: 0,
         emojiTitle: ''
-    },
-    {
-        emojiChars: ':OO',
-        emoji: '😱',
-        sizeIncrease: 0,
-        emojiTitle: 'scared'
     },
     {
         emojiChars: ':O',

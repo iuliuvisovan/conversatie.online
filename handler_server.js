@@ -2,143 +2,99 @@ var users = {};
 var mongoose = require('mongoose');
 var webpush = require('web-push');
 var models = require('./models/models.js');
+var helper = require('./common/helper.js');
+
+var rooms = [];
 
 var handler = {
     init: (io) => {
         io.on('connection', socket => {
-            socket.on('check-in', function (msg) {
-                console.log('connect');
-                if (!msg)
+            socket.on('check-in', message => {
+                message = JSON.parse(message);
+                var userName = message.userName;
+                var room = message.userTopic;
+                if (!rooms.includes(room) < 0)
+                    rooms.push(room);
+                socket.join(room);
+                if (!userName)
                     return;
                 if (users[socket.id])
                     var isNameChange = true;
                 else
                     users[socket.id] = {};
 
+                if (users[socket.id].name == userName)
+                    return;
+                
+                userName = helper.validateUserName(userName, users, socket.id);
+
+
                 var message = {
-                    socketId: socket.id.slice(2),
-                    name: msg,
                     oldName: users[socket.id].name,
-                    isFemale: isFemaleName(msg),
+                    isFemale: helper.isFemaleName(userName),
+                    name: userName,
                     messageText: isNameChange ?
-                        " a devenit " : " ni s-a alăturat!"
+                        " a devenit " : " Bun venit, "
                 };
-                users[socket.id].name = msg;
+
+                users[socket.id].socketId = socket.id;
+                users[socket.id].name = userName;
+                users[socket.id].room = room;
                 users[socket.id].isFemale = message.isFemale;
-                message.color = getUserColor(message.isFemale);
+                message.color = helper.getUserColor(message.isFemale, room, users);
                 users[socket.id].color = message.color;
 
-                io.emit('join', JSON.stringify(message));
+                emitMessage('join', message, isNameChange);
+                emitMessage('online-users-update', Object.keys(users)
+                    .filter(x => users[x].room == room)
+                    .map(x => users[x]));
             });
             socket.on('i am writing', () => {
-                var message = {
-                    socketId: socket.id.slice(2),
-                    name: users[socket.id].name,
-                    color: users[socket.id].color,
+                emitMessage('writing', {
                     messageText: '...'
-                };
-                io.emit('user is writing', JSON.stringify(message));
+                });
             });
             socket.on('chat message', msg => {
-                var message = {
-                    socketId: socket.id.slice(2),
-                    name: users[socket.id].name,
-                    color: users[socket.id].color,
-                    messageText: correctSentence(msg.trim())
-                };
-                io.emit('chat message', JSON.stringify(message));
+                if (msg.length > 300)
+                    return;
+
+                emitMessage('chat message', {
+                    messageText: helper.correctSentence(msg.trim())
+                });
             });
-            socket.on('subscribe', subscription => {
-                var userId = JSON.parse(subscription).userId;
-                var pushMessageSubscription = JSON.parse(subscription).pushMessageSubscription;
-                addOrUpdateModel(new models.pushMessageSubscription({
-                    userId: userId,
-                    subscription: JSON.stringify(pushMessageSubscription)
-                }), 'pushMessageSubscription', {})
 
-                console.log(JSON.stringify(pushMessageSubscription));
+            handlePwaSubscription(socket);
 
-                users[socket.id].userId = userId;
-
-                models.pushMessageSubscription.find({}, (error, subscriptions) => {
-                    subscriptions.forEach(subscription => {
-                        var subscription = subscription.subscription.replace(/\\/g, '');
-                        var subscription = JSON.parse(subscription);
-
-                        console.log("#############");
-                        console.log(subscription.endpoint);
-                        console.log("#############");
-                        webpush.sendNotification(subscription, '');
-                    })
-                })
-            });
-            socket.on('disconnect', function () {
+            socket.on('disconnect', () => {
                 try {
-                    var msg = users[socket.id];
-                    var message = {
-                        name: msg.name,
-                        isFemale: isFemaleName(msg),
+                    emitMessage('leave', {
                         messageText: " s-a dus.",
-                        color: users[socket.id].color
-                    };
-                    io.emit('leave', JSON.stringify(message));
+                    });
+                    var room = users[socket.id].room;
+                    emitMessage('online-users-update', Object.keys(users)
+                        .filter(x => users[x].room == room &&
+                            users[x].socketId != socket.id)
+                        .map(x => users[x]));
+
                     delete users[socket.id];
                 } catch (e) {
-                    delete users[socket.id];
                     console.log(e);
+                    delete users[socket.id];
                 }
             });
+
+            var emitMessage = (eventName, message, isNameChange) => {
+                message.socketId = socket.id.split("#")[1];
+                if (!isNameChange)
+                    message.name = users[socket.id].name;
+                message.color = users[socket.id].color;
+                var room = users[socket.id] && users[socket.id].room;
+                io.in(room).emit(eventName, JSON.stringify(message));
+            };
+
         });
     }
 };
-
-
-function isFemaleName(name) {
-    var isFemale;
-    name = name.toLowerCase().trim();
-    var hardcoded = ['Zoe', 'Mimi', 'Beatrice', 'Alice', 'Gyongy', 'Cami', 'Demi', 'Paula', 'Lady', 'Megan', 'Ada', 'Bianca', 'Camelia', 'Daciana', 'Adina', 'Bogdana', 'Casiana', 'Dana',
-        'Adriana', 'Brandusa', 'Catinca', 'Daria', 'Agata', 'Catrinel', 'Delia', 'Alida', 'Catalina', 'Doina', 'Alina', 'Celia',
-        'Dora', 'Amelia', 'Cezara', 'Dumitra', 'Ana', 'Clarisa', 'Anca', 'Codrina', 'Codruta', 'Anda', 'Corina', 'Andreea',
-        'Lolo', 'Crenguta', 'Anemona', 'Cristina', 'Anica', 'Anuta', 'Aura', 'Roxana', 'Roxy', 'Rox', 'Carmen', 'Cora', 'Lari'
-    ];
-    var hardcodedMale = ['Andrei', 'Vali', 'Muri', 'Danci'];
-    if (hardcoded.some(x => x.toLowerCase() == name))
-        isFemale = true;
-    if (hardcodedMale.some(x => x.toLowerCase() == name))
-        return false;
-    if (name[name.length - 1] == 'a' || name[name.length - 1] == 'ă' || name[name.length - 1] == 'i')
-        isFemale = true;
-    return isFemale;
-}
-
-var femaleColors = ['#ec7ebd', '#f5c33b', '#d696bb'];
-var maleColors = ['#54c7ec', '#a3ce71', '#7596c8'];
-
-function getUserColor(isFemale) {
-    var usersOfGenderCount = Object.keys(users).filter(x => users[x].isFemale == isFemale).length;
-    console.log("User gender: " + (isFemale ? 'female' : 'male'));
-    console.log("Users of gender: " + usersOfGenderCount);
-    console.log("Total users: " + Object.keys(users).length);
-
-    usersOfGenderCount -= 1;
-    if (isFemale)
-        return femaleColors[usersOfGenderCount % femaleColors.length];
-    return maleColors[usersOfGenderCount % maleColors.length];
-}
-
-function isColorUsed(color) {
-    return Object.keys(users).some(x => users[x].color == color);
-}
-
-function correctSentence(sentence) {
-    sentence[0] = sentence[0].toUpperCase();
-    sentence = sentence[0].toUpperCase() + sentence.substr(1);
-    var validFinishCharacters = ['.', '!', '?'];
-    if (validFinishCharacters.indexOf(sentence[sentence.length - 1]) < 0) {
-        sentence += ".";
-    }
-    return sentence;
-}
 
 function addOrUpdateModel(model, modelName) {
     // console.log("Attempting to save object: \n " + model);
@@ -168,6 +124,33 @@ function removeById(modelName, id, response) {
             console.log("Success removing item from database.");
             response.status(200).send("Successfully removed model from database: id: " + id);
         }
+    });
+}
+
+function handlePwaSubscription(socket) {
+    socket.on('subscribe', subscription => {
+        var userId = JSON.parse(subscription).userId;
+        var pushMessageSubscription = JSON.parse(subscription).pushMessageSubscription;
+        addOrUpdateModel(new models.pushMessageSubscription({
+            userId: userId,
+            subscription: JSON.stringify(pushMessageSubscription)
+        }), 'pushMessageSubscription', {})
+
+        console.log(JSON.stringify(pushMessageSubscription));
+
+        users[socket.id].userId = userId;
+
+        models.pushMessageSubscription.find({}, (error, subscriptions) => {
+            subscriptions.forEach(subscription => {
+                var subscription = subscription.subscription.replace(/\\/g, '');
+                var subscription = JSON.parse(subscription);
+
+                console.log("#############");
+                console.log(subscription.endpoint);
+                console.log("#############");
+                webpush.sendNotification(subscription, '');
+            })
+        })
     });
 }
 
