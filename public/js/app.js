@@ -51,7 +51,7 @@ $(document).ready(() => {
     handleOnlineUsersUpdateEvent();
     handleWriteEvent();
     handleChatMessageEvent();
-    handleStartMediaEvent();
+    handleSyncMediaEvent();
     handleLeaveEvent();
     handleOptions();
     fixKeyboardOpen();
@@ -208,6 +208,7 @@ $(document).ready(() => {
 
             var $spanMessageText = $('<span>')
                 .addClass('message-text')
+                .addClass(youtubeVideoId ? 'youtube-video' : '')
                 .css('background', messageObject.color)
                 .html(messageContent);
 
@@ -265,10 +266,15 @@ $(document).ready(() => {
         });
     }
 
-    function handleStartMediaEvent() {
-        socket.on('start-media', message => {
-            var messageId = JSON.parse(message).messageId;
-            playYoutubePlayerById(messageId);
+    function handleSyncMediaEvent() {
+        socket.on('sync-media', message => {
+            message = JSON.parse(message);
+            if (message.socketId == socket.id)
+                return;
+            var messageId = message.messageId;
+            var currentTime = message.currentTime;
+            var playerState = message.playerState;
+            syncYoutubePlayerById(messageId, currentTime, playerState);
         });
     }
 

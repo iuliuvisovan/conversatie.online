@@ -340,3 +340,13 @@ a {
         margin-right: -50px;
     }
 }
+
+.youtube-video {
+    display: inline-flex;
+    width: fit-content;
+    height: 180px;
+    width: 288px;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+}

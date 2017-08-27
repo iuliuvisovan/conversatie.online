@@ -94,10 +94,8 @@ var handler = {
                     messageUnixTime: +new Date()
                 });
             });
-            socket.on('start-media', messageId => {
-                emitMessage('start-media', {
-                    messageId: messageId
-                });
+            socket.on('sync-media', message => {
+                emitMessage('sync-media', JSON.parse(message));
             });
 
             handlePwaSubscription(socket);
