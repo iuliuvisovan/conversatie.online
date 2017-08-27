@@ -209,6 +209,7 @@ $(document).ready(() => {
             var $spanMessageText = $('<span>')
                 .addClass('message-text')
                 .addClass(youtubeVideoId ? 'youtube-video' : '')
+                .on('click', () => alert('abc'))
                 .css('background', messageObject.color)
                 .html(messageContent);
 
