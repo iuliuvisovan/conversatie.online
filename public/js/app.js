@@ -36,6 +36,10 @@ window.onbeforeunload = function () {
 };
 
 $(document).ready(() => {
+    setTimeout(() => {
+        $("meta[name='theme-color']").attr('content', '#0000ff');
+    }, 5000);
+
     // managePwa();
     loadIframeApi();
     handleWindowFocus();
