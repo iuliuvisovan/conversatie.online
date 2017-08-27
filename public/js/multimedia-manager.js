@@ -66,6 +66,18 @@ function createYoutubeVideo(messageId, videoId) {
                 'onStateChange': event => {
                     var player = youtubePlayers[messageId];
                     var currentTime = player.getCurrentTime();
+                    if (!sessionStorage.hasShownInteractionInfo) {
+                        if (event.data == YT.PlayerState.PLAYING) {
+                            alert('Ai pornit un video. Când faci asta, se pornește și celorlalți participanți. Vizionare/ascultare sincronă plăcuta! :)');
+                            sessionStorage.hasShownInteractionInfo = true;
+                        }
+                        if (event.data == YT.PlayerState.PAUSED) {
+                            alert('Ai oprit un video. Când faci asta, se oprește și celorlalți participanți.');
+                            sessionStorage.hasShownInteractionInfo = true;
+                        }
+                        
+                    }
+
                     socket.emit('sync-media', JSON.stringify({
                         messageId,
                         currentTime,
