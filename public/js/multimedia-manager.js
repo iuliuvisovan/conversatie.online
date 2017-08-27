@@ -57,9 +57,11 @@ function createYoutubeVideo(messageId, videoId) {
             height: '180',
             width: '320',
             videoId: videoId,
+            startSeconds: 0,
             events: {
                 'onStateChange': event => {
                     if (event.data == YT.PlayerState.PLAYING) {
+                        youtubePlayers[messageId].playVideo(0);
                         socket.emit('start-media', messageId);
                     }
                 }
