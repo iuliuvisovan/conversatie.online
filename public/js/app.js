@@ -206,10 +206,10 @@ $(document).ready(() => {
                 createYoutubeVideo($(messageContent).attr('id'), youtubeVideoId);
             }
 
+
             var $spanMessageText = $('<span>')
                 .addClass('message-text')
                 .addClass(youtubeVideoId ? 'youtube-video' : '')
-                .on('click', () => alert('abc'))
                 .css('background', messageObject.color)
                 .html(messageContent);
 
@@ -436,7 +436,7 @@ $(document).ready(() => {
 
     function fixScroll() {
         setTimeout(() => {
-            $('.messages')[0].scrollTop = $('.messages')[0].scrollHeight;
+            document.body.scrollTop = document.body.scrollHeight;
         }, 100);
     }
 

@@ -16,7 +16,7 @@ function replaceWithMultiMedia(input, messageId) {
             return `<div data-youtube-url='${embedYoutubeUrl}' id='${'msg' + messageId}'></div>`;
         }
 
-        return `<a target='_blank' href='${input}'>${input}</a>`;
+        return `<a target='_blank' style="word-break: break-all;" href='${input}'>${input}</a>`;
     }
 
     emojiMatchPairs.forEach(matchPair => {
@@ -29,7 +29,7 @@ function replaceWithMultiMedia(input, messageId) {
             `
         );
     })
-    return input;
+    return `<span>${input}</span>`;
 }
 
 function escapeRegExp(text) {
