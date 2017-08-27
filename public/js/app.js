@@ -410,6 +410,7 @@ $(document).ready(() => {
             $inputMessage.val('');
             socket.emit('chat message', message);
             lastSentMessage = message;
+            ga('send', 'event', 'Message', 'send', message);
         }
         $('#inputMessage').focus();
         $('#inputSend').addClass('opaque');
