@@ -65,6 +65,8 @@ var handler = {
                     message.name = users[socket.id].name;
                 message.color = users[socket.id].color;
 
+                emitMessage('i-am-active', {});
+                
                 //Notify new room of join
                 emitMessage('online-users-update', Object.keys(users)
                     .filter(x => users[x].room == newRoom)
@@ -96,6 +98,9 @@ var handler = {
             });
             socket.on('sync-media', message => {
                 emitMessage('sync-media', JSON.parse(message));
+            });
+            socket.on('i-am-active', () => {
+                emitMessage('i-am-active', {});
             });
 
             handlePwaSubscription(socket);

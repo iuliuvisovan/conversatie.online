@@ -49,6 +49,7 @@ $(document).ready(() => {
 
     handleJoinEvent();
     handleOnlineUsersUpdateEvent();
+    handleActiveEvent();
     handleWriteEvent();
     handleChatMessageEvent();
     handleSyncMediaEvent();
@@ -133,6 +134,25 @@ $(document).ready(() => {
                 $joinLi.removeClass('just-sent');
             }, 0);
             fixScroll();
+        });
+    }
+
+    function handleActiveEvent() {
+        socket.on('i-am-active', (msg) => {
+            msg = JSON.parse(msg);
+
+            //Don't treat me as a person who saw the message
+            if (msg.socketId == socket.id)
+                return;
+
+            //Only track seen for my messages
+            if (socket.id != lastMessageSenderId)
+                return;
+
+            $(".users-who-saw").append(
+                $("<div>")
+                .addClass('user-who-saw')
+                .css('background', msg.color));
         });
     }
 
@@ -258,6 +278,8 @@ $(document).ready(() => {
                 else
                     $('title').text('(' + unseenMessageCount + ') Conversează. Online! - www.conversatie.online');
                 $('#favicon').attr('href', 'img/logo_' + messageObject.color.slice(1) + '.png');
+            } else {
+                socket.emit('i-am-active');
             }
 
             if ($(".writing[data-sender-socketid='" + messageObject.socketId + "']").length) {
@@ -379,6 +401,7 @@ $(document).ready(() => {
                 return;
             $inputMessage.val('');
             socket.emit('chat message', message);
+            $(".users-who-saw").children().remove();
             lastSentMessage = message;
         }
         $('#inputMessage').focus();
@@ -411,12 +434,12 @@ $(document).ready(() => {
                 setTimeout(() => {
                     $("li:not(.not-seen)").removeClass('seen-on-focus');
                 }, 7000);
+                socket.emit('i-am-active');
             }
 
             isWindowFocused = true;
             unseenMessageCount = 0;
 
-            debugger;
             $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png');
 
             if (userTopic.toLowerCase().trim() != 'start')
