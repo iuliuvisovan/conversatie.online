@@ -488,10 +488,13 @@ $(document).ready(() => {
     }
 
     function handleDeviceOrientation() {
+        if(!window.ondeviceorientation)
+
+
         window.addEventListener("deviceorientation", event => {
             console.log(event.beta);
             $(".message-text")
-                .css('transform', `rotate(${event.gamma}deg`);
+                .css('box-shadow', `0px ${(event.beta - 30) / 4}px 4px rgba(0, 0, 0, 0.2)`)
         }, true);
     }
 }
