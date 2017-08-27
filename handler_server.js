@@ -90,7 +90,13 @@ var handler = {
                     return;
 
                 emitMessage('chat message', {
-                    messageText: helper.correctSentence(msg.trim())
+                    messageText: helper.correctSentence(msg.trim()),
+                    messageUnixTime: +new Date()
+                });
+            });
+            socket.on('start-media', messageId => {
+                emitMessage('start-media', {
+                    messageId: messageId
                 });
             });
 

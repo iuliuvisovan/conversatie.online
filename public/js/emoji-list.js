@@ -13,6 +13,12 @@ var emojiMatchPairs = [
         sizeIncrease: 0,
         emojiTitle: 'HUG'
     },
+    {
+        emojiChars: ':spoon',
+        emoji: '🥄',
+        sizeIncrease: 0,
+        emojiTitle: 'să te lingură'
+    },
     ...Array.from(new Array(9)).map((x, i) => {
         return {
             emojiChars: ':o3' + '3'.repeat(i),

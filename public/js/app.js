@@ -37,7 +37,7 @@ window.onbeforeunload = function () {
 
 $(document).ready(() => {
     // managePwa();
-
+    loadIframeApi();
     handleWindowFocus();
     getUserName();
 
@@ -51,6 +51,7 @@ $(document).ready(() => {
     handleOnlineUsersUpdateEvent();
     handleWriteEvent();
     handleChatMessageEvent();
+    handleStartMediaEvent();
     handleLeaveEvent();
     handleOptions();
     fixKeyboardOpen();
@@ -77,7 +78,7 @@ $(document).ready(() => {
                         .css('float', onlineUser.socketId.split('#')[1] == socket.id ? 'left' : '')
                         .css('text-decoration', onlineUser.socketId.split('#')[1] == socket.id ? 'underline' : '')
                         .css('cursor', onlineUser.socketId.split('#')[1] == socket.id ? 'pointer' : 'default')
-                        .on('click', changeUserName)
+                        .on('click', onlineUser.socketId.split('#')[1] == socket.id ? changeUserName : undefined)
                         .attr('title', 'Schimbă-ți numele')
                         .text(onlineUser.name)
                     );
@@ -197,10 +198,18 @@ $(document).ready(() => {
                     .text(messageObject.socketId == socket.id ?
                         'Tu' : messageObject.name);
             }
-            var spanMessageText = $('<span>')
+            var messageContent = replaceWithMultiMedia(
+                messageObject.messageText,
+                messageObject.messageUnixTime);
+            var youtubeVideoId = $(messageContent).attr('data-youtube-url');
+            if (youtubeVideoId) {
+                createYoutubeVideo($(messageContent).attr('id'), youtubeVideoId);
+            }
+
+            var $spanMessageText = $('<span>')
                 .addClass('message-text')
                 .css('background', messageObject.color)
-                .html(replaceWithEmojis(messageObject.messageText));
+                .html(messageContent);
 
             var $messageLi = $('<li>');
             $messageLi.css('border-color', messageObject.color)
@@ -221,7 +230,7 @@ $(document).ready(() => {
                     .text(currentDateString));
             }
             $messageLi.append(spanMessageAuthor)
-            $messageLi.append(spanMessageText);
+            $messageLi.append($spanMessageText);
             if (messageObject.socketId == socket.id) {
                 $messageLi.append($('<span>')
                     .addClass('message-time-individual')
@@ -253,6 +262,13 @@ $(document).ready(() => {
                 lastWriteEventDispatchTimestamp.setSeconds(new Date().getSeconds() - 5);
                 return;
             }
+        });
+    }
+
+    function handleStartMediaEvent() {
+        socket.on('start-media', message => {
+            var messageId = JSON.parse(message).messageId;
+            playYoutubePlayerById(messageId);
         });
     }
 
