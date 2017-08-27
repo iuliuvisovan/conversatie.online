@@ -4,9 +4,6 @@ var webpush = require('web-push');
 var models = require('./models/models.js');
 var helper = require('./common/helper.js');
 
-//List of rooms, that grows as users request non-existing ones
-var rooms = [];
-
 var handler = {
     init: (io) => {
         //Triggered automatically by the client framework
@@ -16,8 +13,7 @@ var handler = {
                 message = JSON.parse(message);
                 var userName = message.userName;
                 var newRoom = message.userTopic;
-                if (!rooms.includes(newRoom))
-                    rooms.push(newRoom);
+
                 if (!userName)
                     return;
 
@@ -36,7 +32,7 @@ var handler = {
                     return;
 
                 //If user has no room, or it has changed it, trigger a join
-                if (!users[socket.id] || users[socket.id].room != newRoom) {
+                if (!users[socket.id] || (users[socket.id].room != newRoom)) {
                     //If already in another room, get out of there
                     if (users[socket.id])
                         socket.leave(users[socket.id].room);

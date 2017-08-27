@@ -327,7 +327,7 @@ a {
     text-overflow: ellipsis;
     margin: 0 4px;
     transition: max-width 0.1s ease-in-out;
-    animation-name: fresh;
+    animation-name: fresh-online;
     animation-duration: 0.3s;
 }
 
@@ -335,9 +335,14 @@ a {
     max-width: 250px;
 }
 
-@keyframes fresh {
+@keyframes fresh-online {
     from {
-        margin-right: -50px;
+        margin-right: -30px;
+    }
+}
+@keyframes fresh-seen {
+    from {
+        opacity: 0;
     }
 }
 
@@ -361,4 +366,7 @@ a {
     width: 20px;
     height: 4px;
     display: inline-block;
+    animation-name: fresh-seen;
+    animation-duration: 0.3s;
+    margin-right: 1px;
 }

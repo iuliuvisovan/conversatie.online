@@ -6,7 +6,7 @@ var hadcodedFemaleNames = ['Zoe', 'Mimi', 'Beatrice', 'Alice', 'Gyongy', 'Cami',
     'Dora', 'Amelia', 'Cezara', 'Dumitra', 'Ana', 'Clarisa', 'Anca', 'Codrina', 'Codruta', 'Anda', 'Corina', 'Andreea',
     'Lolo', 'Crenguta', 'Anemona', 'Cristina', 'Anica', 'Anuta', 'Aura', 'Roxana', 'Roxy', 'Rox', 'Carmen', 'Cora', 'Lari'
 ];
-var hardcodedMaleNames = ['Andrei', 'Vali', 'Muri', 'Danci'];
+var hardcodedMaleNames = ['Andrei', 'Vali', 'Muri', 'Danci', 'Iuli'];
 
 module.exports = {
     isFemaleName: (name) => {

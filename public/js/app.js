@@ -246,6 +246,8 @@ $(document).ready(() => {
                 $messageLi.addClass('same-sender');
             }
 
+            $(".users-who-saw").children().remove();
+
             if (messageObject.socketId == socket.id) {
                 $messageLi.addClass('mine');
             } else {
@@ -401,7 +403,6 @@ $(document).ready(() => {
                 return;
             $inputMessage.val('');
             socket.emit('chat message', message);
-            $(".users-who-saw").children().remove();
             lastSentMessage = message;
         }
         $('#inputMessage').focus();
