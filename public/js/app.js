@@ -115,6 +115,8 @@ $(document).ready(() => {
                 $('#options').css('color', messageObject.color);
                 $('#inputSend').css('border-color', messageObject.color);
                 $("meta[name='theme-color']").attr('content', messageObject.color);
+                userColor = messageObject.color;
+                $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png');
             }
             var $joinLi = $('<li>')
                 .addClass('join')
@@ -255,8 +257,7 @@ $(document).ready(() => {
                     $('title').text('(' + unseenMessageCount + ') #' + userTopic + '- Conversează. Online!');
                 else
                     $('title').text('(' + unseenMessageCount + ') Conversează. Online! - www.conversatie.online');
-                var imageNumber = (unseenMessageCount >= 8 ? 7 : unseenMessageCount);
-                $('#favicon').attr('href', 'img/favicon_' + (imageNumber + 1) + '.png');
+                $('#favicon').attr('href', 'img/logo_' + messageObject.color.slice(1) + '.png');
             }
 
             if ($(".writing[data-sender-socketid='" + messageObject.socketId + "']").length) {
@@ -414,11 +415,14 @@ $(document).ready(() => {
 
             isWindowFocused = true;
             unseenMessageCount = 0;
+
+            debugger;
+            $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png');
+
             if (userTopic.toLowerCase().trim() != 'start')
                 $('title').html('#' + userTopic + ' - Conversează. Online! | www.conversatie.online');
             else
                 $('title').html('Conversează. Online! - www.conversatie.online');
-            $('#favicon').attr('href', 'img/favicon_1.png');
             $('#inputMessage').focus();
         });
         $(window).blur(() => isWindowFocused = false);
