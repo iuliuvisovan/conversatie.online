@@ -41,11 +41,13 @@ $(document).ready(() => {
     handleWindowFocus();
     getUserName();
 
+    ga('set', 'userId', socket.id);
     $inputMessage.focus();
     socket.emit('check-in', JSON.stringify({
         userName,
         userTopic
     }));
+    ga('send', 'event', 'Application', 'join', userName);
 
     handleJoinEvent();
     handleOnlineUsersUpdateEvent();
@@ -227,6 +229,7 @@ $(document).ready(() => {
             var youtubeVideoId = $(messageContent).attr('data-youtube-url');
             if (youtubeVideoId) {
                 createYoutubeVideo($(messageContent).attr('id'), youtubeVideoId);
+                ga('send', 'event', 'Message', 'sendVideo', youtubeVideoId);
             }
 
 
@@ -323,6 +326,7 @@ $(document).ready(() => {
                 $leaveLi.removeClass('just-sent');
             }, 0);
             fixScroll();
+            ga('send', 'event', 'Application', 'leave', messageObject.name);
         });
     }
 }
@@ -347,6 +351,7 @@ $(document).ready(() => {
             userName,
             userTopic
         }));
+        ga('send', 'event', 'Application', 'joinTopic', userTopic);
         $('#inputMessage').focus();
     }
 
