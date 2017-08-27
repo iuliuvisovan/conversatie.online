@@ -437,7 +437,7 @@ $(document).ready(() => {
 
     function fixScroll() {
         setTimeout(() => {
-            document.body.scrollTop = document.body.scrollHeight;
+            $(".messages")[0].scrollTop = $(".messages")[0].scrollHeight;
         }, 100);
     }
 
