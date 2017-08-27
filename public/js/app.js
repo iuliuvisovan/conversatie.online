@@ -59,6 +59,7 @@ $(document).ready(() => {
     handleOptions();
     fixKeyboardOpen();
     handleAccessLastMessage();
+    handleDeviceOrientation();
 });
 
 
@@ -484,6 +485,14 @@ $(document).ready(() => {
 
     function fixKeyboardOpen() {
         $(window).on('resize', fixScroll);
+    }
+
+    function handleDeviceOrientation() {
+        window.addEventListener("deviceorientation", event => {
+            console.log(event.beta);
+            $(".message-text")
+                .css('transform', `rotate(${event.gamma}deg`);
+        }, true);
     }
 }
 
