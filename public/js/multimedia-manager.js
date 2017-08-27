@@ -29,7 +29,18 @@ function replaceWithMultiMedia(input, messageId) {
             `
         );
     })
+
+    input = checkForBoldText(input);
+
     return `<span>${input}</span>`;
+}
+
+function checkForBoldText(input) {
+    var firstIndexOfStar = input.indexOf('*');
+    var lastIndexOfStar = input.lastIndexOf('*');
+    if (firstIndexOfStar > -1 && lastIndexOfStar > -1 && (firstIndexOfStar != lastIndexOfStar))
+        input = `${input.slice(0, firstIndexOfStar)}<span style="font-weight: bold">${input.slice(firstIndexOfStar + 1, lastIndexOfStar)}</span>${input.slice(lastIndexOfStar + 1)}`;
+    return input;
 }
 
 function escapeRegExp(text) {

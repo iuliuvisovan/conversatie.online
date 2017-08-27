@@ -347,6 +347,8 @@ $(document).ready(() => {
     function changeUserTopic() {
         userTopic = '';
         getUserTopic();
+        if (!userName)
+            userName = localStorage.userName;
         socket.emit('check-in', JSON.stringify({
             userName,
             userTopic
@@ -361,14 +363,13 @@ $(document).ready(() => {
             userName = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", userName);
         else if (!userName) {
             do {
-                userName = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)",
-                    isNameChange ? userName : randomNames[new Date().getTime() % 38]);
-                if (isNameChange && userName)
-                    break;
+                userName = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", randomNames[new Date().getTime() % 38]);
             } while (!userName);
         }
         if (userName)
             localStorage.userName = userName;
+        else
+            userName = localStorage.userName;
     }
 
     function getUserTopic() {

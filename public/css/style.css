@@ -315,11 +315,11 @@ a {
 }
 
 .online-user {
-    font-size: 13px;
+    font-size: 14px;
     color: white;
     border-radius: 10px 5px;
-    padding: 1px 6px;
-    padding-bottom: 2px;
+    padding: 1px 8px;
+    padding-bottom: 4px;
     max-width: 130px;
     overflow: hidden;
     display: inline-block;
@@ -340,6 +340,7 @@ a {
         margin-right: -30px;
     }
 }
+
 @keyframes fresh-seen {
     from {
         opacity: 0;
@@ -369,4 +370,13 @@ a {
     animation-name: fresh-seen;
     animation-duration: 0.3s;
     margin-right: 1px;
+}
+
+@media(max-width: 769px) {
+    .online-user {
+        font-size: 15px;
+    }
+    li {
+        font-size: 16px!important;
+    }
 }
