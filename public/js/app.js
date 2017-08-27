@@ -494,7 +494,7 @@ $(document).ready(() => {
         window.addEventListener("deviceorientation", event => {
             console.log(event.beta);
             $(".message-text")
-                .css('box-shadow', `0px ${(event.beta - 30) / 4}px 4px rgba(0, 0, 0, 0.2)`)
+                .css('box-shadow', `${event.gamma / 5}px ${(event.beta - 30) / 4}px 4px rgba(0, 0, 0, 0.2)`)
         }, true);
     }
 }
