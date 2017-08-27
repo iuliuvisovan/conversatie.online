@@ -36,10 +36,6 @@ window.onbeforeunload = function () {
 };
 
 $(document).ready(() => {
-    setTimeout(() => {
-        $("meta[name='theme-color']").attr('content', '#0000ff');
-    }, 5000);
-
     // managePwa();
     loadIframeApi();
     handleWindowFocus();
@@ -118,6 +114,7 @@ $(document).ready(() => {
 
                 $('#options').css('color', messageObject.color);
                 $('#inputSend').css('border-color', messageObject.color);
+                $("meta[name='theme-color']").attr('content', messageObject.color);
             }
             var $joinLi = $('<li>')
                 .addClass('join')
