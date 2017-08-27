@@ -92,13 +92,13 @@ $(document).ready(() => {
             var messageObject = JSON.parse(msg);
 
             if (!messageObject.oldName) {
-                var spanMessageText = $('<span>').addClass('join-text').text(messageObject.messageText);
-                var messageText = messageObject.name + '!';
+                var messageText = messageObject.messageText;
                 if (messageObject.socketId == socket.id && userTopic != 'start')
-                    messageText += ` (#${userTopic})`;
+                    messageText = `#${userTopic} - ` + messageText;
+                var spanMessageText = $('<span>').addClass('join-text').text(messageText);
                 var spanMessageAuthor = $('<span>')
                     .addClass('join-author')
-                    .text(messageText);
+                    .text(messageObject.name + '!');
             } else {
                 var spanMessageAuthorOld = $('<span>').addClass('join-author-old').text(messageObject.oldName);
                 var spanMessageText = $('<span>').addClass('join-text').text(messageObject.messageText);
@@ -367,13 +367,19 @@ $(document).ready(() => {
     }
 
     function getUserTopic() {
-        userTopic = prompt("Despre ce vrei sa vorbesti?", userTopic)
-            .toLowerCase()
-            .trim()
-            .replace(/[^\w]/g, '');
+        var promptText = "Despre ce vrei sa vorbesti? (Lasă gol pentru a reveni la pagina de start.)";
+        userTopic = prompt(promptText, userTopic);
+
+        if (!userTopic)
+            userTopic = 'start';
+        else
+            userTopic = userTopic.toLowerCase().trim().replace(/[^\w]/g, '');
         if (userTopic.trim() != 'start') {
-            $('.room-name').text('#' + userTopic.toLowerCase().trim());
+            $('.room-name').text('#' + userTopic);
             $('title').html('[' + userTopic + '] Conversează. Online!');
+        } else {
+            $('.room-name').text('');
+            $('title').html('Conversează. Online!');
         }
 
     }

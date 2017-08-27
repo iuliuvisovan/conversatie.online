@@ -32,9 +32,9 @@ var handler = {
                     return;
 
                 //If user has no room, or it has changed it, trigger a join
-                if (!users[socket.id] || (users[socket.id].room != newRoom)) {
+                if (users[socket.id].room != newRoom) {
                     //If already in another room, get out of there
-                    if (users[socket.id])
+                    if (users[socket.id].room)
                         socket.leave(users[socket.id].room);
                     socket.join(newRoom);
                 }
@@ -62,7 +62,7 @@ var handler = {
                 message.color = users[socket.id].color;
 
                 emitMessage('i-am-active', {});
-                
+
                 //Notify new room of join
                 emitMessage('online-users-update', Object.keys(users)
                     .filter(x => users[x].room == newRoom)
