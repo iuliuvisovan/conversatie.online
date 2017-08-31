@@ -1,4 +1,5 @@
 var youtubePlayers = {};
+var shouldDispatchEvents = true;
 
 function replaceWithMultiMedia(input, messageId) {
     if (isValidURL(input)) {
@@ -78,11 +79,32 @@ function createYoutubeVideo(messageId, videoId) {
                     var player = youtubePlayers[messageId];
                     var currentTime = player.getCurrentTime();
 
-                    socket.emit('sync-media', JSON.stringify({
-                        messageId,
-                        currentTime,
-                        playerState: event.data
-                    }));
+                    var playingPlayer = getPlayingVideo();
+                    if (playingPlayer && messageId == playingPlayer.videoId) {
+                        currentPlayingVideo.isMuted = player.isMuted();
+                    }
+
+                    if (player.getPlayerState() == YT.PlayerState.PLAYING)
+                        lastPlayingPlayer = player;
+
+                    //If playing, mute everything else and don't dispatch events
+                    if (player.getPlayerState() != YT.PlayerState.PAUSED) {
+                        shouldDispatchEvents = false;
+                        Object.keys(youtubePlayers).forEach(x => {
+                            if (youtubePlayers[x] != player)
+                                youtubePlayers[x].pauseVideo();
+                        });
+                        shouldDispatchEvents = true;
+                    }
+
+                    setTimeout(function () {
+                        if (shouldDispatchEvents)
+                            socket.emit('sync-media', JSON.stringify({
+                                messageId,
+                                currentTime,
+                                playerState: event.data
+                            }));
+                    }, 0);
                 }
             }
         });
@@ -95,6 +117,7 @@ function syncYoutubePlayerById(messageId, startTime, playerState) {
         if (player.getPlayerState() != YT.PlayerState.PAUSED) {
             player.pauseVideo();
             player.seekTo(startTime + 1); //Network delay & load :s
+
         }
     }
 
@@ -102,8 +125,13 @@ function syncYoutubePlayerById(messageId, startTime, playerState) {
         if (player.getPlayerState() != YT.PlayerState.PLAYING) {
             player.seekTo(startTime + 1); //Network delay & load :s
             player.playVideo();
+            Object.keys(youtubePlayers).forEach(x => {
+                if (x != messageId)
+                    youtubePlayers[x].pauseVideo()
+            });
         }
     }
+    updatePlaybar();
 }
 
 function loadIframeApi() {

@@ -23,13 +23,73 @@ var userName = '';
 
 //Color of the user
 var userColor = '';
+
+//The user's last sent message, so he can access it using the up arrow
 var lastSentMessage = '';
+
+//Timestamp of the last 'write' event from current user, so dispatch frequency can be tracked & throttle
 var lastWriteEventDispatchTimestamp = new Date();
+
+//Set it to 5 seconds ago by default, so can be dispatched on first key press
 lastWriteEventDispatchTimestamp.setSeconds(new Date().getSeconds() - 5);
+
+//Reference to the setTimeout that removed the 'writing' indicator
 var removeWritingTimeout;
+
+//Message played when sending a chat message
 var chatMessageSound = new Audio('/sounds/chatMessage.mp3');
-var applicationServerPublicKey = "BMEi_ez0hgDxewidO83qBFenXDfkie8kQmfPnj1AJBsZ9EqgywI5Oo3yK5i6Xp0DMYlHNCEBvF0ayUk2f1PUsD0";
 chatMessageSound.loop = false;
+
+//Public key of app, to be used for by PWA subscription requests
+var applicationServerPublicKey = "BMEi_ez0hgDxewidO83qBFenXDfkie8kQmfPnj1AJBsZ9EqgywI5Oo3yK5i6Xp0DMYlHNCEBvF0ayUk2f1PUsD0";
+
+//Reference to the last video that played
+var lastPlayingPlayer;
+
+function getPlayingVideo() {
+    return youtubePlayers[Object.keys(youtubePlayers).find(x =>
+        youtubePlayers[x].getPlayerState() == YT.PlayerState.PLAYING)];
+}
+
+function toggleCurrentVideo() {
+    var player = getPlayingVideo();
+    if (!player)
+        player = lastPlayingPlayer;
+    if (player.getPlayerState() == YT.PlayerState.PLAYING)
+        player.pauseVideo();
+    else {
+        player.playVideo();
+    }
+}
+function toggleMuteCurrentVideo() {
+    var player = getPlayingVideo();
+    if (!player)
+        player = lastPlayingPlayer;
+    if (player.isMuted())
+        player.unMute();
+    else {
+        player.mute();
+    }
+    setTimeout(updatePlaybar, 300);
+}
+
+function updatePlaybar() {
+    var player = getPlayingVideo();
+    if (!player)
+        player = lastPlayingPlayer;
+    if(!lastPlayingPlayer)
+        return;
+    $("#currentVideoName").text(player.getVideoData().title);
+    $(".controls").removeClass('playing');
+    if (player.getPlayerState() == YT.PlayerState.PLAYING)
+        $(".controls").addClass('playing');
+    $(".mute-button").removeClass('muted');
+    if (player.isMuted())
+        $(".mute-button").addClass('muted');
+    $("#playBar").removeClass('no-video');
+    // playerIdInPlaybar = player.
+}
+
 
 window.onbeforeunload = function () {
     return "I am a message";
@@ -118,9 +178,11 @@ $(document).ready(() => {
 
                 $('#options').css('color', messageObject.color);
                 $('#inputSend').css('border-color', messageObject.color);
+                $('#playBar').css('background', messageObject.color);
                 $("meta[name='theme-color']").attr('content', messageObject.color);
                 userColor = messageObject.color;
                 $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png');
+
             }
             var $joinLi = $('<li>')
                 .addClass('join')
@@ -300,11 +362,17 @@ $(document).ready(() => {
     function handleSyncMediaEvent() {
         socket.on('sync-media', message => {
             message = JSON.parse(message);
-            if (message.socketId == socket.id)
-                return;
             var messageId = message.messageId;
             var currentTime = message.currentTime;
             var playerState = message.playerState;
+            if (message.socketId == socket.id) {
+                if (playerState == YT.PlayerState.PLAYING)
+                    Object.keys(youtubePlayers).forEach(x => {
+                        if (x != messageId)
+                            youtubePlayers[x].pauseVideo()
+                    });
+            }
+
             syncYoutubePlayerById(messageId, currentTime, playerState);
         });
     }
@@ -343,6 +411,7 @@ $(document).ready(() => {
             userTopic
         }));
         $('#inputMessage').focus();
+        $(".users-who-saw").children().remove();
     }
 
     function changeUserTopic() {
@@ -356,6 +425,7 @@ $(document).ready(() => {
         }));
         ga('send', 'event', 'Application', 'joinTopic', userTopic);
         $('#inputMessage').focus();
+        $(".users-who-saw").children().remove();
     }
 
     function getUserName(isNameChange) {
@@ -488,11 +558,9 @@ $(document).ready(() => {
     }
 
     function handleDeviceOrientation() {
-        if(!window.ondeviceorientation)
-
-
         window.addEventListener("deviceorientation", event => {
-            console.log(event.beta);
+            if (event.beta == null)
+                return;
             $(".message-text")
                 .css('box-shadow', `${event.gamma / 5}px ${(event.beta - 30) / 4}px 4px rgba(0, 0, 0, 0.2)`)
         }, true);

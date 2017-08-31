@@ -38,6 +38,24 @@
                 <option value='change-topic'>Alt subiect</option>
             </select>
         </div>
+        <div id="playBar" class="no-video">
+            <div style="float: left; width: 80%; overflow: hidden; text-overflow: ellipsis;">
+                <div class="controls playing" onclick="toggleCurrentVideo()">
+                    <span class="control playing" style="font-size: 13px; margin-right: -6px;" id="playVideo">
+                                    ▶
+                                </span>
+                    <span class="control paused" id="pauseVideo" style="font-size: 17px;">
+                                    ⏸
+                                </span>
+                </div>
+
+                <span id="currentVideoName">Trimite un video. Va fi redat in sincron la toti participantii.</span>
+            </div>
+            <div class="mute-button" onclick="toggleMuteCurrentVideo()">
+                <img class="unmuted" src="../img/unmuted.svg">
+                <img class="muted" src="../img/muted.svg">
+            </div>
+        </div>
         <div id="btnAddPwa">
             <div class="mobile">
                 <span class="title">Te rog adaugă la ecranul de start</span>
