@@ -7,6 +7,14 @@ var emojiMatchPairs = [
             emojiTitle: 'HUUUG'
         }
     }).reverse(),
+    ...Array.from(new Array(9)).map((x, i) => {
+        return {
+            emojiChars: 'XD' + 'D'.repeat(i),
+            emoji: '😆',
+            sizeIncrease: i * 5,
+            emojiTitle: 'icsdei'
+        }
+    }).reverse(),
     {
         emojiChars: '>:D',
         emoji: '🤗',
