@@ -60,7 +60,9 @@ function toggleCurrentVideo() {
     else {
         player.playVideo();
     }
+    updatePlaybar();
 }
+
 function toggleMuteCurrentVideo() {
     var player = getPlayingVideo();
     if (!player)
@@ -77,7 +79,7 @@ function updatePlaybar() {
     var player = getPlayingVideo();
     if (!player)
         player = lastPlayingPlayer;
-    if(!lastPlayingPlayer)
+    if (!lastPlayingPlayer)
         return;
     $("#currentVideoName").text(player.getVideoData().title);
     $(".controls").removeClass('playing');
@@ -368,7 +370,7 @@ $(document).ready(() => {
                 if (playerState == YT.PlayerState.PLAYING)
                     Object.keys(youtubePlayers).forEach(x => {
                         if (x != messageId)
-                            youtubePlayers[x].pauseVideo()
+                            youtubePlayers[x].pauseVideo();
                     });
             }
 
@@ -478,8 +480,9 @@ $(document).ready(() => {
         }
     }
 
-    function sendMessage() {
-        var message = $('<div/>').html($inputMessage.val()).text().trim();
+    function sendMessage(message) {
+        if (!message)
+            var message = $('<div/>').html($inputMessage.val()).text().trim();
         if (message) {
             if (message.length > 300)
                 return;
@@ -533,14 +536,16 @@ $(document).ready(() => {
             $('#inputMessage').focus();
         });
         $(window).blur(() => isWindowFocused = false);
-        $("#inputMessage").keyup(e => {
+        $("#inputMessage").keydown(e => {
+            var message = $("#inputMessage").val();
             if ($("#inputMessage").val().trim().length)
                 $('#inputSend').removeClass('opaque');
             else
                 $('#inputSend').addClass('opaque');
 
-            if (e.keyCode == 13) {
-                sendMessage();
+            if (e.keyCode == 13 && !e.shiftKey) {
+                console.log(e); 
+                sendMessage(message);
                 return false;
             }
         });

@@ -1,5 +1,5 @@
-var femaleColors = ['#ec7ebd', '#f5c33b', '#d696bb'];
-var maleColors = ['#54c7ec', '#a3ce71', '#7596c8'];
+var femaleColors = ['#ec7ebd', '#f5c33b', '#af9cda', '#e68585'];
+var maleColors = ['#54c7ec', '#a3ce71', '#7596c8', '#cfa588'];
 
 var hadcodedFemaleNames = ['Zoe', 'Mimi', 'Beatrice', 'Alice', 'Gyongy', 'Cami', 'Demi', 'Paula', 'Lady', 'Megan', 'Ada', 'Bianca', 'Camelia', 'Daciana', 'Adina', 'Bogdana', 'Casiana', 'Dana',
     'Adriana', 'Brandusa', 'Catinca', 'Daria', 'Agata', 'Catrinel', 'Delia', 'Alida', 'Catalina', 'Doina', 'Alina', 'Celia',

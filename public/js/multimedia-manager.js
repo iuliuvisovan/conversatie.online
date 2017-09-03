@@ -79,32 +79,21 @@ function createYoutubeVideo(messageId, videoId) {
                     var player = youtubePlayers[messageId];
                     var currentTime = player.getCurrentTime();
 
+                    //If the target video is the one that's currently in the playbar
                     var playingPlayer = getPlayingVideo();
                     if (playingPlayer && messageId == playingPlayer.videoId) {
                         currentPlayingVideo.isMuted = player.isMuted();
                     }
 
+                    //On any video, if turns to 'playing' make it the latest available player
                     if (player.getPlayerState() == YT.PlayerState.PLAYING)
                         lastPlayingPlayer = player;
 
-                    //If playing, mute everything else and don't dispatch events
-                    if (player.getPlayerState() != YT.PlayerState.PAUSED) {
-                        shouldDispatchEvents = false;
-                        Object.keys(youtubePlayers).forEach(x => {
-                            if (youtubePlayers[x] != player)
-                                youtubePlayers[x].pauseVideo();
-                        });
-                        shouldDispatchEvents = true;
-                    }
-
-                    setTimeout(function () {
-                        if (shouldDispatchEvents)
-                            socket.emit('sync-media', JSON.stringify({
-                                messageId,
-                                currentTime,
-                                playerState: event.data
-                            }));
-                    }, 0);
+                    socket.emit('sync-media', JSON.stringify({
+                        messageId,
+                        currentTime,
+                        playerState: event.data
+                    }));
                 }
             }
         });
