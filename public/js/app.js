@@ -182,7 +182,7 @@ $(document).ready(() => {
                 $('#playBar').css('background', messageObject.color);
                 $("meta[name='theme-color']").attr('content', messageObject.color);
                 userColor = messageObject.color;
-                $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png');
+                $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png?v=' + +new Date());
 
             }
             var $joinLi = $('<li>')
