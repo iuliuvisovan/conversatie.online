@@ -119,7 +119,6 @@ $(document).ready(() => {
     handleOptions();
     fixKeyboardOpen();
     handleAccessLastMessage();
-    handleDeviceOrientation();
 });
 
 
@@ -555,15 +554,6 @@ $(document).ready(() => {
 
     function fixKeyboardOpen() {
         $(window).on('resize', fixScroll);
-    }
-
-    function handleDeviceOrientation() {
-        window.addEventListener("deviceorientation", event => {
-            if (event.beta == null)
-                return;
-            $(".message-text")
-                .css('box-shadow', `${event.gamma / 5}px ${(event.beta - 30) / 4}px 4px rgba(0, 0, 0, 0.2)`)
-        }, true);
     }
 }
 
