@@ -428,7 +428,7 @@ a {
     margin-left: 3px;
     filter: invert();
     width: 17px;
-    height: 17px;
+    height: 15px;
 }
 
 .mute-button img {
@@ -474,19 +474,9 @@ a {
     opacity: 0.5;
 }
 
-.no-video .controls {
-    cursor: default;
-    pointer-events: none;
-}
-
-.no-video .control {
-    opacity: 0.4!important;
-}
-
-.no-video #currentVideoName {
-    text-transform: none;
-}
-
-.no-video .mute-button {
-    /* display: none; */
+.no-video {
+    height: 0!important;
+    overflow: hidden!important;
+    padding: 0!important;
+    border: none!important;
 }

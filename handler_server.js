@@ -3,6 +3,9 @@ var mongoose = require('mongoose');
 var webpush = require('web-push');
 var models = require('./models/models.js');
 var helper = require('./common/helper.js');
+var lastYoutubeMessage;
+var lastYoutubeSync;
+var lastYoutubeSyncTime;
 
 var handler = {
     init: (io) => {
@@ -59,6 +62,7 @@ var handler = {
                 message.socketId = socket.id.split("#")[1];
                 if (isNameChange)
                     message.name = users[socket.id].name;
+
                 message.color = users[socket.id].color;
 
                 emitMessage('i-am-active', {});
@@ -77,6 +81,19 @@ var handler = {
                         .filter(x => users[x].room == oldRoom)
                         .map(x => users[x]), oldRoom);
                 }
+
+                if (!isNameChange && lastYoutubeMessage && lastYoutubeSync) {
+                    lastYoutubeMessage.messageUnixTime = lastYoutubeSync.messageId.slice(3);
+                    lastYoutubeMessage.shouldAutoPlay = undefined;
+                    if (lastYoutubeSync.playerState == 1)
+                        lastYoutubeMessage.shouldAutoPlay = true;
+
+                    var currentDate = new Date();
+                    var secondsSinceLastPlaySync = (currentDate - lastYoutubeSyncTime) / 1000;
+                    lastYoutubeMessage.autoPlayStartSeconds =
+                        (lastYoutubeSync.currentTime + secondsSinceLastPlaySync);
+                    socket.emit('chat message', JSON.stringify(lastYoutubeMessage));
+                }
             });
             socket.on('i am writing', () => {
                 emitMessage('writing', {
@@ -87,13 +104,30 @@ var handler = {
                 if (msg.length > 300)
                     return;
 
+                if (msg.match(/youtube.com/i)) {
+                    lastYoutubeMessage = {
+                        messageText: helper.correctSentence(msg.trim()),
+                        socketId: socket.id.split("#")[1],
+                        name: users[socket.id].name,
+                        color: users[socket.id].color,
+                        messageUnixTime: +new Date()
+                    }
+                }
+
+
                 emitMessage('chat message', {
                     messageText: helper.correctSentence(msg.trim()),
                     messageUnixTime: +new Date()
                 });
             });
             socket.on('sync-media', message => {
-                emitMessage('sync-media', JSON.parse(message));
+                message = JSON.parse(message);
+                if (message.playerState == 1 || message.playerState == 2) {
+                    lastYoutubeSync = message;
+                    lastYoutubeSyncTime = new Date();
+                }
+
+                emitMessage('sync-media', message);
             });
             socket.on('i-am-active', () => {
                 emitMessage('i-am-active', {});

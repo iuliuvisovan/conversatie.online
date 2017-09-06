@@ -19,6 +19,9 @@ var lastMessageSenderId = '';
 var userTopic = 'start';
 
 //Username
+var userId = '';
+
+//Username
 var userName = '';
 
 //Color of the user
@@ -46,35 +49,6 @@ var applicationServerPublicKey = "BMEi_ez0hgDxewidO83qBFenXDfkie8kQmfPnj1AJBsZ9E
 //Reference to the last video that played
 var lastPlayingPlayer;
 
-function getPlayingVideo() {
-    return youtubePlayers[Object.keys(youtubePlayers).find(x =>
-        youtubePlayers[x].getPlayerState() == YT.PlayerState.PLAYING)];
-}
-
-function toggleCurrentVideo() {
-    var player = getPlayingVideo();
-    if (!player)
-        player = lastPlayingPlayer;
-    if (player.getPlayerState() == YT.PlayerState.PLAYING)
-        player.pauseVideo();
-    else {
-        player.playVideo();
-    }
-    updatePlaybar();
-}
-
-function toggleMuteCurrentVideo() {
-    var player = getPlayingVideo();
-    if (!player)
-        player = lastPlayingPlayer;
-    if (player.isMuted())
-        player.unMute();
-    else {
-        player.mute();
-    }
-    setTimeout(updatePlaybar, 300);
-}
-
 function updatePlaybar() {
     var player = getPlayingVideo();
     if (!player)
@@ -92,20 +66,19 @@ function updatePlaybar() {
     // playerIdInPlaybar = player.
 }
 
-
-window.onbeforeunload = function () {
-    return "I am a message";
-};
-
-$(document).ready(() => {
+//Everything happens after YT player is loaded
+loadIframeApi();
+function onYouTubeIframeAPIReady() {
     // managePwa();
-    loadIframeApi();
+    handleUserId();
+    handleBeforeUnload();
     handleWindowFocus();
     getUserName();
 
-    ga('set', 'userId', socket.id);
+    ga('set', 'userId', userId);
     $inputMessage.focus();
     socket.emit('check-in', JSON.stringify({
+        userId,
         userName,
         userTopic
     }));
@@ -121,7 +94,7 @@ $(document).ready(() => {
     handleOptions();
     fixKeyboardOpen();
     handleAccessLastMessage();
-});
+}
 
 
 //Event handlers
@@ -183,7 +156,6 @@ $(document).ready(() => {
                 $("meta[name='theme-color']").attr('content', messageObject.color);
                 userColor = messageObject.color;
                 $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png?v=' + +new Date());
-
             }
             var $joinLi = $('<li>')
                 .addClass('join')
@@ -291,8 +263,10 @@ $(document).ready(() => {
                 messageObject.messageText,
                 messageObject.messageUnixTime);
             var youtubeVideoId = $(messageContent).attr('data-youtube-url');
+            var shouldAutoPlay = !!messageObject.shouldAutoPlay;
+            var autoPlayStartSeconds = messageObject.autoPlayStartSeconds;
             if (youtubeVideoId) {
-                createYoutubeVideo($(messageContent).attr('id'), youtubeVideoId);
+                createYoutubeVideo($(messageContent).attr('id'), youtubeVideoId, shouldAutoPlay, autoPlayStartSeconds);
                 ga('send', 'event', 'Message', 'sendVideo', youtubeVideoId);
             }
 
@@ -512,7 +486,43 @@ $(document).ready(() => {
 
 //UI & behavior
 {
+    function handleUserId() {
+        var userId = localStorage.userId;
+        if(!userId) {
+            localStorage.userId = +new Date();
+        }
+    }
 
+
+    function getPlayingVideo() {
+        return youtubePlayers[Object.keys(youtubePlayers).find(x =>
+            youtubePlayers[x].getPlayerState() == YT.PlayerState.PLAYING)];
+    }
+    
+    function toggleCurrentVideo() {
+        var player = getPlayingVideo();
+        if (!player)
+            player = lastPlayingPlayer;
+        if (player.getPlayerState() == YT.PlayerState.PLAYING)
+            player.pauseVideo();
+        else {
+            player.playVideo();
+        }
+        updatePlaybar();
+    }
+    
+    function toggleMuteCurrentVideo() {
+        var player = getPlayingVideo();
+        if (!player)
+            player = lastPlayingPlayer;
+        if (player.isMuted())
+            player.unMute();
+        else {
+            player.mute();
+        }
+        setTimeout(updatePlaybar, 300);
+    }
+    
     function handleWindowFocus() {
         $(window).focus(() => {
             if (unseenMessageCount) {
@@ -544,7 +554,6 @@ $(document).ready(() => {
                 $('#inputSend').addClass('opaque');
 
             if (e.keyCode == 13 && !e.shiftKey) {
-                console.log(e); 
                 sendMessage(message);
                 return false;
             }
@@ -559,6 +568,12 @@ $(document).ready(() => {
 
     function fixKeyboardOpen() {
         $(window).on('resize', fixScroll);
+    }
+
+    function handleBeforeUnload() {
+        window.onbeforeunload = function () {
+            return "I am a message";
+        };
     }
 }
 
@@ -606,15 +621,12 @@ $(document).ready(() => {
             .then(subscription => {
                 console.log('User is subscribed.');
 
-                localStorage.userId = socket.id;
                 socket.emit('subscribe', JSON.stringify({
                     pushMessageSubscription: subscription,
-                    userId: socket.id
+                    userId: userId
                 }));
 
                 isSubscribed = true;
-
-                // window.location.reload();
             });
     }
 
@@ -632,4 +644,5 @@ $(document).ready(() => {
         }
         return outputArray;
     }
+   
 }

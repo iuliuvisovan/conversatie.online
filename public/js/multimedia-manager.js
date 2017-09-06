@@ -55,12 +55,12 @@ function isValidURL(str) {
 function getYoutubeVideoId(url) {
     var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
     var match = url.match(regExp);
-    return (match && match[7].length == 11) ? match[7] : false;
+    return (match && match[7].length == 11) ? match[7] : "";
 }
 
 var youtubePlayers = {};
 
-function createYoutubeVideo(messageId, videoId) {
+function createYoutubeVideo(messageId, videoId, shouldAutoPlay, autoPlayStartSeconds) {
     // 3. This function creates an <iframe> (and YouTube player)
     //    after the API code downloads.
 
@@ -94,10 +94,18 @@ function createYoutubeVideo(messageId, videoId) {
                         currentTime,
                         playerState: event.data
                     }));
+                },
+                'onReady': event => {
+                    if (shouldAutoPlay) {
+                        event.target.setVolume(100);
+                        event.target.seekTo(autoPlayStartSeconds + 2);
+                        event.target.playVideo();
+                    }
                 }
             }
         });
-    }, 0);
+        console.log('Created YT player');
+    });
 }
 
 function syncYoutubePlayerById(messageId, startTime, playerState) {
@@ -105,14 +113,14 @@ function syncYoutubePlayerById(messageId, startTime, playerState) {
     if (playerState == YT.PlayerState.PAUSED) {
         if (player.getPlayerState() != YT.PlayerState.PAUSED) {
             player.pauseVideo();
-            player.seekTo(startTime + 1); //Network delay & load :s
+            player.seekTo(startTime); //Network delay & load :s
 
         }
     }
 
     if (playerState == YT.PlayerState.PLAYING) {
         if (player.getPlayerState() != YT.PlayerState.PLAYING) {
-            player.seekTo(startTime + 1); //Network delay & load :s
+            player.seekTo(startTime); //Network delay & load :s
             player.playVideo();
             Object.keys(youtubePlayers).forEach(x => {
                 if (x != messageId)
