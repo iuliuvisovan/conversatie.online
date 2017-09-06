@@ -84,6 +84,10 @@ function createYoutubeVideo(messageId, videoId, shouldAutoPlay, autoPlayStartSec
             modestbranding: 1,
             events: {
                 'onStateChange': event => {
+                    //Don't dispatch cue/load/buffer/unstarted events
+                    if(event.data != 1 && event.data != 2)
+                        return;
+
                     var player = youtubePlayers[messageId];
                     var currentTime = player.getCurrentTime();
 
