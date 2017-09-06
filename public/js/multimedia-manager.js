@@ -7,10 +7,10 @@ function replaceWithMultiMedia(input, messageId) {
         if (!input.toLowerCase().includes('http'))
             input = 'http://' + input;
         //Check for images
-        if (input.match(/.(jpg|jpeg|png|gif)$/i))
+        if (input.match(/.(jpg|jpeg|png|gif)/i))
             return `<a target='_blank' href='${input}'>
                         <img src="${input}" style="max-width: 250px; max-height: 250px;" />
-                        <div style="max-width: 250px">${input}</div>
+                        <div style="max-width: 250px; word-break: break-all">${input}</div>
                     </a>`;
         if (input.match(/youtube.com/i)) {
             var embedYoutubeUrl = getYoutubeVideoId(input);
@@ -18,6 +18,14 @@ function replaceWithMultiMedia(input, messageId) {
         }
 
         return `<a target='_blank' style="word-break: break-all;" href='${input}'>${input}</a>`;
+    }
+    //base64 image
+    if (input.includes('image/')) {
+        input = input.slice(0, 1).toLowerCase() + input.slice(1, input.length - 1);
+        return `<div style="cursor: pointer;" onclick="$(this).toggleClass('preview')">
+                    <img src="${input}" style="max-width: 250px; max-height: 250px;" />
+                </div>
+            `;
     }
 
     emojiMatchPairs.forEach(matchPair => {

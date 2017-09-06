@@ -68,6 +68,7 @@ function updatePlaybar() {
 
 //Everything happens after YT player is loaded
 loadIframeApi();
+
 function onYouTubeIframeAPIReady() {
     // managePwa();
     handleUserId();
@@ -92,6 +93,7 @@ function onYouTubeIframeAPIReady() {
     handleSyncMediaEvent();
     handleLeaveEvent();
     handleOptions();
+    handleImagePaste();
     fixKeyboardOpen();
     handleAccessLastMessage();
 }
@@ -458,7 +460,7 @@ function onYouTubeIframeAPIReady() {
         if (!message)
             var message = $('<div/>').html($inputMessage.val()).text().trim();
         if (message) {
-            if (message.length > 300)
+            if (message.length > 500 && !message.includes('image/'))
                 return;
             $inputMessage.val('');
             socket.emit('chat message', message);
@@ -488,7 +490,7 @@ function onYouTubeIframeAPIReady() {
 {
     function handleUserId() {
         var userId = localStorage.userId;
-        if(!userId) {
+        if (!userId) {
             localStorage.userId = +new Date();
         }
     }
@@ -498,7 +500,7 @@ function onYouTubeIframeAPIReady() {
         return youtubePlayers[Object.keys(youtubePlayers).find(x =>
             youtubePlayers[x].getPlayerState() == YT.PlayerState.PLAYING)];
     }
-    
+
     function toggleCurrentVideo() {
         var player = getPlayingVideo();
         if (!player)
@@ -510,7 +512,7 @@ function onYouTubeIframeAPIReady() {
         }
         updatePlaybar();
     }
-    
+
     function toggleMuteCurrentVideo() {
         var player = getPlayingVideo();
         if (!player)
@@ -522,7 +524,7 @@ function onYouTubeIframeAPIReady() {
         }
         setTimeout(updatePlaybar, 300);
     }
-    
+
     function handleWindowFocus() {
         $(window).focus(() => {
             if (unseenMessageCount) {
@@ -574,6 +576,46 @@ function onYouTubeIframeAPIReady() {
         window.onbeforeunload = function () {
             return "I am a message";
         };
+    }
+
+
+    function fileToBase64(myFile) {
+        return new Promise((resolve, reject) => {
+            var coolFile = {};
+
+            function readerOnload(e) {
+                var base64 = btoa(e.target.result);
+                coolFile.base64 = base64;
+                resolve(coolFile);
+            };
+
+            var reader = new FileReader();
+            reader.onload = readerOnload;
+
+            var file = myFile[0].files[0];
+            coolFile.filetype = file.type;
+            coolFile.size = file.size;
+            coolFile.filename = file.name;
+            reader.readAsBinaryString(file);
+        });
+    }
+
+    function handleImagePaste() {
+        document.onpaste = function (event) {
+            var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+            for (index in items) {
+                var item = items[index];
+                if (item.kind === 'file') {
+                    var blob = item.getAsFile();
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        var imageDataUrl = event.target.result;
+                        sendMessage(imageDataUrl);
+                    }; // data url!
+                    reader.readAsDataURL(blob);
+                }
+            }
+        }
     }
 }
 
@@ -630,6 +672,7 @@ function onYouTubeIframeAPIReady() {
             });
     }
 
+
     function urlB64ToUint8Array(base64String) {
         const padding = '='.repeat((4 - base64String.length % 4) % 4);
         const base64 = (base64String + padding)
@@ -644,5 +687,5 @@ function onYouTubeIframeAPIReady() {
         }
         return outputArray;
     }
-   
+
 }

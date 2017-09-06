@@ -101,7 +101,7 @@ var handler = {
                 });
             });
             socket.on('chat message', msg => {
-                if (msg.length > 300)
+                if (msg.length > 500 && !msg.includes('image/'))
                     return;
 
                 if (msg.match(/youtube.com/i)) {
