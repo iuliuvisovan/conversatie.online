@@ -11,9 +11,11 @@ var routes = require('./routes/index');
 
 var app = express();
 
-mongoose.connect(require('./c/credentials').mongoauth, {
-  useMongoClient: true
-});
+if (process.env.MONGODB_URI) {
+  mongoose.connect(process.env.MONGODB_URI, {
+    useMongoClient: true
+  });
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
