@@ -16,6 +16,12 @@ var emojiMatchPairs = [
         }
     }).reverse(),
     {
+        emojiChars: '8-|',
+        emoji: '😒',
+        sizeIncrease: 0,
+        emojiTitle: 'mda..'
+    },
+    {
         emojiChars: '>:D',
         emoji: '🤗',
         sizeIncrease: 0,
