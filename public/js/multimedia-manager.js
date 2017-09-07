@@ -12,7 +12,7 @@ function replaceWithMultiMedia(input, messageId) {
                         <img src="${input}" style="max-width: 250px; max-height: 250px;" />
                         <div style="max-width: 250px; word-break: break-all">${input}</div>
                     </a>`;
-        if (input.match(/youtube.com/i)) {
+        if (input.match(/youtu[(\.be)|(be\.com)]/i)) {
             var embedYoutubeUrl = getYoutubeVideoId(input);
             return `<div data-youtube-url='${embedYoutubeUrl}' id='${'msg' + messageId}'></div>`;
         }
@@ -87,7 +87,6 @@ function createYoutubeVideo(messageId, videoId, shouldAutoPlay, autoPlayStartSec
                     //Don't dispatch cue/load/buffer/unstarted events
                     if(event.data != 1 && event.data != 2)
                         return;
-
                     var player = youtubePlayers[messageId];
                     var currentTime = player.getCurrentTime();
 
@@ -101,11 +100,12 @@ function createYoutubeVideo(messageId, videoId, shouldAutoPlay, autoPlayStartSec
                     if (player.getPlayerState() == YT.PlayerState.PLAYING)
                         lastPlayingPlayer = player;
 
-                    socket.emit('sync-media', JSON.stringify({
+                    socket.emit('sync media', JSON.stringify({
                         messageId,
                         currentTime,
                         playerState: event.data
                     }));
+                    updatePlaybar();
                 },
                 'onReady': event => {
                     if (shouldAutoPlay) {

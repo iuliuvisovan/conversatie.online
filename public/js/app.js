@@ -63,7 +63,6 @@ function updatePlaybar() {
     if (player.isMuted())
         $(".mute-button").addClass('muted');
     $("#playBar").removeClass('no-video');
-    // playerIdInPlaybar = player.
 }
 
 //Everything happens after YT player is loaded
@@ -78,7 +77,7 @@ function onYouTubeIframeAPIReady() {
 
     ga('set', 'userId', userId);
     $inputMessage.focus();
-    socket.emit('check-in', JSON.stringify({
+    socket.emit('check in', JSON.stringify({
         userId,
         userName,
         userTopic
@@ -102,11 +101,13 @@ function onYouTubeIframeAPIReady() {
 //Event handlers
 {
     function handleOnlineUsersUpdateEvent() {
-        socket.on('online-users-update', msg => {
+        socket.on('online users update', msg => {
             var onlineUsers = JSON.parse(msg);
 
             var $onlineUserList = $(".online-users-list");
             $(".online-user").remove();
+
+            $("#aloneBar")[onlineUsers.length < 2 ? 'removeClass' : 'addClass']('no-video');
 
             onlineUsers
                 .sort((a, b) => a.lastMessageSecondsAgo > b.lastMessageSecondsAgo ? 1 : -1)
@@ -155,9 +156,12 @@ function onYouTubeIframeAPIReady() {
                 $('#options').css('color', messageObject.color);
                 $('#inputSend').css('border-color', messageObject.color);
                 $('#playBar').css('background', messageObject.color);
+                $('#aloneBar').css('background', messageObject.color);
+                $('.progress').css('background', messageObject.color);
                 $("meta[name='theme-color']").attr('content', messageObject.color);
                 userColor = messageObject.color;
                 $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png?v=' + +new Date());
+                $('.watermark').attr('src', 'img/logo_' + userColor.slice(1) + '.png?v=' + +new Date());
             }
             var $joinLi = $('<li>')
                 .addClass('join')
@@ -178,7 +182,7 @@ function onYouTubeIframeAPIReady() {
     }
 
     function handleActiveEvent() {
-        socket.on('i-am-active', (msg) => {
+        socket.on('i am active', (msg) => {
             msg = JSON.parse(msg);
 
             //Don't treat me as a person who saw the message
@@ -254,6 +258,7 @@ function onYouTubeIframeAPIReady() {
 
     function handleChatMessageEvent() {
         socket.on('chat message', msg => {
+
             var messageObject = JSON.parse(msg);
             if (messageObject.socketId != lastMessageSenderId) {
                 var spanMessageAuthor = $('<span>')
@@ -261,6 +266,11 @@ function onYouTubeIframeAPIReady() {
                     .text(messageObject.socketId == socket.id ?
                         'Tu' : messageObject.name);
             }
+            if (messageObject.messageText.includes('image/')) {
+                $(".progress").css('opacity', '0');
+                $(".progress").removeClass('progressing');
+            }
+
             var messageContent = replaceWithMultiMedia(
                 messageObject.messageText,
                 messageObject.messageUnixTime);
@@ -324,7 +334,7 @@ function onYouTubeIframeAPIReady() {
                     $('title').text('(' + unseenMessageCount + ') Conversează. Online! - www.conversatie.online');
                 $('#favicon').attr('href', 'img/logo_' + messageObject.color.slice(1) + '.png');
             } else {
-                socket.emit('i-am-active');
+                socket.emit('i am active');
             }
 
             if ($(".writing[data-sender-socketid='" + messageObject.socketId + "']").length) {
@@ -337,7 +347,7 @@ function onYouTubeIframeAPIReady() {
     }
 
     function handleSyncMediaEvent() {
-        socket.on('sync-media', message => {
+        socket.on('sync media', message => {
             message = JSON.parse(message);
             var messageId = message.messageId;
             var currentTime = message.currentTime;
@@ -383,7 +393,7 @@ function onYouTubeIframeAPIReady() {
 
     function changeUserName() {
         getUserName(true);
-        socket.emit('check-in', JSON.stringify({
+        socket.emit('check in', JSON.stringify({
             userName,
             userTopic
         }));
@@ -396,7 +406,7 @@ function onYouTubeIframeAPIReady() {
         getUserTopic();
         if (!userName)
             userName = localStorage.userName;
-        socket.emit('check-in', JSON.stringify({
+        socket.emit('check in', JSON.stringify({
             userName,
             userTopic
         }));
@@ -533,7 +543,7 @@ function onYouTubeIframeAPIReady() {
                 setTimeout(() => {
                     $("li:not(.not-seen)").removeClass('seen-on-focus');
                 }, 7000);
-                socket.emit('i-am-active');
+                socket.emit('i am active');
             }
 
             isWindowFocused = true;
@@ -606,16 +616,28 @@ function onYouTubeIframeAPIReady() {
             for (index in items) {
                 var item = items[index];
                 if (item.kind === 'file') {
+                    $(".progress").css('opacity', '1');
+                    $(".progress").addClass('progressing');
                     var blob = item.getAsFile();
                     var reader = new FileReader();
-                    reader.onload = function (event) {
+                    socket.emit('i am writing');
+                    reader.onload = (event) => {
                         var imageDataUrl = event.target.result;
                         sendMessage(imageDataUrl);
-                    }; // data url!
+                    };
                     reader.readAsDataURL(blob);
                 }
             }
         }
+    }
+
+    function copyLink() {
+        let α = document.createRange(),
+            ρ = window.getSelection();
+        α.selectNodeContents($(`#pageLink`)[0]);
+        ρ.removeAllRanges();
+        ρ.addRange(α);
+        document.execCommand('copy') && $(`#C span`).addClass('shown');
     }
 }
 

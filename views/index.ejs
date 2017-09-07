@@ -21,6 +21,8 @@
 </head>
 
 <body>
+    <img class="watermark" src="img/logo_444.png?v=2" alt="Watermark">
+
     <div class="app">
         <div class="messages col-md-12">
             <ul id="messages"></ul>
@@ -37,17 +39,26 @@
                 <option value='change-topic'>Alt subiect</option>
             </select>
         </div>
-        <div id="playBar" class="no-video">
-            <div id="playBarVideo"></div>
-            <div style="float: left; width: 80%; overflow: hidden; text-overflow: ellipsis;">
-                <div class="controls" onclick="toggleCurrentVideo()">
-                    <img class="play-pause" src="../img/play-pause.png" alt="Play / Pause">
+        <div class="top-bar">
+            <div id="playBar" class="no-video">
+                <div id="playBarVideo"></div>
+                <div style="float: left; width: 80%; overflow: hidden; text-overflow: ellipsis;">
+                    <div class="controls" onclick="toggleCurrentVideo()">
+                        <img class="play-pause" src="../img/play-pause.png" alt="Play / Pause">
+                    </div>
+                    <span id="currentVideoName">Când trimiți un video, e redat sincron la toti participantii.</span>
                 </div>
-                <span id="currentVideoName">Când trimiți un video, e redat sincron la toti participantii.</span>
+                <div class="mute-button" onclick="toggleMuteCurrentVideo()">
+                    <img class="unmuted" src="../img/unmuted.svg">
+                    <img class="muted" src="../img/muted.svg">
+                </div>
             </div>
-            <div class="mute-button" onclick="toggleMuteCurrentVideo()">
-                <img class="unmuted" src="../img/unmuted.svg">
-                <img class="muted" src="../img/muted.svg">
+            <div id="aloneBar" class="no-video">
+                <span id="pageLink" style="opacity: 0; font-size: 0px">http://conversatie.online</span>
+                <span id="currentVideoName">
+                    Nu e nimeni aici. Cheamă niște prieteni, chat-ul ăsta e chiar fun. 
+                    <a href="javascript:void(0);" style="cursor: pointer;" onclick="copyLink()">Copiază link</a>
+                </span>
             </div>
         </div>
         <div id="btnAddPwa">
@@ -62,10 +73,11 @@
                 <span class="button-add" onclick="subscribeUser(); $(this).addClass('disabled')">Bine, vreau notificări</span>
             </div>
         </div>
-        <img src="" id="test"/>
+        <img src="" id="test" />
         <div class="users-who-saw">
         </div>
         <div class="footer">
+            <div class="progress"></div>
             <input title="Scrie un mesaj" onkeydown="event.keyCode >= 32 && iAmWriting()" placeholder="Scrie..." id="inputMessage" autocomplete="off"
             />
             <button title="Trimite" class="opaque" id="inputSend" type="button" value="👌" onclick="sendMessage()">        

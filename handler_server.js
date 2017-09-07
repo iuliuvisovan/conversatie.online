@@ -12,7 +12,7 @@ var handler = {
         //Triggered automatically by the client framework
         io.on('connection', socket => {
             //Triggered by the user when first entering the site / changing name / changing room
-            socket.on('check-in', message => {
+            socket.on('check in', message => {
                 message = JSON.parse(message);
                 var userName = message.userName;
                 var newRoom = message.userTopic;
@@ -65,10 +65,10 @@ var handler = {
 
                 message.color = users[socket.id].color;
 
-                emitMessage('i-am-active', {});
+                emitMessage('i am active', {});
 
                 //Notify new room of join
-                emitMessage('online-users-update', Object.keys(users)
+                emitMessage('online users update', Object.keys(users)
                     .filter(x => users[x].room == newRoom)
                     .map(x => users[x]), newRoom);
                 emitMessage('join', message, newRoom);
@@ -77,7 +77,7 @@ var handler = {
                     //Notify old room of leave
                     message.messageText = " s-a dus.";
                     emitMessage('leave', message, oldRoom);
-                    emitMessage('online-users-update', Object.keys(users)
+                    emitMessage('online users update', Object.keys(users)
                         .filter(x => users[x].room == oldRoom)
                         .map(x => users[x]), oldRoom);
                 }
@@ -104,7 +104,7 @@ var handler = {
                 if (msg.length > 500 && !msg.includes('image/'))
                     return;
 
-                if (msg.match(/youtube.com/i)) {
+                if (msg.match(/youtu[(\.be)|(be\.com)]/i)) {
                     lastYoutubeMessage = {
                         messageText: helper.correctSentence(msg.trim()),
                         socketId: socket.id.split("#")[1],
@@ -120,17 +120,17 @@ var handler = {
                     messageUnixTime: +new Date()
                 });
             });
-            socket.on('sync-media', message => {
+            socket.on('sync media', message => {
                 message = JSON.parse(message);
                 if (message.playerState == 1 || message.playerState == 2) {
                     lastYoutubeSync = message;
                     lastYoutubeSyncTime = new Date();
                 }
 
-                emitMessage('sync-media', message);
+                emitMessage('sync media', message);
             });
             socket.on('i-am-active', () => {
-                emitMessage('i-am-active', {});
+                emitMessage('i am active', {});
             });
 
             handlePwaSubscription(socket);
@@ -141,7 +141,7 @@ var handler = {
                         messageText: " s-a dus.",
                     });
                     var room = users[socket.id].room;
-                    emitMessage('online-users-update', Object.keys(users)
+                    emitMessage('online users update', Object.keys(users)
                         .filter(x => users[x].room == room &&
                             users[x].socketId != socket.id)
                         .map(x => users[x]));
