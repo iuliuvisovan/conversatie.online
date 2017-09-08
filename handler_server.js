@@ -172,6 +172,8 @@ var handler = {
 
             var emitMessage = (eventName, message, requestedRoom) => {
                 message.socketId = socket.id.split("#")[1];
+                if(!users[socket.id])
+                    return;
                 message.name = users[socket.id].name;
                 message.color = users[socket.id].color;
                 var room = users[socket.id].room;

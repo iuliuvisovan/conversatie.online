@@ -86,6 +86,10 @@ function createYoutubeVideo(messageId, videoId, shouldAutoPlay, autoPlayStartSec
             modestbranding: 1,
             events: {
                 'onStateChange': event => {
+                    //Mobile devices shouldn't control video state
+                    if(window.innerWidth < 1025)
+                        return;
+
                     //Don't dispatch cue/load/buffer/unstarted events
                     if (event.data != 1 && event.data != 2)
                         return;
