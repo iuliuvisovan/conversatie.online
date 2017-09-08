@@ -1,5 +1,7 @@
 var youtubePlayers = {};
-var shouldDispatchEvents = true;
+var lastMediaSyncDispatch = new Date();
+lastMediaSyncDispatch.setSeconds(new Date().getSeconds() - 5);
+
 
 function replaceWithMultiMedia(input, messageId) {
     if (isValidURL(input)) {
@@ -87,6 +89,15 @@ function createYoutubeVideo(messageId, videoId, shouldAutoPlay, autoPlayStartSec
                     //Don't dispatch cue/load/buffer/unstarted events
                     if(event.data != 1 && event.data != 2)
                         return;
+
+                    //Don't dispatch more frequently than once every 500ms
+                    if ((new Date() - lastMediaSyncDispatch) / 1000 < 0.5)  {
+                        return;
+                    }
+                    lastMediaSyncDispatch = new Date();
+
+                    console.log('emitting ' + event.data);
+
                     var player = youtubePlayers[messageId];
                     var currentTime = player.getCurrentTime();
 
@@ -122,7 +133,10 @@ function createYoutubeVideo(messageId, videoId, shouldAutoPlay, autoPlayStartSec
 
 function syncYoutubePlayerById(messageId, startTime, playerState) {
     var player = youtubePlayers[messageId];
+
+    //If received PAUSED from someone else
     if (playerState == YT.PlayerState.PAUSED) {
+        //If my video isn't PAUSED
         if (player.getPlayerState() != YT.PlayerState.PAUSED) {
             player.pauseVideo();
             player.seekTo(startTime); //Network delay & load :s
@@ -130,14 +144,14 @@ function syncYoutubePlayerById(messageId, startTime, playerState) {
         }
     }
 
+
+    //If received PLAYING from someone else
     if (playerState == YT.PlayerState.PLAYING) {
+        //If my video isn't PLAYING
         if (player.getPlayerState() != YT.PlayerState.PLAYING) {
-            player.seekTo(startTime); //Network delay & load :s
+            //Sync my video
+            player.seekTo(startTime);
             player.playVideo();
-            Object.keys(youtubePlayers).forEach(x => {
-                if (x != messageId)
-                    youtubePlayers[x].pauseVideo()
-            });
         }
     }
     updatePlaybar();
