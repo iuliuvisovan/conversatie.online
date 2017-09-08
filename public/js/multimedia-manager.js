@@ -87,7 +87,7 @@ function createYoutubeVideo(messageId, videoId, shouldAutoPlay, autoPlayStartSec
             events: {
                 'onStateChange': event => {
                     //Mobile devices shouldn't control video state
-                    if(window.innerWidth < 1025)
+                    if(isMobileDevice())
                         return;
 
                     //Don't dispatch cue/load/buffer/unstarted events
@@ -99,8 +99,6 @@ function createYoutubeVideo(messageId, videoId, shouldAutoPlay, autoPlayStartSec
                         return;
                     }
                     lastMediaSyncDispatch = new Date();
-
-                    console.log('emitting ' + event.data);
 
                     var player = youtubePlayers[messageId];
                     var currentTime = player.getCurrentTime();
@@ -141,13 +139,18 @@ function syncYoutubePlayerById(messageId, startTime, playerState) {
     //If received PLAYING from someone else && my video isn't PLAYING
     if (playerState == YT.PlayerState.PAUSED && localPlayer.getPlayerState() != YT.PlayerState.PAUSED) {
         localPlayer.pauseVideo();
-        localPlayer.seekTo(startTime);
+        localPlayer.seekTo(startTime + 1);
     }
 
 
     //If received PLAYING from someone else && my video isn't PLAYING
     if (playerState == YT.PlayerState.PLAYING && localPlayer.getPlayerState() != YT.PlayerState.PLAYING) {
-        localPlayer.seekTo(startTime);
+        var compensationSeconds = 0;
+        if(localPlayer.getPlayerState() == 5) {
+            compensationSeconds = 3;
+        }
+            
+        localPlayer.seekTo(startTime + compensationSeconds);
         localPlayer.playVideo();
     }
     updatePlaybar();

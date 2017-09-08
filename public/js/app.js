@@ -267,11 +267,7 @@ function onYouTubeIframeAPIReady() {
                     .text(messageObject.socketId == socket.id ?
                         'Tu' : messageObject.name);
             }
-            if (messageObject.messageText.includes('image/')) {
-                $(".progress").css('opacity', '0');
-                $(".progress").removeClass('progressing');
-            }
-
+         
             var messageContent = replaceWithMultiMedia(
                 messageObject.messageText,
                 messageObject.messageUnixTime);
@@ -473,6 +469,11 @@ function onYouTubeIframeAPIReady() {
         if (message) {
             if (message.length > 500 && !message.includes('image/'))
                 return;
+            if(message.includes('play ')) {
+                $(".progress").css('background-color', '#cc0404');
+                $(".progress").css('opacity', '1');
+                $(".progress").addClass('progressing');
+            }
             $inputMessage.val('');
             socket.emit('chat message', message);
             lastSentMessage = message;
@@ -510,17 +511,16 @@ function onYouTubeIframeAPIReady() {
         console.log('toggling fullscreen');
         var doc = window.document;
         var docEl = doc.documentElement;
-      
+
         var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
         var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-      
-        if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
-          requestFullScreen.call(docEl);
+
+        if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+            requestFullScreen.call(docEl);
+        } else {
+            cancelFullScreen.call(doc);
         }
-        else {
-          cancelFullScreen.call(doc);
-        }
-      }
+    }
 
     function getPlayingVideo() {
         return youtubePlayers[Object.keys(youtubePlayers).find(x =>
@@ -627,13 +627,20 @@ function onYouTubeIframeAPIReady() {
     }
 
     function handleImagePaste() {
+        $(".progress").on('animationend webkitanimationend', () => {
+            $(".progress").removeClass('progressing');
+            $(".progress").css('opacity', '0');
+        });
+
         document.onpaste = function (event) {
             var items = (event.clipboardData || event.originalEvent.clipboardData).items;
             for (index in items) {
                 var item = items[index];
                 if (item.kind === 'file') {
+                    $(".progress").css('background-color', userColor);
                     $(".progress").css('opacity', '1');
                     $(".progress").addClass('progressing');
+
                     var blob = item.getAsFile();
                     var reader = new FileReader();
                     socket.emit('i am writing');
@@ -654,6 +661,12 @@ function onYouTubeIframeAPIReady() {
         ρ.removeAllRanges();
         ρ.addRange(α);
         document.execCommand('copy') && $(`#C span`).addClass('shown');
+    }
+
+    function isMobileDevice() {
+        if (/Mobi/.test(navigator.userAgent)) {
+            return true;
+        }
     }
 }
 

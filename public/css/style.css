@@ -548,13 +548,12 @@ a {
     animation-name: progressing;
     animation-duration: 2s;
     animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    animation-iteration-count: infinite;
 }
 
 
 @keyframes progressing {
     100% {
-        transform: scaleX(1);
+        transform: scaleX(1.5);
         opacity: 0;
     }
 }

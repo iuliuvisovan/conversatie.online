@@ -13,6 +13,11 @@ youTube.setKey('AIzaSyBfbAdPTjdFBPN_04wp1ef5l31PTgzFl7A');
 youTube.addParam('type', 'video');
 
 
+process.on('uncaughtException', err => {
+    console.error(err.stack);
+    console.log("Node NOT Exiting...");
+});
+
 var handler = {
     init: (io) => {
         //Triggered automatically by the client framework
@@ -22,9 +27,6 @@ var handler = {
                 message = JSON.parse(message);
                 var userName = message.userName;
                 var newRoom = message.userTopic;
-
-                if (!userName)
-                    return;
 
                 //If user exists, check if it's in the same room. If yes, consider it a name change
                 if (users[socket.id]) {
@@ -120,15 +122,25 @@ var handler = {
                     }
                 }
 
-                if (msg.startsWith("#piesa")) {
-                    getYoutubeVideoBySearchTerm(msg.slice(7))
+                if (msg.startsWith("play ")) {
+                    getYoutubeVideoBySearchTerm(msg.slice(6))
                         .then(ytLink => {
-                            if (ytLink)
+                            if (ytLink) {
                                 msg = ytLink;
+                                lastYoutubeMessage = {
+                                    messageText: helper.correctSentence(msg.trim()),
+                                    socketId: socket.id.split("#")[1],
+                                    name: users[socket.id].name,
+                                    color: users[socket.id].color,
+                                    messageUnixTime: +new Date()
+                                }
+                            }
+                                
                             emitMessage('chat message', {
                                 messageText: helper.correctSentence(msg.trim()),
                                 messageUnixTime: +new Date()
                             });
+                            
                         });
                 } else {
                     emitMessage('chat message', {
@@ -172,12 +184,11 @@ var handler = {
 
             var emitMessage = (eventName, message, requestedRoom) => {
                 message.socketId = socket.id.split("#")[1];
-                if(!users[socket.id])
+                if (!users[socket.id])
                     return;
                 message.name = users[socket.id].name;
                 message.color = users[socket.id].color;
                 var room = users[socket.id].room;
-                console.log(users[socket.id]);
                 if (requestedRoom)
                     room = requestedRoom;
                 console.log(`Emitting [${eventName}] in room ${room}`);
