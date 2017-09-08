@@ -1,11 +1,17 @@
 var users = {};
 var mongoose = require('mongoose');
 var webpush = require('web-push');
+var YouTube = require('youtube-node');
 var models = require('./models/models.js');
 var helper = require('./common/helper.js');
+
 var lastYoutubeMessage;
 var lastYoutubeSync;
 var lastYoutubeSyncTime;
+var youTube = new YouTube();
+youTube.setKey('AIzaSyBfbAdPTjdFBPN_04wp1ef5l31PTgzFl7A');
+youTube.addParam('type', 'video');
+
 
 var handler = {
     init: (io) => {
@@ -114,11 +120,22 @@ var handler = {
                     }
                 }
 
-
-                emitMessage('chat message', {
-                    messageText: helper.correctSentence(msg.trim()),
-                    messageUnixTime: +new Date()
-                });
+                if (msg.startsWith("#piesa")) {
+                    getYoutubeVideoBySearchTerm(msg.slice(7))
+                        .then(ytLink => {
+                            if (ytLink)
+                                msg = ytLink;
+                            emitMessage('chat message', {
+                                messageText: helper.correctSentence(msg.trim()),
+                                messageUnixTime: +new Date()
+                            });
+                        });
+                } else {
+                    emitMessage('chat message', {
+                        messageText: helper.correctSentence(msg.trim()),
+                        messageUnixTime: +new Date()
+                    });
+                }
             });
             socket.on('sync media', message => {
                 message = JSON.parse(message);
@@ -225,6 +242,24 @@ function handlePwaSubscription(socket) {
             })
         })
     });
+}
+
+function getYoutubeVideoBySearchTerm(searchTerm) {
+    return new Promise((resolve, reject) => {
+        youTube.search(searchTerm, 1, {
+            type: 'video'
+        }, (error, result) => {
+            if (error)
+                console.log(error);
+            else {
+                if (result.items[0])
+                    resolve('https://www.youtube.com/watch?v=' + result.items[0].id.videoId);
+                else
+                    resolve('');
+            }
+        });
+    });
+
 }
 
 module.exports = handler;

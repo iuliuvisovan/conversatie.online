@@ -87,11 +87,11 @@ function createYoutubeVideo(messageId, videoId, shouldAutoPlay, autoPlayStartSec
             events: {
                 'onStateChange': event => {
                     //Don't dispatch cue/load/buffer/unstarted events
-                    if(event.data != 1 && event.data != 2)
+                    if (event.data != 1 && event.data != 2)
                         return;
 
                     //Don't dispatch more frequently than once every 500ms
-                    if ((new Date() - lastMediaSyncDispatch) / 1000 < 0.5)  {
+                    if ((new Date() - lastMediaSyncDispatch) / 1000 < 0.5) {
                         return;
                     }
                     lastMediaSyncDispatch = new Date();
@@ -132,27 +132,19 @@ function createYoutubeVideo(messageId, videoId, shouldAutoPlay, autoPlayStartSec
 }
 
 function syncYoutubePlayerById(messageId, startTime, playerState) {
-    var player = youtubePlayers[messageId];
+    var localPlayer = youtubePlayers[messageId];
 
-    //If received PAUSED from someone else
-    if (playerState == YT.PlayerState.PAUSED) {
-        //If my video isn't PAUSED
-        if (player.getPlayerState() != YT.PlayerState.PAUSED) {
-            player.pauseVideo();
-            player.seekTo(startTime); //Network delay & load :s
-
-        }
+    //If received PLAYING from someone else && my video isn't PLAYING
+    if (playerState == YT.PlayerState.PAUSED && localPlayer.getPlayerState() != YT.PlayerState.PAUSED) {
+        localPlayer.pauseVideo();
+        localPlayer.seekTo(startTime);
     }
 
 
-    //If received PLAYING from someone else
-    if (playerState == YT.PlayerState.PLAYING) {
-        //If my video isn't PLAYING
-        if (player.getPlayerState() != YT.PlayerState.PLAYING) {
-            //Sync my video
-            player.seekTo(startTime);
-            player.playVideo();
-        }
+    //If received PLAYING from someone else && my video isn't PLAYING
+    if (playerState == YT.PlayerState.PLAYING && localPlayer.getPlayerState() != YT.PlayerState.PLAYING) {
+        localPlayer.seekTo(startTime);
+        localPlayer.playVideo();
     }
     updatePlaybar();
 }
