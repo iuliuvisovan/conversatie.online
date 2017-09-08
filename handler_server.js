@@ -178,7 +178,7 @@ var handler = {
                 console.log(users[socket.id]);
                 if (requestedRoom)
                     room = requestedRoom;
-                console.log(`Emitting ${eventName} in room ${room}`);
+                console.log(`Emitting [${eventName}] in room ${room}`);
                 io.in(room).emit(eventName, JSON.stringify(message));
             };
 
@@ -249,14 +249,10 @@ function getYoutubeVideoBySearchTerm(searchTerm) {
         youTube.search(searchTerm, 1, {
             type: 'video'
         }, (error, result) => {
-            if (error)
-                console.log(error);
-            else {
-                if (result.items[0])
-                    resolve('https://www.youtube.com/watch?v=' + result.items[0].id.videoId);
-                else
-                    resolve('');
-            }
+            if (result.items[0])
+                resolve('https://www.youtube.com/watch?v=' + result.items[0].id.videoId);
+            else
+                resolve('');
         });
     });
 
