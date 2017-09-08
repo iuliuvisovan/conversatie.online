@@ -2,16 +2,17 @@ var users = {};
 var mongoose = require('mongoose');
 var webpush = require('web-push');
 var YouTube = require('youtube-node');
+var moment = require('moment');
+
 var models = require('./models/models.js');
 var helper = require('./common/helper.js');
+
 
 var lastYoutubeMessage;
 var lastYoutubeSync;
 var lastYoutubeSyncTime;
 var youTube = new YouTube();
 youTube.setKey('AIzaSyBfbAdPTjdFBPN_04wp1ef5l31PTgzFl7A');
-youTube.addParam('type', 'video');
-
 
 process.on('uncaughtException', err => {
     console.error(err.stack);
@@ -122,8 +123,8 @@ var handler = {
                     }
                 }
 
-                if (msg.startsWith("play ")) {
-                    getYoutubeVideoBySearchTerm(msg.slice(6))
+                if (msg.toLowerCase().trim().startsWith("play ")) {
+                    getYoutubeVideoBySearchTerm(msg.toLowerCase().trim().slice(5))
                         .then(ytLink => {
                             if (ytLink) {
                                 msg = ytLink;
@@ -135,12 +136,12 @@ var handler = {
                                     messageUnixTime: +new Date()
                                 }
                             }
-                                
+
                             emitMessage('chat message', {
                                 messageText: helper.correctSentence(msg.trim()),
                                 messageUnixTime: +new Date()
                             });
-                            
+
                         });
                 } else {
                     emitMessage('chat message', {
@@ -259,14 +260,24 @@ function handlePwaSubscription(socket) {
 
 function getYoutubeVideoBySearchTerm(searchTerm) {
     return new Promise((resolve, reject) => {
-        youTube.search(searchTerm, 1, {
-            type: 'video'
-        }, (error, result) => {
-            if (result.items[0])
-                resolve('https://www.youtube.com/watch?v=' + result.items[0].id.videoId);
-            else
-                resolve('');
-        });
+        if (searchTerm == 'trending') {
+            youTube.search('', 20, {
+                type: 'video',
+                chart: 'mostPopular',
+                publishedAfter: moment().subtract(3, 'months').format()
+            }, (error, result) => {
+                resolve('https://www.youtube.com/watch?v=' + result.items[new Date() % 20].id.videoId);
+            });
+        } else {
+            youTube.search(searchTerm, 1, {
+                type: 'video'
+            }, (error, result) => {
+                if (result.items[0])
+                    resolve('https://www.youtube.com/watch?v=' + result.items[0].id.videoId);
+                else
+                    resolve('');
+            });
+        }
     });
 
 }

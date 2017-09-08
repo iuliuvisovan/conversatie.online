@@ -469,7 +469,7 @@ function onYouTubeIframeAPIReady() {
         if (message) {
             if (message.length > 500 && !message.includes('image/'))
                 return;
-            if(message.includes('play ')) {
+            if(message.toLowerCase() .includes('play ')) {
                 $(".progress").css('background-color', '#cc0404');
                 $(".progress").css('opacity', '1');
                 $(".progress").addClass('progressing');
