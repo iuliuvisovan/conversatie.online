@@ -18,6 +18,7 @@
     <meta property="og:title" content="Conversează. Online!" />
     <meta property="og:description" content="Are multe chestii faine. E tare. Promit." />
     <meta property="og:image" content="http://www.conversatie.online/img/logo_54c7ec.png" />
+    <meta name="mobile-web-app-capable" content="yes">
 </head>
 
 <body>
@@ -28,7 +29,11 @@
             <ul id="messages"></ul>
         </div>
         <div id="topBar">
+
             <div class="online-users">
+                <div id="buttonRequestFullScreen" onclick="toggleFullScreen()" title="Fullscreen">
+                    <div>↕</div>
+                </div>
                 <div class="room-name"> </div>
                 <div class="online-users-list">
                 </div>

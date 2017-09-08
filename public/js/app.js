@@ -158,6 +158,7 @@ function onYouTubeIframeAPIReady() {
                 $('#playBar').css('background', messageObject.color);
                 $('#aloneBar').css('background', messageObject.color);
                 $('.progress').css('background', messageObject.color);
+                $('#buttonRequestFullScreen').css('color', messageObject.color).css('border-color', messageObject.color);
                 $("meta[name='theme-color']").attr('content', messageObject.color);
                 userColor = messageObject.color;
                 $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png?v=' + +new Date());
@@ -505,6 +506,21 @@ function onYouTubeIframeAPIReady() {
         }
     }
 
+    function toggleFullScreen() {
+        console.log('toggling fullscreen');
+        var doc = window.document;
+        var docEl = doc.documentElement;
+      
+        var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+      
+        if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+          requestFullScreen.call(docEl);
+        }
+        else {
+          cancelFullScreen.call(doc);
+        }
+      }
 
     function getPlayingVideo() {
         return youtubePlayers[Object.keys(youtubePlayers).find(x =>

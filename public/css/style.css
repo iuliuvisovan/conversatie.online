@@ -558,3 +558,39 @@ a {
         opacity: 0;
     }
 }
+
+#buttonRequestFullScreen {
+    width: 15px;
+    height: 15px;
+    border: 2px solid #444;
+    display: inline-block;
+    position: absolute;
+    top: calc(50% - 8px);
+    border-radius: 3px;
+    left: 14px;
+    transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+}
+
+
+#buttonRequestFullScreen:hover div {
+    margin-top: -6px;
+    margin-left: 0px;
+    font-size: 22px;
+}
+#buttonRequestFullScreen:active div {
+    font-size: 30px;
+    margin-top: -13px;
+    margin-left: -1px;
+}
+
+#buttonRequestFullScreen div {
+    transform: rotate(45deg) translate(1px, -4px);
+}
+
+@media(min-width: 1025px) {
+    #buttonRequestFullScreen {
+        display: none;
+    }
+}
+
