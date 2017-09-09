@@ -124,6 +124,19 @@ function onYouTubeIframeAPIReady() {
                         .text(onlineUser.name)
                     );
                 });
+
+            setTimeout(() => {
+                $(".online-users-list").removeClass('is-overflowing');
+                setTimeout(() => {
+                    if (($(".online-users-list")[0].scrollWidth - 20) > $(".online-users-list")[0].clientWidth) {
+                        console.log($(".online-users-list")[0].scrollWidth);
+                        console.log($(".online-users-list")[0].clientWidth);
+                        $(".online-users-list").addClass('is-overflowing');
+                    } else {
+                        $(".online-users-list").removeClass('is-overflowing');
+                    }
+                }, 0);
+            }, 500);
         });
     }
 
@@ -267,7 +280,7 @@ function onYouTubeIframeAPIReady() {
                     .text(messageObject.socketId == socket.id ?
                         'Tu' : messageObject.name);
             }
-         
+
             var messageContent = replaceWithMultiMedia(
                 messageObject.messageText,
                 messageObject.messageUnixTime);
@@ -469,7 +482,7 @@ function onYouTubeIframeAPIReady() {
         if (message) {
             if (message.length > 500 && !message.includes('image/'))
                 return;
-            if(message.toLowerCase() .includes('play ')) {
+            if (message.toLowerCase().includes('play ')) {
                 $(".progress").css('background-color', '#cc0404');
                 $(".progress").css('opacity', '1');
                 $(".progress").addClass('progressing');

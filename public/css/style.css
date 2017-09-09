@@ -308,7 +308,8 @@ a {
     width: 100%;
 }
 
-#playBar, #aloneBar {
+#playBar,
+#aloneBar {
     height: 26px;
     padding: 5px;
     font-size: 12px;
@@ -327,7 +328,10 @@ a {
 }
 
 .online-users-list {
-    height: 21px;
+    height: 24px;
+    max-width: 85%;
+    white-space: nowrap;
+    overflow: auto;
 }
 
 .online-users {
@@ -550,7 +554,6 @@ a {
     animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-
 @keyframes progressing {
     100% {
         transform: scaleX(1.5);
@@ -571,12 +574,12 @@ a {
     cursor: pointer;
 }
 
-
 #buttonRequestFullScreen:hover div {
     margin-top: -6px;
     margin-left: 0px;
     font-size: 22px;
 }
+
 #buttonRequestFullScreen:active div {
     font-size: 30px;
     margin-top: -13px;
@@ -593,3 +596,24 @@ a {
     }
 }
 
+.online-users-list.is-overflowing {
+    position: relative;
+}
+
+.online-users-list:before {
+    transition: box-shadow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.online-users-list.is-overflowing:before {
+    content: "";
+    /* Expand element */
+    position: absolute;
+    left: -100%;
+    top: -23px;
+    right: 0px;
+    width: 200%;
+    height: 265%;
+    bottom: 0px;
+    box-shadow: inset -10px 0px 22px rgba(0, 0, 0, 0.36);
+    pointer-events: none;
+}
