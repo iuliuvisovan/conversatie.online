@@ -6,13 +6,14 @@ var moment = require('moment');
 
 var models = require('./models/models.js');
 var helper = require('./common/helper.js');
+var credentialStore = require('./credentials/credential-store.js');
 
 
 var lastYoutubeMessage;
 var lastYoutubeSync;
 var lastYoutubeSyncTime;
 var youTube = new YouTube();
-youTube.setKey('AIzaSyBfbAdPTjdFBPN_04wp1ef5l31PTgzFl7A');
+youTube.setKey(credentialStore.getCredential('YT_API_KEY'));
 
 process.on('uncaughtException', err => {
     console.error(err.stack);

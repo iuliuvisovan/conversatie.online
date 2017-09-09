@@ -6,15 +6,16 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var webpush = require('web-push');
+var credentialStore = require('./credentials/credential-store.js');
 
 var routes = require('./routes/index');
 
 var app = express();
 
-var isDevelopment = !process.env.MONGODB_URI;
+var isProduction = credentialStore.getCredential("IS_PRODUCTION");
 
-if (!isDevelopment) {
-  mongoose.connect(process.env.MONGODB_URI, {
+if (isProduction) {
+  mongoose.connect(credentialStore.getCredential("MONGODB_URI"), {
     useMongoClient: true
   });
 }
@@ -33,17 +34,15 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// set up a route to redirect http to https
-if (!isDevelopment) {
+//Redirect http trafic to https domain
+if (isProduction) {
   app.get('*', (req, res) => {
-    // if (req.protocol == 'http')
-    //   res.redirect('https://www.conversatie.online' + req.url)
+    if (req.protocol == 'http')
+      res.redirect('https://www.conversatie.online/' + req.url);
   })
 }
 
 app.use('/', routes);
-
-
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
