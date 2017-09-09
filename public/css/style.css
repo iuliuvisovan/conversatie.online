@@ -217,7 +217,11 @@ a {
     cursor: pointer;
     -webkit-appearance: button;
     font-family: 'Open Sans', sans-serif;
-    transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.button-options:hover {
+    letter-spacing: 2px;
 }
 
 .opaque {
@@ -318,7 +322,7 @@ a {
     color: white;
     background: #999999;
     border-bottom: 1px solid rgba(153, 153, 153, 0.1);
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.3s ease-in-out;
 }
 
 #aloneBar {
@@ -380,6 +384,7 @@ a {
     will-change: margin;
     cursor: default;
 }
+
 
 /* .online-user:hover {
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.32);
@@ -645,14 +650,49 @@ a {
     }
 }
 
-.copied:after {
-    content: " (✓copiat!)";
+.copied {
+    position: relative;
+}
+
+.copied:not(.share-button):before {
+    content: "✓";
+    font-weight: bold;
     text-decoration: none!important;
     display: inline-block;
-    margin-left: 5px;
+    position: absolute;
+    right: -10px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    margin-top: 1px;
     animation-name: fadeCopy;
     animation-duration: 3s;
     animation-fill-mode: forwards;
+}
+
+.share-button:after {
+    display: none!important;
+}
+
+.share-button:hover:after {
+    display: block!important;
+}
+
+.share-button.copied:after {
+    content: " Link copiat!";
+    text-decoration: none!important;
+    position: absolute;
+    right: 10px;
+    bottom: -7px;
+    font-size: 11px;
+    z-index: 8;
+    transform: rotate(61deg);
+    white-space: nowrap;
+    color: #54c6ec;
+    margin: auto;
+    margin-top: 1px;
+    animation-name: fadeCopy;
+    animation-duration: 3s;
 }
 
 @keyframes fadeCopy {
@@ -662,4 +702,109 @@ a {
     100% {
         opacity: 0;
     }
+}
+
+.share-disabled,
+.share-enabled {
+    display: none;
+}
+
+.share-button {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    float: left;
+    top: 8px;
+    left: 10px;
+    cursor: pointer;
+}
+
+.share-button img {
+    width: 100%;
+    transform: rotate(59deg) translate(-1px, -3.8px);
+    opacity: 0;
+    z-index: 0;
+}
+
+.share-button:hover {
+    transition: all 0.5s ease-out;
+    transform: rotate(-61deg) translate(0px, 13px);
+}
+
+.share-button:hover img {
+    transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.0);
+    opacity: 1;
+}
+
+.share-button:hover .circle.one {
+    transform: rotate(-360deg) translate(-13.5px, -10px);
+    transition: all 0.5s ease-out;
+}
+
+.share-button:hover .bar.one {
+    transform: rotate(93deg) translate(3px, 9px);
+    transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.0);
+}
+
+.share-button div {
+    position: absolute;
+}
+
+.circle {
+    background: #444;
+    width: 8px;
+    height: 8px;
+    border-radius: 30px;
+    animation: move-circles;
+    animation-duration: 0.3s;
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1;
+}
+
+@keyframes move-circles {
+    from {
+        transform: translateY(-50px);
+    }
+}
+
+.bar {
+    background: #444;
+    width: 21px;
+    height: 2px;
+    animation: show-bars;
+    animation-duration: 2s;
+    z-index: 1;
+}
+
+@keyframes show-bars {
+    from {
+        background-color: white;
+    }
+}
+
+.circle.one {
+    top: 3.4px;
+    right: 3.7px;
+}
+
+.bar.one {
+    top: 2px;
+    right: 2px;
+    transform: rotate(151deg) translate(5px, -5.3px);
+}
+
+.circle.two {
+    top: 11px;
+    left: 3.5px;
+}
+
+.bar.two {
+    top: calc(50% - 5px);
+    right: 2px;
+    transform: rotate(27deg) translate(1px, 8.7px);
+}
+
+.circle.three {
+    bottom: 3.5px;
+    right: 3.8px;
 }

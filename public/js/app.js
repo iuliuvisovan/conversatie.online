@@ -172,9 +172,7 @@ function onYouTubeIframeAPIReady() {
 
                 $('#options').css('color', messageObject.color);
                 $('#inputSend').css('border-color', messageObject.color);
-                $('#playBar').css('background', messageObject.color);
-                $('#aloneBar').css('background', messageObject.color);
-                $('.progress').css('background', messageObject.color);
+                $('#playBar, #aloneBar, .progress, .circle, .bar').css('background', messageObject.color);
                 $('#buttonRequestFullScreen').css('color', messageObject.color).css('border-color', messageObject.color);
                 $("meta[name='theme-color']").attr('content', messageObject.color);
                 userColor = messageObject.color;
@@ -691,9 +689,9 @@ function onYouTubeIframeAPIReady() {
 
     function setupShareMethod() {
         if (navigator.share) {
-            $("#shareEnabled").show();
+            $(".share-enabled").show();
         } else {
-            $("#shareDisabled").show();
+            $(".share-disabled").show();
         }
     }
 

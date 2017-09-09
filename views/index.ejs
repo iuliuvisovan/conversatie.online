@@ -34,6 +34,26 @@
                 <!-- <div id="buttonRequestFullScreen" onclick="toggleFullScreen()" title="Fullscreen">
                     <div>↕</div>
                 </div> -->
+                <div class="share-enabled">
+                    <div class="share-button" title="Trimite prietenilor" onclick="share(); $(this).addClass('copied'); setTimeout(() => $(this).removeClass('copied'), 3000)">
+                        <div class="bar two"></div>
+                        <div class="bar one"></div>
+                        <div class="circle one"></div>
+                        <div class="circle two"></div>
+                        <div class="circle three"></div>
+                        <img src="../img/heart.png" title="Share the <3" alt="Share the <3">
+                    </div>
+                </div>
+                <div class="share-disabled">
+                    <div class="share-button" title="Trimite prietenilor" onclick="copyLink(); $(this).addClass('copied'); setTimeout(() => $(this).removeClass('copied'), 3000)">
+                        <div class="bar two"></div>
+                        <div class="bar one"></div>
+                        <div class="circle one"></div>
+                        <div class="circle two"></div>
+                        <div class="circle three"></div>
+                        <img src="../img/heart.png" title="Share the <3" alt="Share the <3">
+                    </div>
+                </div>
                 <div class="room-name"> </div>
                 <div class="online-users-list">
                 </div>
@@ -62,12 +82,12 @@
                 <span id="pageLink" style="opacity: 0; font-size: 0px">https://conversatie.online</span>
                 <span>
                     Cheamă un prieten, chat-ul ăsta e chiar fun. 
-                    <span id="shareDisabled" style="display: none">
+                    <span class="share-disabled">
                         <a href="javascript:void(0);" style="cursor: pointer;" 
                         title="Copiază și trimite link-ul la prieteni" 
                         onclick="copyLink(); $(this).addClass('copied'); setTimeout(() => $(this).removeClass('copied'), 3000)">Copiază link</a>
                     </span>
-                    <span id="shareEnabled" onclick="share()" style="display: none">
+                <span class="share-enabled" onclick="share()">
                             <a href="javascript:void(0);" style="cursor: pointer;" title="Trimite la prieteni" onclick="share()">Trimite</a>
                         </span>
                 </span>
@@ -85,7 +105,6 @@
                 <span class="button-add" onclick="subscribeUser(); $(this).addClass('disabled')">Bine, vreau notificări</span>
             </div>
         </div>
-        <img src="" id="test" />
         <div class="users-who-saw">
         </div>
         <div class="footer">
