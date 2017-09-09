@@ -328,10 +328,14 @@ a {
 }
 
 .online-users-list {
-    height: 24px;
+    height: 26px;
     max-width: 85%;
     white-space: nowrap;
     overflow: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    transform: translateZ(0);
 }
 
 .online-users {
@@ -367,9 +371,13 @@ a {
     white-space: nowrap;
     text-overflow: ellipsis;
     margin: 0 4px;
+    margin-bottom: 1px;
+    margin-top: 1px;
     transition: max-width 0.1s ease-in-out;
     animation-name: fresh-online;
-    animation-duration: 0.3s;
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    will-change: margin;
 }
 
 .online-user:hover {
@@ -600,10 +608,6 @@ a {
     position: relative;
 }
 
-.online-users-list:before {
-    transition: box-shadow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
 .online-users-list.is-overflowing:before {
     content: "";
     /* Expand element */
@@ -614,6 +618,28 @@ a {
     width: 200%;
     height: 265%;
     bottom: 0px;
-    box-shadow: inset -10px 0px 22px rgba(0, 0, 0, 0.36);
+    box-shadow: inset -13px 0px 50px rgba(0, 0, 0, 0.08);
+    animation-name: no-box-shadow;
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
     pointer-events: none;
+}
+
+.online-users-list.is-overflowing:hover:before {
+    display: none;
+}
+
+.online-users-list.is-overflowing:hover {
+    white-space: normal;
+    overflow: visible;
+    display: block;
+    margin-top: 138px;
+    height: 165px;
+    transition: margin-top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes no-box-shadow {
+    from {
+        box-shadow: none;
+    }
 }

@@ -112,11 +112,11 @@ function onYouTubeIframeAPIReady() {
             onlineUsers
                 .sort((a, b) => a.lastMessageSecondsAgo > b.lastMessageSecondsAgo ? 1 : -1)
                 .forEach(onlineUser => {
-                    $onlineUserList.append(
+                    $onlineUserList.prepend(
                         $("<span>")
                         .addClass('online-user')
                         .css('background', onlineUser.color)
-                        .css('float', onlineUser.socketId.split('#')[1] == socket.id ? 'left' : '')
+                        .css('order', onlineUser.socketId.split('#')[1] == socket.id ? '-1' : '')
                         .css('text-decoration', onlineUser.socketId.split('#')[1] == socket.id ? 'underline' : '')
                         .css('cursor', onlineUser.socketId.split('#')[1] == socket.id ? 'pointer' : 'default')
                         .on('click', onlineUser.socketId.split('#')[1] == socket.id ? changeUserName : undefined)
@@ -128,7 +128,9 @@ function onYouTubeIframeAPIReady() {
             setTimeout(() => {
                 $(".online-users-list").removeClass('is-overflowing');
                 setTimeout(() => {
-                    if (($(".online-users-list")[0].scrollWidth - 20) > $(".online-users-list")[0].clientWidth) {
+                    if (($(".online-users-list")[0].scrollWidth - 20) > $(".online-users-list")[0].clientWidth
+                    
+                    || ($(".online-users-list")[0].scrollHeight - 20) > $(".online-users-list")[0].clientHeight) {
                         console.log($(".online-users-list")[0].scrollWidth);
                         console.log($(".online-users-list")[0].clientWidth);
                         $(".online-users-list").addClass('is-overflowing');
