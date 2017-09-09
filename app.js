@@ -36,44 +36,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Redirect http trafic to https domain
 if (isProduction) {
-  app.get('*', (req, res) => {
-    if (req.protocol == 'http')
-      res.redirect('https://www.conversatie.online/' + req.url);
-  })
+  app.use((req, res, next) => {
+    if (!req.secure) {
+      //FYI this should work for local development as well
+      return res.redirect('https://' + req.get('host') + req.url);
+    }
+    next();
+  });
 }
 
 app.use('/', routes);
-
-// catch 404 and forward to error handler
-app.use((req, res, next) => {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use((err, req, res, next) => {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function (err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
-});
 
 
 // VAPID keys should only be generated only once.
