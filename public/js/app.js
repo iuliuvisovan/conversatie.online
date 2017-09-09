@@ -170,12 +170,13 @@ function onYouTubeIframeAPIReady() {
                     .on('click', changeUserName)
                     .attr('title', 'Schimbă-ți numele');
 
-                $('#options').css('color', messageObject.color);
-                $('#inputSend').css('border-color', messageObject.color);
-                $('#playBar, #aloneBar, .progress, .circle, .bar').css('background', messageObject.color);
-                $('#buttonRequestFullScreen').css('color', messageObject.color).css('border-color', messageObject.color);
-                $("meta[name='theme-color']").attr('content', messageObject.color);
+
                 userColor = messageObject.color;
+                $('#options, .share-button').css('color', userColor);
+                $('#inputSend').css('border-color', userColor);
+                $('#playBar, #aloneBar, .progress, .circle, .bar').css('background', userColor);
+                $('#buttonRequestFullScreen').css('color', userColor).css('border-color', userColor);
+                $("meta[name='theme-color']").attr('content', userColor);
                 $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png?v=' + +new Date());
                 $('.watermark').attr('src', 'img/logo_' + userColor.slice(1) + '.png?v=' + +new Date());
             }

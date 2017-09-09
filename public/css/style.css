@@ -27,7 +27,6 @@ a {
     top: 0;
     bottom: 0;
     margin: auto;
-    padding-bottom: 150px;
     width: 300px;
     opacity: 0.03;
 }
@@ -682,17 +681,20 @@ a {
     content: " Link copiat!";
     text-decoration: none!important;
     position: absolute;
-    right: 10px;
-    bottom: -7px;
+    right: 7px;
+    bottom: -13px;
     font-size: 11px;
-    z-index: 8;
+    z-index: 200000;
     transform: rotate(61deg);
     white-space: nowrap;
-    color: #54c6ec;
     margin: auto;
+    background: white;
+    padding: 2px 6px;
+    border-radius: 10px 5px;
     margin-top: 1px;
     animation-name: fadeCopy;
     animation-duration: 3s;
+    animation-fill-mode: forwards;
 }
 
 @keyframes fadeCopy {
@@ -717,6 +719,7 @@ a {
     top: 8px;
     left: 10px;
     cursor: pointer;
+    z-index: 30;
 }
 
 .share-button img {
