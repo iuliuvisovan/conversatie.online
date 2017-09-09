@@ -35,15 +35,16 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //Redirect http trafic to https domain
+/* At the top, with other redirect methods before other routes */
 if (isProduction) {
-  app.use((req, res, next) => {
-    if (!req.secure) {
-      //FYI this should work for local development as well
-      return res.redirect('https://' + req.get('host') + req.url);
-    }
-    next();
-  });
+  app.get('*', function (req, res, next) {
+    if (req.headers['x-forwarded-proto'] != 'https')
+      res.redirect('https://www.conversatie.online' + req.url)
+    else
+      next() /* Continue to other routes if we're not redirecting */
+  })
 }
+
 
 app.use('/', routes);
 
