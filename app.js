@@ -36,7 +36,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // set up a route to redirect http to https
 if (!isDevelopment) {
   app.get('*', (req, res) => {
-    res.redirect('https://www.conversatie.online' + req.url)
+    if (req.protocol == 'http')
+      res.redirect('https://www.conversatie.online' + req.url)
   })
 }
 
