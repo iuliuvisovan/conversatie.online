@@ -310,7 +310,7 @@ a {
 
 #playBar,
 #aloneBar {
-    height: 26px;
+    height: 28px;
     padding: 5px;
     font-size: 12px;
     text-transform: uppercase;
@@ -328,7 +328,7 @@ a {
 }
 
 .online-users-list {
-    height: 26px;
+    height: 27px;
     max-width: 85%;
     white-space: nowrap;
     overflow: auto;
@@ -378,15 +378,16 @@ a {
     animation-duration: 0.5s;
     animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
     will-change: margin;
+    cursor: default;
 }
 
-.online-user:hover {
-    max-width: 250px;
-}
+/* .online-user:hover {
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.32);
+} */
 
 @keyframes fresh-online {
     from {
-        margin-right: -30px;
+        margin-right: -10px;
     }
 }
 
@@ -641,5 +642,24 @@ a {
 @keyframes no-box-shadow {
     from {
         box-shadow: none;
+    }
+}
+
+.copied:after {
+    content: " (✓copiat!)";
+    text-decoration: none!important;
+    display: inline-block;
+    margin-left: 5px;
+    animation-name: fadeCopy;
+    animation-duration: 3s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeCopy {
+    75% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
     }
 }

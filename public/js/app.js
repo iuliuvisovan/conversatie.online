@@ -95,6 +95,8 @@ function onYouTubeIframeAPIReady() {
     handleImagePaste();
     fixKeyboardOpen();
     handleAccessLastMessage();
+    fixUserListHover();
+    setupShareMethod();
 }
 
 
@@ -112,15 +114,16 @@ function onYouTubeIframeAPIReady() {
             onlineUsers
                 .sort((a, b) => a.lastMessageSecondsAgo > b.lastMessageSecondsAgo ? 1 : -1)
                 .forEach(onlineUser => {
+                    var isMe = onlineUser.socketId.split('#')[1] == socket.id;
+
                     $onlineUserList.prepend(
                         $("<span>")
                         .addClass('online-user')
+                        .css('border', '1px solid ' + onlineUser.color)
+                        .css('order', isMe ? '-1' : '')
+                        .css('text-decoration', isMe ? 'underline' : '')
                         .css('background', onlineUser.color)
-                        .css('order', onlineUser.socketId.split('#')[1] == socket.id ? '-1' : '')
-                        .css('text-decoration', onlineUser.socketId.split('#')[1] == socket.id ? 'underline' : '')
-                        .css('cursor', onlineUser.socketId.split('#')[1] == socket.id ? 'pointer' : 'default')
-                        .on('click', onlineUser.socketId.split('#')[1] == socket.id ? changeUserName : undefined)
-                        .attr('title', 'Schimbă-ți numele')
+                        .attr('title', isMe ? 'Tu' : onlineUser.name)
                         .text(onlineUser.name)
                     );
                 });
@@ -129,10 +132,9 @@ function onYouTubeIframeAPIReady() {
                 $(".online-users-list").removeClass('is-overflowing');
                 setTimeout(() => {
                     if (($(".online-users-list")[0].scrollWidth - 20) > $(".online-users-list")[0].clientWidth
-                    
-                    || ($(".online-users-list")[0].scrollHeight - 20) > $(".online-users-list")[0].clientHeight) {
-                        console.log($(".online-users-list")[0].scrollWidth);
-                        console.log($(".online-users-list")[0].clientWidth);
+
+                        ||
+                        ($(".online-users-list")[0].scrollHeight - 20) > $(".online-users-list")[0].clientHeight) {
                         $(".online-users-list").addClass('is-overflowing');
                     } else {
                         $(".online-users-list").removeClass('is-overflowing');
@@ -430,11 +432,9 @@ function onYouTubeIframeAPIReady() {
     function getUserName(isNameChange) {
         userName = localStorage.userName;
         if (isNameChange)
-            userName = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", userName);
+            userName = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", userName).substr(0, 20);
         else if (!userName) {
-            do {
-                userName = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", randomNames[new Date().getTime() % 38]);
-            } while (!userName);
+            userName = prompt("Cum te cheamă?", randomNames[new Date().getTime() % 38]).substr(0, 20);
         }
         if (userName)
             localStorage.userName = userName;
@@ -678,6 +678,25 @@ function onYouTubeIframeAPIReady() {
         document.execCommand('copy') && $(`#C span`).addClass('shown');
     }
 
+    function fixUserListHover() {
+        $(".online-users-list.is-overflowing").hover(function () {
+            console.log('dsds');
+            $(this).addClass('hovered');
+        }, function () {
+            setTimeout(function () {
+                $(this).addClass('hovered');
+            }, 100);
+        });
+    }
+
+    function setupShareMethod() {
+        if (navigator.share) {
+            $("#shareEnabled").show();
+        } else {
+            $("#shareDisabled").show();
+        }
+    }
+
     function isMobileDevice() {
         if (/Mobi/.test(navigator.userAgent)) {
             return true;
@@ -687,6 +706,16 @@ function onYouTubeIframeAPIReady() {
 
 //Progressive web app management
 {
+    function share() {
+        navigator.share({
+                title: 'Conversează. Online!',
+                text: 'Nu sta deoparte. Hai și tu în conversație!',
+                url: 'https://www.conversatie.online',
+            })
+            .then(() => console.log('Successful share'))
+            .catch((error) => console.log('Error sharing', error));
+    }
+
 
     function managePwa() {
         initServiceWorker()

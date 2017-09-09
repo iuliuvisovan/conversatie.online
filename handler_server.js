@@ -160,7 +160,7 @@ var handler = {
 
                 emitMessage('sync media', message);
             });
-            socket.on('i-am-active', () => {
+            socket.on('i am active', () => {
                 emitMessage('i am active', {});
             });
 
