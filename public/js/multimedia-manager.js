@@ -26,8 +26,7 @@ function replaceWithMultiMedia(input, messageId) {
         input = input.slice(0, 1).toLowerCase() + input.slice(1, input.length - 1);
         return `<div style="cursor: pointer;" onclick="$(this).toggleClass('preview')">
                     <img src="${input}" style="max-width: 250px; max-height: 250px;" />
-                </div>
-            `;
+                </div>`;
     }
 
     emojiMatchPairs.forEach(matchPair => {

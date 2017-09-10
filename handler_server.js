@@ -27,7 +27,7 @@ var handler = {
             //Triggered by the user when first entering the site / changing name / changing room
             socket.on('check in', message => {
                 message = JSON.parse(message);
-                var userName = message.userName;
+                var userName = message.userName.substr(0, 20);
                 var newRoom = message.userTopic;
 
                 //If user exists, check if it's in the same room. If yes, consider it a name change

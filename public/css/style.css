@@ -123,7 +123,7 @@ a {
     padding: 3px 15px;
 }
 
-#messages li:not(.join):hover .message-time-individual {
+#messages li:not(.join):not(.previewed):hover .message-time-individual {
     display: inline;
 }
 
@@ -165,11 +165,14 @@ a {
 
 .message-text {
     display: inline-block;
-    color: white;
     border-radius: 10px 5px;
     padding: 5px 7px;
     padding-bottom: 7px;
     max-width: 300px;
+}
+
+.message-text span {
+    color: white;
 }
 
 .join-author,
@@ -292,7 +295,7 @@ a {
     display: none;
 }
 
-.seen-on-focus {
+.seen-on-focus:not(.previewed) {
     opacity: 0.65;
 }
 
@@ -309,6 +312,10 @@ a {
     position: absolute;
     top: 47px;
     width: 100%;
+}
+
+.top-bar.with-preview #playBar {
+    margin-top: 370px;
 }
 
 #playBar,
@@ -411,6 +418,44 @@ a {
     justify-content: center;
 }
 
+.youtube-video:not(.expanded):after {
+    content: '‹ ›';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    right: 312px;
+    transform: rotate(-45deg);
+    font-weight: bold;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+}
+
+.youtube-video.expanded:after {
+    content: '› ‹';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    left: 14px;
+    font-size: 18px;
+    padding-bottom: 5px;
+    background: white;
+    border-radius: 31px;
+    right: auto;
+    transform: rotate(-45deg);
+    font-weight: bold;
+    cursor: pointer;
+    width: 34px;
+    height: 29px;
+    opacity: 0.5;
+}
+
+.youtube-video:after:hover {
+    color: red;
+}
+
 .users-who-saw {
     position: absolute;
     bottom: 42px;
@@ -438,7 +483,7 @@ a {
 #playBar img.play-pause {
     width: 25px;
     margin: 0 -3px;
-    margin-bottom: -11px;
+    margin-top: -6px;
     cursor: pointer;
     opacity: 0.6;
     filter: invert();
@@ -450,8 +495,8 @@ a {
 }
 
 .controls {
-    margin-left: 3px;
-    margin-top: -6px;
+    margin-top: -1px;
+    height: 11px;
     cursor: pointer;
     display: inline-block;
     user-select: none;
@@ -514,11 +559,19 @@ a {
     opacity: 0.5;
 }
 
-.no-video {
+.no-video:not(.with-preview) {
     height: 0!important;
     overflow: hidden!important;
     padding: 0!important;
     border: none!important;
+}
+
+#expandedYoutubeVideo {
+    margin-left: -5px;
+}
+
+.with-preview {
+    height: auto!important;
 }
 
 .preview {
@@ -537,6 +590,16 @@ a {
 }
 
 .preview img {
+    max-width: 70vw!important;
+    max-height: 70vh!important;
+    animation-name: pop;
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px dashed rgba(255, 255, 255, 0.24);
+    padding: 3px;
+}
+
+.preview .yt-video {
     max-width: 70vw!important;
     max-height: 70vh!important;
     animation-name: pop;
@@ -810,4 +873,26 @@ a {
 .circle.three {
     bottom: 3.5px;
     right: 3.8px;
+}
+
+.previewed {
+    position: absolute!important;
+    top: 47px;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 670px;
+    height: 370px;
+    z-index: 30;
+    padding: 0!important;
+}
+
+.previewed.mine {
+    left: -3px;
+}
+
+.previewed .message-text {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    border-radius: 0!important;
+    padding: 0;
 }
