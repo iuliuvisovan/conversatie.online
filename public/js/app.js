@@ -798,7 +798,7 @@ function onYouTubeIframeAPIReady() {
             return;
         }
         navigator.serviceWorker
-            .register('service-worker.js', {
+            .register('service-worker.js?v=2', {
                 scope: ' '
             })
             .then(swReg => {
