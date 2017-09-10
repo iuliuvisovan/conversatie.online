@@ -683,7 +683,7 @@ function onYouTubeIframeAPIReady() {
             $(this).addClass('hovered');
         }, function () {
             setTimeout(function () {
-                $(this).addClass('hovered');
+                $(this).removeClass('hovered');
             }, 100);
         });
     }

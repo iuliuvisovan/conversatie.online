@@ -681,8 +681,8 @@ a {
     content: " Link copiat!";
     text-decoration: none!important;
     position: absolute;
-    right: 7px;
-    bottom: -13px;
+    right: 6px;
+    bottom: -11px;
     font-size: 11px;
     z-index: 200000;
     transform: rotate(61deg);
@@ -716,7 +716,7 @@ a {
     height: 30px;
     position: absolute;
     float: left;
-    top: 8px;
+    top: 10px;
     left: 10px;
     cursor: pointer;
     z-index: 30;
@@ -755,8 +755,8 @@ a {
 
 .circle {
     background: #444;
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 30px;
     animation: move-circles;
     animation-duration: 0.3s;
@@ -786,7 +786,7 @@ a {
 }
 
 .circle.one {
-    top: 3.4px;
+    top: 2.4px;
     right: 3.7px;
 }
 
@@ -797,7 +797,7 @@ a {
 }
 
 .circle.two {
-    top: 11px;
+    top: 12px;
     left: 3.5px;
 }
 
