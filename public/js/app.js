@@ -85,8 +85,18 @@ function onYouTubeIframeAPIReady() {
                 $(".bar, .circle").css('background', '#a3ce71');
                 return;
             }
-            
+
             //Everything else only if subscribed
+
+            //Tell the service worker who I am
+            navigator.serviceWorker.ready.then(serviceWorkerRegistration => {
+                navigator.serviceWorker.controller.postMessage({
+                    name: 'socketInit',
+                    value: socket.id
+                });
+            });
+
+
             handleBeforeUnload();
             handleWindowFocus();
             getUserName();
@@ -637,6 +647,8 @@ function onYouTubeIframeAPIReady() {
             }
 
             isWindowFocused = true;
+            updateWindowFocus(true);
+
             unseenMessageCount = 0;
 
             $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png');
@@ -647,7 +659,10 @@ function onYouTubeIframeAPIReady() {
                 $('title').html('Conversează. Online! - www.conversatie.online');
             $('#inputMessage').focus();
         });
-        $(window).blur(() => isWindowFocused = false);
+        $(window).blur(() => {
+            isWindowFocused = false;
+            updateWindowFocus(false);
+        });
         $("#inputMessage").keydown(e => {
             var message = $("#inputMessage").val();
             if ($("#inputMessage").val().trim().length)
@@ -798,7 +813,7 @@ function onYouTubeIframeAPIReady() {
             return;
         }
         navigator.serviceWorker
-            .register('service-worker.js?v=2', {
+            .register('service-worker.js', {
                 scope: ' '
             })
             .then(swReg => {
@@ -852,6 +867,13 @@ function onYouTubeIframeAPIReady() {
             outputArray[i] = rawData.charCodeAt(i);
         }
         return outputArray;
+    }
+
+    function updateWindowFocus(newValue) {
+        navigator.serviceWorker.controller.postMessage({
+            name: 'windowFocus',
+            value: newValue
+        });
     }
 
 }
