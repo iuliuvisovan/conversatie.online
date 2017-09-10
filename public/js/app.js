@@ -74,15 +74,19 @@ loadIframeApi();
 function onYouTubeIframeAPIReady() {
     initPwa()
         .then(isUserSubscribed => {
-            //What can he use without push notifications?
+            //What can he do even if subscribed or not?
+            handleUserId();
+            setupShareMethod();
+
+            //What can he use without being subscribed?
             if (!isUserSubscribed) {
-                setupShareMethod();
-                $("#inputMessage").css('pointer-events', 'none');
+                $("#inputMessage, #options").css('pointer-events', 'none');
+                $("#options").css('color', '#a3ce71');
+                $(".bar, .circle").css('background', '#a3ce71');
                 return;
             }
-
-
-            handleUserId();
+            
+            //Everything else only if subscribed
             handleBeforeUnload();
             handleWindowFocus();
             getUserName();
@@ -568,9 +572,12 @@ function onYouTubeIframeAPIReady() {
 //UI & behavior
 {
     function handleUserId() {
-        var userId = localStorage.userId;
+        userId = localStorage.userId;
+
+        //If never set
         if (!userId) {
             localStorage.userId = +new Date();
+            userId = localStorage.userId;
         }
     }
 
@@ -779,7 +786,7 @@ function onYouTubeIframeAPIReady() {
                 //Else, act like it exists everywhere, ask for permision and tell the user the app won't work without it
                 else
                     initialiseUI()
-                        .then(resolve);
+                    .then(resolve);
             });
     });
 
@@ -820,6 +827,7 @@ function onYouTubeIframeAPIReady() {
             })
             .then(subscription => {
                 console.log('User is subscribed.');
+                // window.location.reload();
 
                 socket.emit('subscribe', JSON.stringify({
                     pushMessageSubscription: subscription,

@@ -14,11 +14,9 @@ var app = express();
 
 var isProduction = credentialStore.getCredential("IS_PRODUCTION");
 
-if (isProduction) {
-  mongoose.connect(credentialStore.getCredential("MONGODB_URI"), {
-    useMongoClient: true
-  });
-}
+mongoose.connect(credentialStore.getCredential("MONGODB_URI"), {
+  useMongoClient: true
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

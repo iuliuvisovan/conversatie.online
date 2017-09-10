@@ -246,51 +246,6 @@ a {
     display: none;
 }
 
-#btnAddPwa .title {
-    display: block;
-    width: 100%;
-    color: #E91E63;
-    text-align: left;
-    margin-top: -10px;
-    margin-bottom: 5px;
-}
-
-#btnAddPwa .button-add {
-    background: #E91E63;
-    color: white;
-    font-weight: 500;
-    border-radius: 30px;
-    padding: 5px 10px;
-    display: block;
-    text-align: center;
-    font-weight: bold;
-    margin-top: 15px;
-    box-shadow: -2px 4px 7px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-}
-
-#btnAddPwa .button-add.disabled {
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-#btnAddPwa .button-add:hover {
-    box-shadow: -2px 4px 7px rgba(0, 0, 0, 0.3);
-}
-
-#btnAddPwa .mobile {
-    display: none;
-}
-
-@media(max-width: 1024px) {
-    #btnAddPwa .desktop {
-        display: none;
-    }
-    #btnAddPwa .mobile {
-        display: block;
-    }
-}
-
 ::-webkit-scrollbar {
     display: none;
 }
@@ -361,12 +316,25 @@ a {
     background: #a3ce71;
     font-size: 13px;
     padding-bottom: 8px;
+    padding-bottom: 8px;
+    width: 100%;
+    animation-name: show-pwa-bar;
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: none;
+}
+
+@keyframes show-pwa-bar {
+    from {
+        margin-left: 100%;
+    }
 }
 
 #pwaBar a {
     cursor: pointer;
     background: white;
     color: #a3ce71;
+    font-weight: bold;
     border-radius: 30px;
     padding: 1px 6px;
     padding-bottom: 2px;

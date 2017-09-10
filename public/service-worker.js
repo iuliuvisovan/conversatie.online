@@ -1,9 +1,11 @@
-self.addEventListener('push', function (event) {
-    const title = 'PENIS DE ARMADILLO';
+self.addEventListener('push', event => {
+    var message = event.data.json();
+
+    const title = message.name;
     const options = {
-        body: 'Da, ai citit corect. Penis de armadillo.',
-        icon: 'https://ae01.alicdn.com/kf/HTB1TGiKKXXXXXcLXpXXq6xXFXXXI/Stag-font-b-Night-b-font-Halloween-Inflatable-Willy-Adult-Fancy-Dress-Costume-Penis-Cosplay-Outfit.jpg',
-        badge: 'https://ae01.alicdn.com/kf/HTB1TGiKKXXXXXcLXpXXq6xXFXXXI/Stag-font-b-Night-b-font-Halloween-Inflatable-Willy-Adult-Fancy-Dress-Costume-Penis-Cosplay-Outfit.jpg'
+        body: message.messageText,
+        icon: 'https://www.conversatie.online/img/logo_' + message.color.slice(1) + '.png?v=2',
+        badge: 'https://www.conversatie.online/img/logo_' + message.color.slice(1) + '.png?v=2'
     };
 
     event.waitUntil(self.registration.showNotification(title, options));

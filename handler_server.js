@@ -195,14 +195,27 @@ var handler = {
                     room = requestedRoom;
                 console.log(`Emitting [${eventName}] in room ${room}`);
                 io.in(room).emit(eventName, JSON.stringify(message));
-            };
 
+                //Also emit push notification if eventName is 'chat message'
+                if (eventName == 'chat message') {
+                    //Find all subscriptions and send a message to them!
+                    models.pushMessageSubscription.find({}, (error, subscriptions) => {
+                        subscriptions.forEach(subscription => {
+                            //This. Is. Horrible. But it works so don't touch it.
+                            var subscription = subscription.subscription.replace(/\\/g, '');
+                            var subscription = JSON.parse(subscription);
+
+                            webpush.sendNotification(subscription, JSON.stringify(message));
+                        })
+                    })
+                }
+            };
         });
     }
 };
 
 function addOrUpdateModel(model, modelName) {
-    // console.log("Attempting to save object: \n " + model);
+    console.log("Attempting to save object: \n " + model);
     var query = {
         '_id': model._id
     };
@@ -210,9 +223,9 @@ function addOrUpdateModel(model, modelName) {
         upsert: true
     }, function (error, doc) {
         if (error) {
-            // console.log("Error occured when trying to add / update! " + error);
+            console.log("Error occured when trying to add / update! " + error);
         } else {
-            // console.log("Successfullly added / updated model to database.");
+            console.log("Successfullly added / updated model to database.");
         }
     });
 }
@@ -243,16 +256,14 @@ function handlePwaSubscription(socket) {
 
         console.log(JSON.stringify(pushMessageSubscription));
 
-        users[socket.id].userId = userId;
 
+        //Find all subscriptions and send a message to them!
         models.pushMessageSubscription.find({}, (error, subscriptions) => {
             subscriptions.forEach(subscription => {
+                //This. Is. Horrible. But it works so don't touch it.
                 var subscription = subscription.subscription.replace(/\\/g, '');
                 var subscription = JSON.parse(subscription);
 
-                console.log("#############");
-                console.log(subscription.endpoint);
-                console.log("#############");
                 webpush.sendNotification(subscription, '');
             })
         })
