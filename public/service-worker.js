@@ -3,8 +3,9 @@ self.isWindowFocused = true;
 self.addEventListener('push', event => {
     var message = event.data.json();
 
-    // if (message.socketId == self.socketId)
-    //     return;
+    //If has an active window or message is received by sender
+    if (isWindowFocused || message.socketId == self.socketId)
+        return;
 
     const title = message.name;
     const options = {

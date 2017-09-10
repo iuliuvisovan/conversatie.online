@@ -813,7 +813,7 @@ function onYouTubeIframeAPIReady() {
             return;
         }
         navigator.serviceWorker
-            .register('service-worker.js', {
+            .register('service-worker.js?v=3', {
                 scope: ' '
             })
             .then(swReg => {
