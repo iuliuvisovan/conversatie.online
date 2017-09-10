@@ -72,7 +72,6 @@ function updatePlaybar() {
 loadIframeApi();
 
 function onYouTubeIframeAPIReady() {
-    return;
     initPwa()
         .then(isUserSubscribed => {
             //What can he do even if subscribed or not?
