@@ -536,14 +536,17 @@ function onYouTubeIframeAPIReady() {
 
         //Definitely clicked on maximize button
         if (!iAmExpanded) {
+            var iframeWidth = (window.innerWidth > 675 ? 675 : window.innerWidth);
+            var iframeHeight = iframeWidth / 1.77;
+
             $(".top-bar")
                 .addClass('with-preview');
 
             $(element).addClass('expanded').attr('title', 'Mai mic');
             $(element)
                 .find('iframe')
-                .attr('width', 675)
-                .attr('height', 380);
+                .attr('width', iframeWidth)
+                .attr('height', iframeHeight);
             $(element).parent('li').addClass('previewed');
         }
     }

@@ -98,7 +98,7 @@ a {
     padding-bottom: 5px!important;
 }
 
-#messages li:last-of-type {
+#messages li:not(.previewed):last-of-type {
     padding-bottom: 15px!important;
 }
 
@@ -315,7 +315,15 @@ a {
 }
 
 .top-bar.with-preview #playBar {
-    margin-top: 370px;
+    /* responsive margin-top motherfuckers */
+    margin-top: calc((629px - (629px - 100vw)) / 1.7);
+}
+
+@media(min-width: 676px) {
+    .top-bar.with-preview #playBar {
+        /* responsive margin-top motherfuckers */
+        margin-top: calc(629px / 1.7);
+    }
 }
 
 #playBar,
@@ -329,6 +337,14 @@ a {
     background: #999999;
     border-bottom: 1px solid rgba(153, 153, 153, 0.1);
     transition: all 0.3s ease-in-out;
+}
+
+#currentVideoName {
+    max-width: 67vw;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #aloneBar {
@@ -424,12 +440,18 @@ a {
     justify-content: center;
     align-items: center;
     position: absolute;
+    z-index: 50;
     right: 312px;
     transform: rotate(-45deg);
     font-weight: bold;
     cursor: pointer;
     width: 50px;
     height: 50px;
+}
+
+.mine .youtube-video:not(.expanded):after {
+    right: auto;
+    left: 308px;
 }
 
 .youtube-video.expanded:after {
@@ -448,12 +470,16 @@ a {
     font-weight: bold;
     cursor: pointer;
     width: 34px;
+    margin-top: -3px;
     height: 29px;
-    opacity: 0.5;
+    transition: lettter-spacing 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.youtube-video:after:hover {
-    color: red;
+.youtube-video:not(.expanded):hover:after {
+    letter-spacing: 2px;
+}
+.youtube-video.expanded:hover:after {
+    box-shadow: 0 0 6px 3px rgba(0, 0, 0, 0.33);
 }
 
 .users-who-saw {
@@ -483,7 +509,7 @@ a {
 #playBar img.play-pause {
     width: 25px;
     margin: 0 -3px;
-    margin-top: -6px;
+    margin-top: -8px;
     cursor: pointer;
     opacity: 0.6;
     filter: invert();
@@ -495,8 +521,9 @@ a {
 }
 
 .controls {
-    margin-top: -1px;
-    height: 11px;
+    margin-top: -6px;
+    margin-bottom: 4px;
+    height: 9px;
     cursor: pointer;
     display: inline-block;
     user-select: none;
@@ -880,9 +907,12 @@ a {
     top: 47px;
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     width: 670px;
+    max-width: 100vw;
     height: 370px;
+    max-height: calc(100vw / 1.7);
     z-index: 30;
     padding: 0!important;
+    /* padding-bottom: 29px!important; */
 }
 
 .previewed.mine {
