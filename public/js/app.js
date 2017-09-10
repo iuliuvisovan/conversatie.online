@@ -27,6 +27,9 @@ var userName = '';
 //Color of the user
 var userColor = '';
 
+//Color of the user
+var userHasPushMessagesEnabled = '';
+
 //The user's last sent message, so he can access it using the up arrow
 var lastSentMessage = '';
 
@@ -69,34 +72,44 @@ function updatePlaybar() {
 loadIframeApi();
 
 function onYouTubeIframeAPIReady() {
-    // managePwa();
-    handleUserId();
-    handleBeforeUnload();
-    handleWindowFocus();
-    getUserName();
+    initPwa()
+        .then(isUserSubscribed => {
+            //What can he use without push notifications?
+            if (!isUserSubscribed) {
+                setupShareMethod();
+                $("#inputMessage").css('pointer-events', 'none');
+                return;
+            }
 
-    ga('set', 'userId', userId);
-    $inputMessage.focus();
-    socket.emit('check in', JSON.stringify({
-        userId,
-        userName,
-        userTopic
-    }));
-    ga('send', 'event', 'Application', 'join', userName);
 
-    handleJoinEvent();
-    handleOnlineUsersUpdateEvent();
-    handleActiveEvent();
-    handleWriteEvent();
-    handleChatMessageEvent();
-    handleSyncMediaEvent();
-    handleLeaveEvent();
-    handleOptions();
-    handleImagePaste();
-    fixKeyboardOpen();
-    handleAccessLastMessage();
-    fixUserListHover();
-    setupShareMethod();
+            handleUserId();
+            handleBeforeUnload();
+            handleWindowFocus();
+            getUserName();
+
+            ga('set', 'userId', userId);
+            $inputMessage.focus();
+            socket.emit('check in', JSON.stringify({
+                userId,
+                userName,
+                userTopic
+            }));
+            ga('send', 'event', 'Application', 'join', userName);
+
+            handleJoinEvent();
+            handleOnlineUsersUpdateEvent();
+            handleActiveEvent();
+            handleWriteEvent();
+            handleChatMessageEvent();
+            handleSyncMediaEvent();
+            handleLeaveEvent();
+            handleOptions();
+            handleImagePaste();
+            fixKeyboardOpen();
+            handleAccessLastMessage();
+            fixUserListHover();
+            setupShareMethod();
+        });
 }
 
 
@@ -756,14 +769,25 @@ function onYouTubeIframeAPIReady() {
     }
 
 
-    function managePwa() {
+    var initPwa = () => new Promise((resolve, reject) => {
         initServiceWorker()
-            .then(initialiseUI);
-    }
+            .then(supportsServiceWorker => {
+                //If doesns't supoprt.. just treat it as subscribed.. fml
+                if (!supportsServiceWorker)
+                    resolve(true);
+
+                //Else, act like it exists everywhere, ask for permision and tell the user the app won't work without it
+                else
+                    initialiseUI()
+                        .then(resolve);
+            });
+    });
+
 
     var initServiceWorker = () => new Promise((resolve, reject) => {
         if (!'serviceWorker' in navigator) {
             alert("Congrats! Your browser doesn't support service worker! In 2017!");
+            resolve(false);
             return;
         }
         navigator.serviceWorker
@@ -773,7 +797,7 @@ function onYouTubeIframeAPIReady() {
             .then(swReg => {
                 swRegistration = swReg;
                 console.log('Houston, we have a registered Service Worker! 😱');
-                resolve();
+                resolve(true);
             });
     });
 
@@ -782,9 +806,9 @@ function onYouTubeIframeAPIReady() {
             .then(subscription => {
                 isSubscribed = !(subscription === null);
                 if (!isSubscribed || Notification.permission === 'denied') {
-                    $("#btnAddPwa").show();
+                    $("#pwaBar").removeClass('no-video');
                 }
-                resolve();
+                resolve(isSubscribed);
             });
     });
 

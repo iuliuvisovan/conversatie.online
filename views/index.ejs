@@ -65,6 +65,18 @@
             </select>
         </div>
         <div class="status-bar">
+            <div id="pwaBar" class="no-video">
+                <span>Salut! Aplicația asta foloște mecanismul nativ al browserului pentru a trimite notificări în timp real. 
+                 </br>Pentru a putea face asta, avem însă nevoie de un ok de la tine.
+                </span>
+                <span>
+                    <a href="javascript:void(0);" style="cursor: pointer;" 
+                        title="Oferă dreptul pentru notificări în timp real"
+                        onclick="subscribeUser(); $(this).hide()">Oki doki!
+                    </a>
+                </span>
+                </span>
+            </div>
             <div id="playBar" class="no-video">
                 <div id="expandedYoutubeVideo"></div>
                 <div id="playBarVideo"></div>
@@ -96,8 +108,8 @@
         </div>
         <div id="btnAddPwa">
             <div class="mobile">
-                <span class="title">Te rog adaugă la ecranul de start</span>
-                <span>Notificări, acces instant și toate funcționalitățile disponibile cu un simplu click.</span>
+                <span class="title">Notificări în timp real</span>
+                <span></span>
                 <span class="button-add" onclick="subscribeUser(); $(this).addClass('disabled')">Adaugă aplicația</span>
             </div>
             <div class="desktop">
