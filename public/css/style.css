@@ -308,19 +308,19 @@ a {
     border-bottom: 1px solid rgba(153, 153, 153, 0.1);
 }
 
-.top-bar {
+.status-bar {
     position: absolute;
     top: 47px;
     width: 100%;
 }
 
-.top-bar.with-preview #playBar {
+.status-bar.with-preview #playBar {
     /* responsive margin-top motherfuckers */
     margin-top: calc((629px - (629px - 100vw)) / 1.7);
 }
 
 @media(min-width: 676px) {
-    .top-bar.with-preview #playBar {
+    .status-bar.with-preview #playBar {
         /* responsive margin-top motherfuckers */
         margin-top: calc(629px / 1.7);
     }

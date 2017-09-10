@@ -539,7 +539,7 @@ function onYouTubeIframeAPIReady() {
             var iframeWidth = (window.innerWidth > 675 ? 675 : window.innerWidth);
             var iframeHeight = iframeWidth / 1.77;
 
-            $(".top-bar")
+            $(".status-bar")
                 .addClass('with-preview');
 
             $(element).addClass('expanded').attr('title', 'Mai mic');
