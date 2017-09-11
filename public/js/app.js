@@ -356,7 +356,7 @@ Hugs! 🤗`);
                 .addClass('message-text')
                 .addClass(youtubeVideoId ? 'youtube-video' : '')
                 .attr('title', youtubeVideoId ? 'Vezi mai mare' : '')
-                .attr('onclick', 'setAsLargeVideo(this)')
+                .attr('onclick', youtubeVideoId ? 'setAsLargeVideo(this)' : '')
                 .css('background', messageObject.color)
                 .css('color', messageObject.color)
                 .html(messageContent);

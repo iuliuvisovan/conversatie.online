@@ -11,11 +11,11 @@ self.addEventListener('push', event => {
     console.log(message);
 
     //If has an active window or message is received by sender
-    if (self.isWindowFocused || message.socketId == self.socketId) {
+    // if (self.isWindowFocused || message.socketId == self.socketId) {
         console.log('Window focused: ' + self.isWindowFocused);
         console.log('I am the sender: ' + (message.socketId == self.socketId));
         return;
-    }
+    // }
 
     console.log('Eveyrthing is cool, showing notification!: ' + message.messageText);
 

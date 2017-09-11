@@ -266,7 +266,7 @@ a {
 
 .status-bar {
     position: absolute;
-    top: 47px;
+    top: 45px;
     width: 100%;
 }
 
@@ -849,13 +849,16 @@ a {
     border-radius: 30px;
     animation: move-circles;
     animation-duration: 0.3s;
+    animation-delay: 2s;
     animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation-fill-mode: forwards;
     z-index: 1;
+    transform: translateY(-50px);
 }
 
 @keyframes move-circles {
-    from {
-        transform: translateY(-50px);
+    to {
+        transform: translateY(0);
     }
 }
 
@@ -865,12 +868,15 @@ a {
     height: 2px;
     animation: show-bars;
     animation-duration: 2s;
+    animation-delay: 2.5s;
+    animation-fill-mode: forwards;
     z-index: 1;
+    opacity: 0;
 }
 
 @keyframes show-bars {
-    from {
-        background-color: white;
+    to {
+        opacity: 1;
     }
 }
 
