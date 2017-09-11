@@ -135,9 +135,9 @@ Hugs! 🤗`);
     handleAccessLastMessage();
     fixUserListHover();
     setupShareMethod();
-    $(".loading-indicator").fadeOut();
 
     navigator.serviceWorker.ready.then(serviceWorkerRegistration => {
+        // $(".loading-indicator").fadeOut();
         navigator.serviceWorker.controller.postMessage({
             name: 'socketInit',
             value: socket.id
@@ -839,7 +839,7 @@ Hugs! 🤗`);
             return;
         }
         navigator.serviceWorker
-            .register('service-worker.js?v=3', {
+            .register('service-worker.js?v=4', {
                 scope: ' '
             })
             .then(swReg => {

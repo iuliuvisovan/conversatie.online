@@ -26,7 +26,7 @@ self.addEventListener('push', event => {
         badge: 'https://www.conversatie.online/img/logo_' + message.color.slice(1) + '.png?v=2'
     };
 
-    event.waitUntil(self.registration.showNotification(title, options));
+    return self.registration.showNotification(title, options);
 });
 
 self.onmessage = function (msg) {
