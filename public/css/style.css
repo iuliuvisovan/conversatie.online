@@ -31,6 +31,7 @@ a {
     opacity: 0.03;
 }
 
+
 .footer {
     position: absolute;
     bottom: 0;
@@ -301,6 +302,7 @@ a {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 50vw;
 }
 
 #aloneBar,

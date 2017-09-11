@@ -83,6 +83,7 @@ function onYouTubeIframeAPIReady() {
                 $("#inputMessage, #options").css('pointer-events', 'none');
                 $("#options").css('color', '#a3ce71');
                 $(".bar, .circle").css('background', '#a3ce71');
+                $(".loading-indicator").fadeOut();
                 return;
             }
 
@@ -96,6 +97,12 @@ function onYouTubeIframeAPIReady() {
                 });
             });
 
+            console.log(`Hello! Thank you for using conversatie.online! In case you didn't know, this is the developer console!
+Glad to see people are interested in hacking / learning from this application.
+I suggest you visit its github page (https://github.com/iuliuvisovan/conversatie.online). If you would like to see new features, fix buggy
+existing ones, or really just straight out hate existing ones, I suggest you fork the shit out of the repo, clone it, make your changes, and then submit a pull request.
+And who knows, it may even be YOU (amongsts thousands, maybe millions of others) who is declared the winner and receives a review and a merge. 
+Hugs! 🤗`);
 
             handleBeforeUnload();
             handleWindowFocus();
@@ -123,6 +130,7 @@ function onYouTubeIframeAPIReady() {
             handleAccessLastMessage();
             fixUserListHover();
             setupShareMethod();
+            $(".loading-indicator").fadeOut();
         });
 }
 
@@ -842,7 +850,7 @@ function onYouTubeIframeAPIReady() {
             })
             .then(subscription => {
                 console.log('User is subscribed.');
-                // window.location.reload();
+                window.location.reload();
 
                 socket.emit('subscribe', JSON.stringify({
                     pushMessageSubscription: subscription,

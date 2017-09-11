@@ -19,11 +19,60 @@
     <meta property="og:description" content="Are multe chestii faine. E tare. Promit." />
     <meta property="og:image" content="https://www.conversatie.online/img/logo_54c7ec.png" />
     <meta name="mobile-web-app-capable" content="yes">
+    <style>
+        .loading-indicator {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            width: 100%;
+            z-index: 1000;
+            max-width: 675px;
+            background: white;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .loading-indicator img {
+            height: 189px;
+        }
+
+        .loading-indicator span {
+            text-transform: unset;
+            margin-top: 23px;
+            color: #54c6ec;
+            display: inline-block;
+            height: 19px;
+        }
+
+        .loading-indicator-bar {
+            background: #54c6ec;
+            width: 10px;
+            height: 1px;
+            animation: grow 4s cubic-bezier(0.23, 1, 0.320, 1);
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes grow {
+            to {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <img class="watermark" src="img/logo_444.png?v=2" alt="Watermark">
-
+    <div class="loading-indicator">
+        <img src="img/logo_54c7ec.png?v=2">
+        <span style="font-weight: bold; margin-bottom: 4px">conversatie.online</span>
+        <div class="loading-indicator-bar"></div>
+        <span style="margin-top: 0; font-size: 14px">Conversează. Online!</span>
+    </div>
     <div class="app">
         <div class="messages col-md-12">
             <ul id="messages"></ul>
@@ -153,5 +202,4 @@
         ga('send', 'pageview');
     </script>
 </body>
-
 </html>

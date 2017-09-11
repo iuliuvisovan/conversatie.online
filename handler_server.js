@@ -66,7 +66,7 @@ var handler = {
                 users[socket.id].socketId = socket.id;
                 users[socket.id].name = userName;
                 users[socket.id].isFemale = message.isFemale;
-                message.color = helper.getUserColor(message.isFemale, newRoom, users);
+                message.color = helper.getUserColor(message.isFemale, newRoom, users, socket.id);
                 users[socket.id].color = message.color;
 
                 message.socketId = socket.id.split("#")[1];
@@ -255,18 +255,6 @@ function handlePwaSubscription(socket) {
         }), 'pushMessageSubscription', {})
 
         console.log(JSON.stringify(pushMessageSubscription));
-
-
-        //Find all subscriptions and send a message to them!
-        models.pushMessageSubscription.find({}, (error, subscriptions) => {
-            subscriptions.forEach(subscription => {
-                //This. Is. Horrible. But it works so don't touch it.
-                var subscription = subscription.subscription.replace(/\\/g, '');
-                var subscription = JSON.parse(subscription);
-
-                webpush.sendNotification(subscription, '');
-            })
-        })
     });
 }
 

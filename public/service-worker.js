@@ -11,8 +11,8 @@ self.addEventListener('push', event => {
     console.log(message);
 
     //If has an active window or message is received by sender
-    if (isWindowFocused || message.socketId == self.socketId) {
-        console.log('Window focused: ' + isWindowFocused);
+    if (self.isWindowFocused || message.socketId == self.socketId) {
+        console.log('Window focused: ' + self.isWindowFocused);
         console.log('I am the sender: ' + (message.socketId == self.socketId));
         return;
     }
@@ -30,11 +30,15 @@ self.addEventListener('push', event => {
 });
 
 self.onmessage = function (msg) {
-    if (msg.data.name == 'windowFocus')
+    if (msg.data.name == 'windowFocus') {
+        console.log('received new window focus:' + msg.data.value);
         self.isWindowFocused = msg.data.value;
-    if (msg.data.name == 'socketInit')
+    }
+        
+    if (msg.data.name == 'socketInit') {
+        console.log('received new socket id :' + msg.data.value);
         self.socketId = msg.data.value;
-
+    }
 }
 
 

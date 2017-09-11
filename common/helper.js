@@ -21,15 +21,19 @@ module.exports = {
             isFemale = true;
         return isFemale;
     },
-    getUserColor: (isFemale, room, users) => {
+    getUserColor: (isFemale, room, users, socketId) => {
         var usersOfGenderCount = Object.keys(users)
             .filter(x => users[x].isFemale == isFemale && users[x].room == room).length;
         usersOfGenderCount -= 1;
 
         //If there is an available color, return that
-        var availableColor = (isFemale ? femaleColors : maleColors).find(x => !Object.keys(users).some(y => users[y].color == x &&
+        var availableColor = (isFemale ? femaleColors : maleColors)
+        .find(x => !Object.keys(users).some(y => 
+            users[y].color == x &&
             users[y].room == room &&
-            users[y].isFemale == isFemale));
+            users[y].socketId != socketId &&
+            users[y].isFemale == isFemale
+        ));
             
         if (availableColor)
             return availableColor;
