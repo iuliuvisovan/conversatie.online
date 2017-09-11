@@ -137,7 +137,7 @@ Hugs! 🤗`);
     setupShareMethod();
 
     navigator.serviceWorker.ready.then(serviceWorkerRegistration => {
-        // $(".loading-indicator").fadeOut();
+        $(".loading-indicator").fadeOut();
         navigator.serviceWorker.controller.postMessage({
             name: 'socketInit',
             value: socket.id
