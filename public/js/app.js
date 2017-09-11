@@ -1,4 +1,5 @@
 var socket = io();
+var isAppInitiated = false;
 
 //The input from where all chat messages are send
 var $inputMessage = $('#inputMessage');
@@ -88,50 +89,60 @@ function onYouTubeIframeAPIReady() {
             }
 
             //Everything else only if subscribed
-
-            //Tell the service worker who I am
-            navigator.serviceWorker.ready.then(serviceWorkerRegistration => {
-                navigator.serviceWorker.controller.postMessage({
-                    name: 'socketInit',
-                    value: socket.id
-                });
-            });
-
-            console.log(`Hello! Thank you for using conversatie.online! In case you didn't know, this is the developer console!
-Glad to see people are interested in hacking / learning from this application.
-I suggest you visit its github page (https://github.com/iuliuvisovan/conversatie.online). If you would like to see new features, fix buggy
-existing ones, or really just straight out hate existing ones, I suggest you fork the shit out of the repo, clone it, make your changes, and then submit a pull request.
-And who knows, it may even be YOU (amongsts thousands, maybe millions of others) who is declared the winner and receives a review and a merge. 
-Hugs! 🤗`);
-
             handleBeforeUnload();
             handleWindowFocus();
             getUserName();
 
             ga('set', 'userId', userId);
             $inputMessage.focus();
+            handleSocketEvents();
             socket.emit('check in', JSON.stringify({
                 userId,
                 userName,
                 userTopic
             }));
-            ga('send', 'event', 'Application', 'join', userName);
 
-            handleJoinEvent();
-            handleOnlineUsersUpdateEvent();
-            handleActiveEvent();
-            handleWriteEvent();
-            handleChatMessageEvent();
-            handleSyncMediaEvent();
-            handleLeaveEvent();
-            handleOptions();
-            handleImagePaste();
-            fixKeyboardOpen();
-            handleAccessLastMessage();
-            fixUserListHover();
-            setupShareMethod();
-            $(".loading-indicator").fadeOut();
+            //initApp() will be called at 'check in' response (first 'join' event)
         });
+}
+
+function handleSocketEvents() {
+    handleJoinEvent();
+    handleOnlineUsersUpdateEvent();
+    handleActiveEvent();
+    handleWriteEvent();
+    handleChatMessageEvent();
+    handleSyncMediaEvent();
+    handleLeaveEvent();
+}
+
+function initApp() {
+    isAppInitiated = true;
+
+    //Tell the service worker who I am
+    console.log(`Hello! Thank you for using conversatie.online! In case you didn't know, this is the developer console!
+Glad to see people are interested in hacking / learning from this application.
+I suggest you visit its github page (https://github.com/iuliuvisovan/conversatie.online). If you would like to see new features, fix buggy
+existing ones, or really just straight out hate existing ones, I suggest you fork the shit out of the repo, clone it, make your changes, and then submit a pull request.
+And who knows, it may even be YOU (amongsts thousands, maybe millions of others) who is declared the winner and receives a review and a merge. 
+Hugs! 🤗`);
+
+    ga('send', 'event', 'Application', 'join', userName);
+
+    handleOptions();
+    handleImagePaste();
+    fixKeyboardOpen();
+    handleAccessLastMessage();
+    fixUserListHover();
+    setupShareMethod();
+    $(".loading-indicator").fadeOut();
+
+    navigator.serviceWorker.ready.then(serviceWorkerRegistration => {
+        navigator.serviceWorker.controller.postMessage({
+            name: 'socketInit',
+            value: socket.id
+        });
+    });
 }
 
 
@@ -181,6 +192,13 @@ Hugs! 🤗`);
 
     function handleJoinEvent() {
         socket.on('join', msg => {
+
+            //First trigger that socket is connected
+            if (!isAppInitiated)
+                initApp();
+
+
+
             var messageObject = JSON.parse(msg);
 
             if (!messageObject.oldName) {
