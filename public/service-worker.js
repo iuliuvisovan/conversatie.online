@@ -22,11 +22,12 @@ self.addEventListener('push', event => {
     const title = message.name;
     const options = {
         body: message.messageText,
+        tag: 'conversatie.online',
         icon: 'https://www.conversatie.online/img/logo_' + message.color.slice(1) + '.png?v=2',
         badge: 'https://www.conversatie.online/img/logo_' + message.color.slice(1) + '.png?v=2'
     };
 
-    return self.registration.showNotification(title, options);
+    event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.onmessage = function (msg) {
