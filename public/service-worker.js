@@ -18,7 +18,6 @@ self.addEventListener('push', event => {
     }
 
     console.log('Everything is cool, showing notification!: ' + message.messageText);
-    eweqw
     const title = message.name;
     const options = {
         body: message.messageText,

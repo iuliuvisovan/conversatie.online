@@ -854,16 +854,17 @@ a {
     width: 21px;
     height: 2px;
     animation: show-bars;
-    animation-duration: 1s;
-    animation-delay: 1.5s;
+    animation-duration: 0.7s;
+    animation-delay: 2s;
     animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 1;
-    opacity: 0;
+    width: 0;
 }
 
 @keyframes show-bars {
     to {
-        opacity: 1;
+        width: 21px;
     }
 }
 
