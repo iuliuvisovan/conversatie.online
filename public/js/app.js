@@ -681,8 +681,6 @@ function initApp() {
             }
 
             isWindowFocused = true;
-            updateWindowFocus(true);
-
             unseenMessageCount = 0;
 
             $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png');
@@ -695,7 +693,6 @@ function initApp() {
         });
         $(window).blur(() => {
             isWindowFocused = false;
-            updateWindowFocus(false);
         });
         $("#inputMessage").keydown(e => {
             var message = $("#inputMessage").val();
@@ -847,7 +844,7 @@ function initApp() {
             return;
         }
         navigator.serviceWorker
-            .register('service-worker.js?v=4', {
+            .register('service-worker.js?v=5', {
                 scope: ' '
             })
             .then(swReg => {
@@ -902,12 +899,4 @@ function initApp() {
         }
         return outputArray;
     }
-
-    function updateWindowFocus(newValue) {
-        navigator.serviceWorker.controller.postMessage({
-            name: 'windowFocus',
-            value: newValue
-        });
-    }
-
 }
