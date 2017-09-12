@@ -5,6 +5,9 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
     self.clients.claim();
 });
+self.addEventListener('fetch', event => {
+    //Happy, Mr. Archibald?
+});
 
 self.addEventListener('push', async function (event) {
     event.waitUntil(async function () {
