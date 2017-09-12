@@ -1,6 +1,7 @@
 {
-  "short_name": "Conversatie online",
-  "name": "conversatie.online - Converseaza. Online!",
+  "short_name": "Conversează. Online!",
+  "name": "conversatie.online",
+  "lang": "ro",
   "icons": [
     {
       "src": "launcher-icon-2x.png",
@@ -20,6 +21,6 @@
   ],
   "theme_color": "#54c7ec",
   "start_url": "/",
-  "display": "fullscreen",
+  "display": "standalone",
   "orientation": "portrait"
 }
