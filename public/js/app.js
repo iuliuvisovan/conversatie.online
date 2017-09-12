@@ -844,7 +844,7 @@ function initApp() {
             return;
         }
         navigator.serviceWorker
-            .register('service-worker.js?v=5', {
+            .register('service-worker.js?v=' + +new Date(), {
                 scope: ' '
             })
             .then(swReg => {
