@@ -846,19 +846,7 @@ a {
     width: 7px;
     height: 7px;
     border-radius: 30px;
-    animation: move-circles;
-    animation-duration: 0.3s;
-    animation-delay: 2s;
-    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    animation-fill-mode: forwards;
     z-index: 1;
-    transform: translateY(-50px);
-}
-
-@keyframes move-circles {
-    to {
-        transform: translateY(0);
-    }
 }
 
 .bar {
@@ -866,8 +854,8 @@ a {
     width: 21px;
     height: 2px;
     animation: show-bars;
-    animation-duration: 2s;
-    animation-delay: 2.5s;
+    animation-duration: 1s;
+    animation-delay: 1.5s;
     animation-fill-mode: forwards;
     z-index: 1;
     opacity: 0;

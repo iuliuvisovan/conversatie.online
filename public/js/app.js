@@ -197,9 +197,6 @@ Hugs! 🤗`);
             if (!isAppInitiated)
                 initApp();
 
-            //Revert the layout if any video was maximized
-            unsetAsLargeVideo();
-
             var messageObject = JSON.parse(msg);
 
             if (!messageObject.oldName) {
@@ -217,6 +214,9 @@ Hugs! 🤗`);
             }
 
             if (messageObject.socketId == socket.id) {
+                //Revert the layout if any video was maximized
+                unsetAsLargeVideo();
+
                 if (!spanMessageAuthorOld)
                     $messageList.children().remove();
                 $messageList
