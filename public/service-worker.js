@@ -1,4 +1,3 @@
-self.isWindowFocused = true;
 
 self.addEventListener('install', function (event) {
     // The promise that skipWaiting() returns can be safely ignored.
@@ -18,12 +17,12 @@ self.addEventListener('push', async function(event) {
     })).some(x => x.focused);
 
     console.log('any focues window available: ', anyWindowHasFocus);
-    //If has an active window or message is received by sender
-    // if (self.isWindowFocused || message.socketId == self.socketId) {
-    //     console.log('Window focused: ' + self.isWindowFocused);
-    //     console.log('I am the sender: ' + (message.socketId == self.socketId));
-    //     return;
-    // }
+    // If has an active window or message is received by sender
+    if (anyWindowHasFocus || message.socketId == self.socketId) {
+        console.log('Window focused: ' + anyWindowHasFocus);
+        console.log('I am the sender: ' + (message.socketId == self.socketId));
+        return;
+    }
 
 
     console.log('Everything is cool, showing notification!: ' + message.messageText);
@@ -40,11 +39,6 @@ self.addEventListener('push', async function(event) {
 });
 
 self.onmessage = function (msg) {
-    // if (msg.data.name == 'windowFocus') {
-    //     console.log('received new window focus:' + msg.data.value);
-    //     self.isWindowFocused = msg.data.value;
-    // }
-
     if (msg.data.name == 'socketInit') {
         console.log('received new socket id :' + msg.data.value);
         self.socketId = msg.data.value;
