@@ -197,7 +197,8 @@ Hugs! 🤗`);
             if (!isAppInitiated)
                 initApp();
 
-
+            //Revert the layout if any video was maximized
+            unsetAsLargeVideo();
 
             var messageObject = JSON.parse(msg);
 
@@ -356,7 +357,7 @@ Hugs! 🤗`);
                 .addClass('message-text')
                 .addClass(youtubeVideoId ? 'youtube-video' : '')
                 .attr('title', youtubeVideoId ? 'Vezi mai mare' : '')
-                .attr('onclick', youtubeVideoId ? 'setAsLargeVideo(this)' : '')
+                .attr('onclick', youtubeVideoId ? 'toggleAsLargeVideo(this)' : '')
                 .css('background', messageObject.color)
                 .css('color', messageObject.color)
                 .html(messageContent);
@@ -545,7 +546,7 @@ Hugs! 🤗`);
         if (message) {
             if (message.length > 500 && !message.includes('image/'))
                 return;
-            if (message.toLowerCase().includes('play ')) {
+            if (message.toLowerCase().trim().startsWith('play ')) {
                 $(".progress").css('background-color', '#cc0404');
                 $(".progress").css('opacity', '1');
                 $(".progress").addClass('progressing');
@@ -574,34 +575,41 @@ Hugs! 🤗`);
     }
 
     function setAsLargeVideo(element) {
-        var iAmExpanded;
+        var iframeWidth = (window.innerWidth > 675 ? 675 : window.innerWidth);
+        var iframeHeight = iframeWidth / 1.77;
 
-        //If clicked on the minimize/maximize button
-        if ($(element).hasClass('expanded'))
-            iAmExpanded = true;
+        $(".status-bar")
+            .addClass('with-preview');
 
+        $(element).addClass('expanded').attr('title', 'Mai mic');
+        $(element)
+            .find('iframe')
+            .attr('width', iframeWidth)
+            .attr('height', iframeHeight);
+        $(element).parent('li').addClass('previewed');
+    }
+
+    function unsetAsLargeVideo(element) {
         $('.with-preview').removeClass('with-preview');
         $('.expanded').removeClass('expanded').attr('title', 'Mai mare');
         $('.previewed').removeClass('previewed');
         $('iframe')
             .attr('width', 320)
             .attr('height', 180);
+    }
 
-        //Definitely clicked on maximize button
-        if (!iAmExpanded) {
-            var iframeWidth = (window.innerWidth > 675 ? 675 : window.innerWidth);
-            var iframeHeight = iframeWidth / 1.77;
 
-            $(".status-bar")
-                .addClass('with-preview');
+    function toggleAsLargeVideo(element) {
+        var iAmExpanded;
 
-            $(element).addClass('expanded').attr('title', 'Mai mic');
-            $(element)
-                .find('iframe')
-                .attr('width', iframeWidth)
-                .attr('height', iframeHeight);
-            $(element).parent('li').addClass('previewed');
-        }
+        //If clicked on the minimize/maximize button
+        if ($(element).hasClass('expanded'))
+            iAmExpanded = true;
+
+        unsetAsLargeVideo(element);
+
+        if (!iAmExpanded)
+            setAsLargeVideo(element);
     }
 }
 

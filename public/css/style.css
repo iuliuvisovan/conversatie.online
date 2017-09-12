@@ -438,7 +438,6 @@ a {
     justify-content: center;
     align-items: center;
     position: absolute;
-    z-index: 50;
     right: 312px;
     transform: rotate(-45deg);
     font-weight: bold;

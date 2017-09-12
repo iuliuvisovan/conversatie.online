@@ -92,7 +92,7 @@ var handler = {
                         .map(x => users[x]), oldRoom);
                 }
 
-                if (!isNameChange && lastYoutubeMessage && lastYoutubeSync) {
+                if (!isNameChange && lastYoutubeMessage && lastYoutubeSync && lastYoutubeMessage.room == newRoom) {
                     lastYoutubeMessage.messageUnixTime = lastYoutubeSync.messageId.slice(3);
                     lastYoutubeMessage.shouldAutoPlay = undefined;
                     if (lastYoutubeSync.playerState == 1)
@@ -120,7 +120,8 @@ var handler = {
                         socketId: socket.id.split("#")[1],
                         name: users[socket.id].name,
                         color: users[socket.id].color,
-                        messageUnixTime: +new Date()
+                        messageUnixTime: +new Date(),
+                        room: users[socket.id].room
                     }
                 }
 
@@ -134,7 +135,8 @@ var handler = {
                                     socketId: socket.id.split("#")[1],
                                     name: users[socket.id].name,
                                     color: users[socket.id].color,
-                                    messageUnixTime: +new Date()
+                                    messageUnixTime: +new Date(),
+                                    room: users[socket.id].room
                                 }
                             }
 

@@ -17,8 +17,8 @@ self.addEventListener('push', event => {
         return;
     }
 
-    console.log('Eveyrthing is cool, showing notification!: ' + message.messageText);
-
+    console.log('Everything is cool, showing notification!: ' + message.messageText);
+    eweqw
     const title = message.name;
     const options = {
         body: message.messageText,
@@ -51,27 +51,17 @@ self.addEventListener('notificationclick', function (event) {
     const url = 'https://www.conversatie.online';
 
     const urlToOpen = new URL(url, self.location.origin).href;
-    const promiseChain = clients.matchAll({
-            type: 'window',
-            includeUncontrolled: true
-        })
-        .then((windowClients) => {
-            let matchingClient = null;
 
-            for (let i = 0; i < windowClients.length; i++) {
-                const windowClient = windowClients[i];
-                if (windowClient.url === urlToOpen) {
-                    matchingClient = windowClient;
-                    break;
-                }
-            }
-
-            if (matchingClient) {
-                return matchingClient.focus();
-            } else {
-                return clients.openWindow(urlToOpen);
-            }
+    event.waitUntil(Promise.all([clients.matchAll({
+        type: 'window'
+    }).then(windowClients => {
+        const client = windowClients.find(client => {
+            return (client.urlToOpen === urlToOpen && 'focus' in client);
         });
+        if (client)
+            client.focus();
+        else if (clients.openWindow)
+            return clients.openWindow(urlToOpen);
 
-    event.waitUntil(promiseChain);
+    }), self.analytics.trackEvent('notification-click')]));
 });
