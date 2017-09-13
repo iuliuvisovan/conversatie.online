@@ -11,7 +11,7 @@
     <link id="favicon" rel="icon" href="img/logo_444.png?v=2" type="image/png" sizes="16x16">
 
     <!-- Compatibility & PWA -->
-    <meta charset="utf-8" /> 
+    <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="theme-color" content="#fff">
     <link rel="manifest" href="manifest.json">
@@ -28,7 +28,7 @@
     <meta property="og:title" content="Conversează. Online!" />
     <meta property="og:description" content="Are multe chestii faine. E tare. Promit." />
     <meta property="og:image" content="https://www.conversatie.online/img/logo_54c7ec.png" />
-    
+
     <style>
         .loading-indicator {
             position: fixed;
@@ -147,6 +147,10 @@
                     </div>
                     <span id="currentVideoName"></span>
                 </div>
+                <div class="enlarge-video" title="Fă-l mai mare" onclick="toggleAsLargeVideo()">
+                    <span class="not-expanded-indicator">‹ ›</span>
+                    <span class="expanded-indicator">› ‹</span>
+                </div>
                 <div class="mute-button" onclick="toggleMuteCurrentVideo()">
                     <img class="unmuted" src="../img/unmuted.svg">
                     <img class="muted" src="../img/muted.svg">
@@ -192,7 +196,7 @@
     </div>
 
     <script src="js/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
     <script src="js/name-list.js"></script>
     <script src="js/emoji-list.js"></script>
     <script src="js/multimedia-manager.js"></script>

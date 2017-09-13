@@ -31,7 +31,6 @@ a {
     opacity: 0.03;
 }
 
-
 .footer {
     position: absolute;
     bottom: 0;
@@ -296,13 +295,17 @@ a {
     transition: all 0.3s ease-in-out;
 }
 
+#playBar {
+    position: relative;
+}
+
 #lastVideoInteraction {
     position: absolute;
     height: 28px;
     left: 0;
-    top: 1px;
+    top: 0;
     width: 4px;
-    background: red;
+    background: transparent;
 }
 
 #currentVideoName {
@@ -544,10 +547,10 @@ a {
 .mute-button {
     float: right;
     cursor: pointer;
-    margin-left: 3px;
+    margin-right: 4px;
     filter: invert();
     width: 17px;
-    height: 15px;
+    height: 17px;
 }
 
 .mute-button img {
@@ -918,4 +921,35 @@ a {
     height: 100%;
     border-radius: 0!important;
     padding: 0;
+}
+
+.enlarge-video {
+    font-size: 18px;
+    margin-top: -3px;
+    margin-left: -16px;
+    display: inline-block;
+    margin: 0 5px;
+    transform: rotate(-45deg);
+    position: absolute;
+    right: 32px;
+    top: 1px;
+    cursor: pointer;
+}
+
+.enlarge-video:hover {
+    letter-spacing: 2px;
+    right: 30px;
+    top: -1px;
+}
+
+.enlarge-video span {
+    display: none;
+}
+
+.enlarge-video.expanded .expanded-indicator {
+    display: inline;
+}
+
+.enlarge-video:not(.expanded) .not-expanded-indicator {
+    display: inline;
 }

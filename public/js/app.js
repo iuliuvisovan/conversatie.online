@@ -422,20 +422,24 @@ function initApp() {
 
     var lastVideoInteractionUpdate = new Date();
     lastVideoInteractionUpdate.setSeconds(new Date().getSeconds() - 5);
+
     function handleSyncMediaEvent() {
         socket.on('sync media', message => {
-             //Don't handle more frequently than once every 200ms
-             if ((new Date() - lastVideoInteractionUpdate) / 1000 < 0.2) {
+            //Don't handle more frequently than once every 200ms
+            if ((new Date() - lastVideoInteractionUpdate) / 1000 < 0.2) {
                 return;
             }
-            lastVideoInteractionUpdate = new Date();
-
 
             message = JSON.parse(message);
             var messageId = message.messageId;
             var currentTime = message.currentTime;
             var playerState = message.playerState;
-            $("#lastVideoInteraction").css('background', message.color);
+
+            if ($('.expanded').length && playerState == YT.PlayerState.PLAYING && !$(`.expanded iframe[id='${messageId}']`).length)
+                toggleAsLargeVideo($(`iframe[id='${messageId}']`).parent());
+            $("#lastVideoInteraction").css('background', message.color).attr('title', 'Ultima data schimbat de ' + message.name);;
+            lastVideoInteractionUpdate = new Date();
+
             if (message.socketId == socket.id) {
                 if (playerState == YT.PlayerState.PLAYING)
                     Object.keys(youtubePlayers).forEach(x => {
@@ -593,6 +597,8 @@ function initApp() {
             .addClass('with-preview');
 
         $(element).addClass('expanded').attr('title', 'Mai mic');
+        $('.enlarge-video').addClass('expanded').attr('title', 'Mai mic');
+
         $(element)
             .find('iframe')
             .attr('width', iframeWidth)
@@ -611,6 +617,12 @@ function initApp() {
 
 
     function toggleAsLargeVideo(element) {
+        if (!element) {
+            var playBarVideo = getPlayingVideo() || lastPlayingPlayer;
+            var videoId = Object.keys(youtubePlayers).find(x => youtubePlayers[x] == playBarVideo);
+            element = $(`iframe[id='${videoId}']`).parent();
+        }
+
         var iAmExpanded;
 
         //If clicked on the minimize/maximize button
