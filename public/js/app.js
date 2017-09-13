@@ -119,12 +119,12 @@ function handleSocketEvents() {
 function initApp() {
     isAppInitiated = true;
 
-//     console.log(`Hello! Thank you for using conversatie.online! In case you didn't know, this is the developer console!
-// Glad to see people are interested in hacking / learning from this application.
-// I suggest you visit its github page (https://github.com/iuliuvisovan/conversatie.online). If you would like to see new features, fix buggy
-// existing ones, or really just straight out hate existing ones, I suggest you fork the shit out of the repo, clone it, make your changes, and then submit a pull request.
-// And who knows, it may even be YOU (amongsts thousands, maybe millions of others) who is declared the winner and receives a review and a merge. 
-// Hugs! 🤗`);
+    //     console.log(`Hello! Thank you for using conversatie.online! In case you didn't know, this is the developer console!
+    // Glad to see people are interested in hacking / learning from this application.
+    // I suggest you visit its github page (https://github.com/iuliuvisovan/conversatie.online). If you would like to see new features, fix buggy
+    // existing ones, or really just straight out hate existing ones, I suggest you fork the shit out of the repo, clone it, make your changes, and then submit a pull request.
+    // And who knows, it may even be YOU (amongsts thousands, maybe millions of others) who is declared the winner and receives a review and a merge. 
+    // Hugs! 🤗`);
 
     ga('send', 'event', 'Application', 'join', userName);
 
@@ -696,15 +696,17 @@ function initApp() {
         });
         $("#inputMessage").keydown(e => {
             var message = $("#inputMessage").val();
-            if ($("#inputMessage").val().trim().length)
-                $('#inputSend').removeClass('opaque');
-            else
-                $('#inputSend').addClass('opaque');
-
             if (e.keyCode == 13 && !e.shiftKey) {
                 sendMessage(message);
                 return false;
             }
+        });
+        $("#inputMessage").on('propertychange change click keyup input paste', e => {
+            var message = $("#inputMessage").val();
+            if ($("#inputMessage").val().trim().length)
+                $('#inputSend').removeClass('opaque');
+            else
+                $('#inputSend').addClass('opaque');
         });
     }
 
