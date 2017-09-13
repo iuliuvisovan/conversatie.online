@@ -953,3 +953,26 @@ a {
 .enlarge-video:not(.expanded) .not-expanded-indicator {
     display: inline;
 }
+
+#scrollToBottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -30px;
+    margin: auto;
+    width: 120px;
+    cursor: pointer;
+    border: 1px solid #54c7ec;
+    color: #54c7ec;
+    font-size: 13px;
+    border-radius: 10px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#scrollToBottom:hover {
+    border-bottom-right-radius: 0px;
+    transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}

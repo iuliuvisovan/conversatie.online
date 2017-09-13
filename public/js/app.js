@@ -248,7 +248,7 @@ function initApp() {
             setTimeout(() => {
                 $joinLi.removeClass('just-sent');
             }, 0);
-            fixScroll();
+            fixScroll(true);
         });
     }
 
@@ -396,7 +396,7 @@ function initApp() {
                 $messageLi.removeClass('just-sent');
             }, 0);
 
-            fixScroll();
+            fixScroll(true);
             lastMessageSenderId = messageObject.socketId;
 
             if (!isWindowFocused) {
@@ -733,13 +733,36 @@ function initApp() {
         });
     }
 
-    function fixScroll() {
+    function scrollToBottom() {
         setTimeout(() => {
             $(".messages")[0].scrollTop = $(".messages")[0].scrollHeight;
+            $("#scrollToBottom").fadeOut();
         }, 100);
     }
 
+    function fixScroll(isChatMessage) {
+        var distanceFromBottom = $(".messages")[0].scrollHeight - ($(".messages")[0].clientHeight + $(".messages")[0].scrollTop);
+
+        if (distanceFromBottom > 250 && isChatMessage) {
+            $("#scrollToBottom").fadeIn();
+        } else {
+            if (distanceFromBottom > 250)
+                return;
+            $("#scrollToBottom").fadeOut();
+            setTimeout(() => {
+                $(".messages")[0].scrollTop = $(".messages")[0].scrollHeight;
+            }, 100);
+        }
+    }
+
     function fixKeyboardOpen() {
+        $(".messages").on('scroll', () => {
+            setTimeout(() => {
+                var distanceFromBottom = $(".messages")[0].scrollHeight - ($(".messages")[0].clientHeight + $(".messages")[0].scrollTop);
+                if (distanceFromBottom < 250)
+                    $("#scrollToBottom").fadeOut();
+            }, 0);
+        });
         $(window).on('resize', fixScroll);
     }
 

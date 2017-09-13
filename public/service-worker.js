@@ -13,16 +13,12 @@ self.addEventListener('push', async function (event) {
     event.waitUntil(async function () {
         var message = event.data.json();
         console.log('Received message!');
-        console.log(message);
         var anyWindowHasFocus = (await clients.matchAll({
             type: 'window'
         })).some(x => x.focused);
 
-        console.log('any focues window available: ', anyWindowHasFocus);
         // If has an active window or message is received by sender
         if (anyWindowHasFocus || message.socketId == self.socketId) {
-            console.log('Window focused: ' + anyWindowHasFocus);
-            console.log('I am the sender: ' + (message.socketId == self.socketId));
             return;
         }
 
