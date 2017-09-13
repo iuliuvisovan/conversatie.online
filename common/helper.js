@@ -19,7 +19,7 @@ module.exports = {
             isFemale = true;
         if (name[name.length - 1] == 'a' || name[name.length - 1] == 'ă' || name[name.length - 1] == 'i')
             isFemale = true;
-        return isFemale;
+        return !!isFemale;
     },
     getUserColor: (isFemale, room, users, socketId) => {
         var usersOfGenderCount = Object.keys(users)

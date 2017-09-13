@@ -296,6 +296,15 @@ a {
     transition: all 0.3s ease-in-out;
 }
 
+#lastVideoInteraction {
+    position: absolute;
+    height: 28px;
+    left: 0;
+    top: 1px;
+    width: 4px;
+    background: red;
+}
+
 #currentVideoName {
     max-width: 67vw;
     display: inline-block;
@@ -589,6 +598,10 @@ a {
     overflow: hidden!important;
     padding: 0!important;
     border: none!important;
+}
+
+.no-video #lastVideoInteraction {
+    display: none;
 }
 
 #expandedYoutubeVideo {

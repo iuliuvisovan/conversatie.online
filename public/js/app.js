@@ -419,12 +419,23 @@ function initApp() {
         });
     }
 
+
+    var lastVideoInteractionUpdate = new Date();
+    lastVideoInteractionUpdate.setSeconds(new Date().getSeconds() - 5);
     function handleSyncMediaEvent() {
         socket.on('sync media', message => {
+             //Don't handle more frequently than once every 200ms
+             if ((new Date() - lastVideoInteractionUpdate) / 1000 < 0.2) {
+                return;
+            }
+            lastVideoInteractionUpdate = new Date();
+
+
             message = JSON.parse(message);
             var messageId = message.messageId;
             var currentTime = message.currentTime;
             var playerState = message.playerState;
+            $("#lastVideoInteraction").css('background', message.color);
             if (message.socketId == socket.id) {
                 if (playerState == YT.PlayerState.PLAYING)
                     Object.keys(youtubePlayers).forEach(x => {
