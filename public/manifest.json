@@ -17,6 +17,11 @@
       "src": "launcher-icon-4x.png",
       "sizes": "192x192",
       "type": "image/png"
+    },
+    {
+      "src": "launcher-icon-6x.png",
+      "sizes": "288x288",
+      "type": "image/png"
     }
   ],
   "theme_color": "#54c7ec",
