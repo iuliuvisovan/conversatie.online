@@ -35,7 +35,7 @@ self.addEventListener('push', async function (event) {
     }());
 });
 
-self.onmessage = function (msg) {
+self.onmessage = (msg) => {
     if (msg.data.name == 'socketInit') {
         console.log('received new socket id :' + msg.data.value);
         self.socketId = msg.data.value;

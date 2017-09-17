@@ -1,7 +1,7 @@
 var socket = io();
 var isAppInitiated = false;
 
-//The input from where all chat messages are send
+//The input from where all chat messages are sent
 var $inputMessage = $('#inputMessage');
 
 //The <ul> list of messages
@@ -16,8 +16,8 @@ var isWindowFocused = true;
 //Socket ID of the last message source user
 var lastMessageSenderId = '';
 
-//Subject/room chosen by the user
-var userRoom = window.location.hash.slice(1) || "start";
+//Subject/room chosen by the user (IF it has a hash, take that, if no hash, check local storage for room, else treat it as 'start')
+var userRoom = window.location.hash.slice(1) || localStorage.room || "start";
 
 //Username
 var userId = '';
@@ -89,6 +89,7 @@ function onYouTubeIframeAPIReady() {
             }
 
             //What happens only if he's subscribed?
+            updateUserRoom();
             handleBeforeUnload();
             handleWindowFocus();
             getUserName();
@@ -130,12 +131,12 @@ function initApp() {
 
     ga('send', 'event', 'Application', 'join', userName);
 
+    updateUserRoom();
     handleOptions();
     handleImagePaste();
     fixKeyboardOpen();
     handleAccessLastMessage();
     setupShareMethod();
-    updateUserRoomName();
     handleHashChange();
 
     //Tell the service worker who I am
@@ -500,6 +501,7 @@ function initApp() {
         getUserRoom();
         ga('send', 'event', 'Application', 'joinRoom', userRoom);
         window.onbeforeunload = $.noop;
+        localStorage.room = userRoom;
         if (userRoom == "start")
             window.location.href = window.location.origin;
         else
@@ -527,11 +529,12 @@ function initApp() {
             userRoom = 'start';
         else
             userRoom = userRoom.toLowerCase().trim().replace(/[^\w]/g, '');
-        updateUserRoomName();
+        updateUserRoom();
     }
 
-    function updateUserRoomName() {
+    function updateUserRoom() {
         if (userRoom.trim() != 'start') {
+            window.location.hash = userRoom;
             $('#roomName').text('#' + userRoom);
             $('title').html('#' + userRoom + ' - Conversează. Online!');
         } else {
