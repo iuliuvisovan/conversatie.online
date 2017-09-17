@@ -56,6 +56,9 @@ function checkForBoldText(input) {
 function escapeRegExp(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
+function escapeRegExp(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
 
 function isValidURL(str) {
     return str.match(/^((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/igm);
@@ -162,4 +165,49 @@ function loadIframeApi() {
     tag.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+
+function updatePlaybar() {
+    let player = getPlayingVideo();
+    if (!player)
+        player = lastPlayingPlayer;
+    if (!lastPlayingPlayer)
+        return;
+    $("#currentVideoName").text(player.getVideoData().title);
+    $(".controls").removeClass('playing');
+    if (player.getPlayerState() == YT.PlayerState.PLAYING)
+        $(".controls").addClass('playing');
+    $(".mute-button").removeClass('muted');
+    if (player.isMuted())
+        $(".mute-button").addClass('muted');
+    $("#playBar").removeClass('no-video');
+}
+
+function getPlayingVideo() {
+    return youtubePlayers[Object.keys(youtubePlayers).find(x =>
+        youtubePlayers[x].getPlayerState() == YT.PlayerState.PLAYING)];
+}
+
+function toggleCurrentVideo() {
+    var player = getPlayingVideo();
+    if (!player)
+        player = lastPlayingPlayer;
+    if (player.getPlayerState() == YT.PlayerState.PLAYING)
+        player.pauseVideo();
+    else {
+        player.playVideo();
+    }
+    updatePlaybar();
+}
+
+function toggleMuteCurrentVideo() {
+    var player = getPlayingVideo();
+    if (!player)
+        player = lastPlayingPlayer;
+    if (player.isMuted())
+        player.unMute();
+    else {
+        player.mute();
+    }
+    setTimeout(updatePlaybar, 300);
 }
