@@ -4,5 +4,6 @@ var Schema = mongoose.Schema;
 exports.pushMessageSubscription = mongoose.model('pushMessageSubscription',
     new mongoose.Schema({
         userId: String,
-        subscription: String
+        subscription: String,
+        currentRoom: String
     }));

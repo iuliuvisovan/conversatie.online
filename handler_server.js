@@ -28,7 +28,9 @@ var handler = {
             socket.on('check in', message => {
                 message = JSON.parse(message);
                 var userName = message.userName.substr(0, 20);
-                var newRoom = message.userTopic;
+                var userId = message.userId;
+                var userSubscriptionEndpoint = message.subscriptionEndpoint;
+                var newRoom = message.userRoom;
 
                 //If user exists, check if it's in the same room. If yes, consider it a name change
                 if (users[socket.id]) {
@@ -50,6 +52,7 @@ var handler = {
                     if (users[socket.id].room)
                         socket.leave(users[socket.id].room);
                     socket.join(newRoom);
+                    updateUserRoom(newRoom, userSubscriptionEndpoint);
                 }
 
                 users[socket.id].room = newRoom;
@@ -64,6 +67,7 @@ var handler = {
                 };
 
                 users[socket.id].socketId = socket.id;
+                users[socket.id].userId = userId;
                 users[socket.id].name = userName;
                 users[socket.id].isFemale = message.isFemale;
                 message.color = helper.getUserColor(message.isFemale, newRoom, users, socket.id);
@@ -181,12 +185,12 @@ var handler = {
 
                     delete users[socket.id];
                 } catch (e) {
-                    console.log(e);
                     delete users[socket.id];
                 }
             });
 
             var emitMessage = (eventName, message, requestedRoom) => {
+                message.userId = users[socket.id].userId;
                 message.socketId = socket.id.split("#")[1];
                 if (!users[socket.id])
                     return;
@@ -198,24 +202,64 @@ var handler = {
                 console.log(`Emitting [${eventName}] in room ${room}`);
                 io.in(room).emit(eventName, JSON.stringify(message));
 
-                //Also emit push notification if eventName is 'chat message'
+                //Emit push notification if eventName is 'chat message'
                 if (eventName == 'chat message') {
                     //Find all subscriptions and send a message to them!
-                    models.pushMessageSubscription.find({}, (error, subscriptions) => {
-                        subscriptions.forEach(subscription => {
-                            //This. Is. Horrible. But it works so don't touch it.
-                            var subscription = subscription.subscription.replace(/\\/g, '');
-                            var subscription = JSON.parse(subscription);
-
-                            webpush.sendNotification(subscription, JSON.stringify(message));
-                        })
-                    })
+                    sendNotificationsToRoom(room, message);
                 }
             };
         });
     }
 };
 
+var cachedSubscriptions = [];
+
+function sendNotificationsToRoom(room, notification) {
+    //Use the cached ones if exist
+    if (cachedSubscriptions.length)
+        cachedSubscriptions.forEach(x => sendNotificationToSubscription(x, notification));
+    else
+        //Query the DB for the subscriptions
+        models.pushMessageSubscription.find({
+            'currentRoom': room
+        }, (error, subscriptions) => {
+            subscriptions.forEach(subscription => {
+                //Cache them
+                cachedSubscriptions = subscriptions;
+                sendNotificationToSubscription(subscription, notification);
+            })
+        })
+}
+
+function sendNotificationToSubscription(subscription, notification) {
+    //This. Is. Horrible. But it works so don't touch it.
+    var subscription = subscription.subscription.replace(/\\/g, '');
+    var subscription = JSON.parse(subscription);
+
+    webpush.sendNotification(subscription, JSON.stringify(notification));
+}
+
+function updateUserRoom(newRoom, userSubscriptionEndpoint) {
+    var userRegex = new RegExp(escapeRegExp(userSubscriptionEndpoint), 'gi');
+
+    mongoose.model('pushMessageSubscription').findOneAndUpdate({
+            "subscription": userRegex,
+        }, {
+            "$set": {
+                "currentRoom": newRoom
+            }
+        }, {
+            new: true,
+            upsert: true
+        }, (err, doc) => {
+            if (err)
+                throw err; // handle error;
+        }
+    );
+    cachedSubscriptions = [];
+}
+
+//Adds or updates a model based on whether it has a 
 function addOrUpdateModel(model, modelName) {
     console.log("Attempting to save object: \n " + model);
     var query = {
@@ -223,7 +267,7 @@ function addOrUpdateModel(model, modelName) {
     };
     mongoose.model(modelName).findOneAndUpdate(query, model, {
         upsert: true
-    }, function (error, doc) {
+    }, (error, doc) => {
         if (error) {
             console.log("Error occured when trying to add / update! " + error);
         } else {
@@ -236,7 +280,7 @@ function removeById(modelName, id, response) {
     console.log("Attempting to remove " + modelName + " with ID " + id);
     mongoose.model(modelName).find({
         _id: id
-    }).remove(function (error) {
+    }).remove(error => {
         if (error) {
             console.log("Error removing item from database: " + error);
             response.status(500).send(error);
@@ -249,10 +293,12 @@ function removeById(modelName, id, response) {
 
 function handlePwaSubscription(socket) {
     socket.on('subscribe', subscription => {
+        cachedSubscriptions = [];
         var userId = JSON.parse(subscription).userId;
         var pushMessageSubscription = JSON.parse(subscription).pushMessageSubscription;
         addOrUpdateModel(new models.pushMessageSubscription({
             userId: userId,
+            currentRoom: "",
             subscription: JSON.stringify(pushMessageSubscription)
         }), 'pushMessageSubscription', {})
 
@@ -282,6 +328,10 @@ function getYoutubeVideoBySearchTerm(searchTerm) {
         }
     });
 
+}
+
+function escapeRegExp(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
 
 module.exports = handler;

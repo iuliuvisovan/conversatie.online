@@ -16,8 +16,8 @@ var isWindowFocused = true;
 //Socket ID of the last message source user
 var lastMessageSenderId = '';
 
-//Subject/room/topic chosen by the user
-var userTopic = 'start';
+//Subject/room chosen by the user
+var userRoom = window.location.hash.slice(1) || "start";
 
 //Username
 var userId = '';
@@ -74,12 +74,12 @@ loadIframeApi();
 
 function onYouTubeIframeAPIReady() {
     initPwa()
-        .then(isUserSubscribed => {
-            //What can he do even if subscribed or not?
+        .then(async (isUserSubscribed) => {
+            //What happens not matter if subscribed or not?
             handleUserId();
             setupShareMethod();
 
-            //What can he use without being subscribed?
+            //What happens if he's not subscribed?
             if (!isUserSubscribed) {
                 $("#inputMessage, #options").css('pointer-events', 'none');
                 $("#options").css('color', '#a3ce71');
@@ -88,7 +88,7 @@ function onYouTubeIframeAPIReady() {
                 return;
             }
 
-            //Everything else only if subscribed
+            //What happens only if he's subscribed?
             handleBeforeUnload();
             handleWindowFocus();
             getUserName();
@@ -99,10 +99,12 @@ function onYouTubeIframeAPIReady() {
             socket.emit('check in', JSON.stringify({
                 userId,
                 userName,
-                userTopic
+                userRoom: userRoom,
+                subscriptionEndpoint: await getCurrentSubscriptionEndpoint()
             }));
 
-            //initApp() will be called at 'check in' response (first 'join' event)
+            //initApp() will be called at 'check in' response (first 'join' event) 
+            //since we want to make sure our var socket = io() variable has the id property set
         });
 }
 
@@ -132,11 +134,12 @@ function initApp() {
     handleImagePaste();
     fixKeyboardOpen();
     handleAccessLastMessage();
-    fixUserListHover();
     setupShareMethod();
+    updateUserRoomName();
+    handleHashChange();
 
     //Tell the service worker who I am
-    navigator.serviceWorker.ready.then(serviceWorkerRegistration => {
+    navigator.serviceWorker.ready.then(registration => {
         $(".loading-indicator").fadeOut();
         navigator.serviceWorker.controller.postMessage({
             name: 'socketInit',
@@ -201,8 +204,8 @@ function initApp() {
 
             if (!messageObject.oldName) {
                 var messageText = messageObject.messageText;
-                if (messageObject.socketId == socket.id && userTopic != 'start')
-                    messageText = `#${userTopic} - ` + messageText;
+                if (messageObject.socketId == socket.id && userRoom != 'start')
+                    messageText = `#${userRoom} - ` + messageText;
                 var spanMessageText = $('<span>').addClass('join-text').text(messageText);
                 var spanMessageAuthor = $('<span>')
                     .addClass('join-author')
@@ -401,8 +404,8 @@ function initApp() {
 
             if (!isWindowFocused) {
                 unseenMessageCount++;
-                if (userTopic.toLowerCase().trim() != 'start')
-                    $('title').text('(' + unseenMessageCount + ') #' + userTopic + '- Conversează. Online!');
+                if (userRoom.toLowerCase().trim() != 'start')
+                    $('title').text('(' + unseenMessageCount + ') #' + userRoom + '- Conversează. Online!');
                 else
                     $('title').text('(' + unseenMessageCount + ') Conversează. Online! - www.conversatie.online');
                 $('#favicon').attr('href', 'img/logo_' + messageObject.color.slice(1) + '.png');
@@ -486,24 +489,21 @@ function initApp() {
         getUserName(true);
         socket.emit('check in', JSON.stringify({
             userName,
-            userTopic
+            userRoom
         }));
         $('#inputMessage').focus();
         $(".users-who-saw").children().remove();
     }
 
-    function changeUserTopic() {
-        userTopic = '';
-        getUserTopic();
-        if (!userName)
-            userName = localStorage.userName;
-        socket.emit('check in', JSON.stringify({
-            userName,
-            userTopic
-        }));
-        ga('send', 'event', 'Application', 'joinTopic', userTopic);
-        $('#inputMessage').focus();
-        $(".users-who-saw").children().remove();
+    function changeUserRoom() {
+        userRoom = '';
+        getUserRoom();
+        ga('send', 'event', 'Application', 'joinRoom', userRoom);
+        window.onbeforeunload = $.noop;
+        if (userRoom == "start")
+            window.location.href = window.location.origin;
+        else
+            window.location.hash = userRoom;
     }
 
     function getUserName(isNameChange) {
@@ -519,22 +519,25 @@ function initApp() {
             userName = localStorage.userName;
     }
 
-    function getUserTopic() {
+    function getUserRoom() {
         var promptText = "Despre ce vrei sa vorbesti? (Lasă gol pentru a reveni la pagina de start.)";
-        userTopic = prompt(promptText, userTopic);
+        userRoom = prompt(promptText, userRoom);
 
-        if (!userTopic)
-            userTopic = 'start';
+        if (!userRoom)
+            userRoom = 'start';
         else
-            userTopic = userTopic.toLowerCase().trim().replace(/[^\w]/g, '');
-        if (userTopic.trim() != 'start') {
-            $('.room-name').text('#' + userTopic);
-            $('title').html('[' + userTopic + '] Conversează. Online!');
+            userRoom = userRoom.toLowerCase().trim().replace(/[^\w]/g, '');
+        updateUserRoomName();
+    }
+
+    function updateUserRoomName() {
+        if (userRoom.trim() != 'start') {
+            $('#roomName').text('#' + userRoom);
+            $('title').html('#' + userRoom + ' - Conversează. Online!');
         } else {
-            $('.room-name').text('');
+            $('#roomName').text('');
             $('title').html('Conversează. Online!');
         }
-
     }
 
     function handleAccessLastMessage() {
@@ -582,7 +585,7 @@ function initApp() {
                     changeUserName();
                     break;
                 case 'change-topic':
-                    changeUserTopic();
+                    changeUserRoom();
                     break;
             }
             $("#options").val(0);
@@ -708,8 +711,8 @@ function initApp() {
 
             $('#favicon').attr('href', 'img/logo_' + userColor.slice(1) + '.png');
 
-            if (userTopic.toLowerCase().trim() != 'start')
-                $('title').html('#' + userTopic + ' - Conversează. Online! | www.conversatie.online');
+            if (userRoom.toLowerCase().trim() != 'start')
+                $('title').html('#' + userRoom + ' - Conversează. Online! | www.conversatie.online');
             else
                 $('title').html('Conversează. Online! - www.conversatie.online');
             $('#inputMessage').focus();
@@ -767,9 +770,15 @@ function initApp() {
     }
 
     function handleBeforeUnload() {
-        window.onbeforeunload = function () {
+        window.onbeforeunload = () => {
             return "I am a message";
         };
+    }
+
+    function handleHashChange() {
+        $(window).on('hashchange', () => {
+            window.location.reload();
+        });
     }
 
 
@@ -829,17 +838,6 @@ function initApp() {
         ρ.removeAllRanges();
         ρ.addRange(α);
         document.execCommand('copy') && $(`#C span`).addClass('shown');
-    }
-
-    function fixUserListHover() {
-        $(".online-users-list.is-overflowing").hover(function () {
-            console.log('dsds');
-            $(this).addClass('hovered');
-        }, function () {
-            setTimeout(function () {
-                $(this).removeClass('hovered');
-            }, 100);
-        });
     }
 
     function setupShareMethod() {
@@ -930,6 +928,12 @@ function initApp() {
 
                 isSubscribed = true;
             });
+    }
+
+    var getCurrentSubscriptionEndpoint = async () => {
+        var registration = await navigator.serviceWorker.getRegistration();
+        var subscription = await registration.pushManager.getSubscription();
+        return subscription.endpoint;
     }
 
 

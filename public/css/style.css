@@ -382,12 +382,12 @@ a {
     align-items: center;
 }
 
-.room-name {
+#roomName {
     font-size: 13px;
     display: inline-block;
     color: #999;
     position: absolute;
-    left: 0;
+    right: 6px;
     top: 0;
     text-align: center;
     font-family: 'Consolas';
