@@ -18,9 +18,9 @@ self.addEventListener('push', async function (event) {
         })).some(x => x.focused);
 
         // If has an active window or message is received by sender
-        // if (anyWindowHasFocus || message.socketId == self.socketId) {
-        //     return;
-        // }
+        if (anyWindowHasFocus || message.socketId == self.socketId) {
+            return;
+        }
 
 
         console.log('Everything is cool, showing notification!: ' + message.messageText);

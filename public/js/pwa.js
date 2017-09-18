@@ -45,6 +45,10 @@ var initialiseUI = () => new Promise((resolve, reject) => {
     swRegistration.pushManager.getSubscription()
         .then(subscription => {
             isSubscribed = !(subscription === null);
+            if (isMobileDevice()) {
+                resolve(true);
+                return;
+            }
             if (!isSubscribed || Notification.permission === 'denied') {
                 $("#pwaBar").removeClass('no-video');
             }
@@ -74,7 +78,10 @@ var subscribeUser = () => {
 var getCurrentSubscriptionEndpoint = async() => {
     var registration = await navigator.serviceWorker.getRegistration();
     var subscription = await registration.pushManager.getSubscription();
-    return subscription.endpoint;
+    if (subscription)
+        return subscription.endpoint;
+    else
+        return "-";
 }
 
 
