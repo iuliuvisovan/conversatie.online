@@ -18,9 +18,9 @@ self.addEventListener('push', async function (event) {
         })).some(x => x.focused);
 
         // If has an active window or message is received by sender
-        if (anyWindowHasFocus || message.socketId == self.socketId) {
-            return;
-        }
+        // if (anyWindowHasFocus || message.socketId == self.socketId) {
+        //     return;
+        // }
 
 
         console.log('Everything is cool, showing notification!: ' + message.messageText);
@@ -43,7 +43,7 @@ self.onmessage = (msg) => {
 }
 
 
-self.addEventListener('notificationclick', function (event) {
+self.addEventListener('notificationclick', event => {
     console.log('[Service Worker] Notification click Received.');
 
     event.notification.close();
@@ -56,7 +56,7 @@ self.addEventListener('notificationclick', function (event) {
         const client = (await clients.matchAll({
                 type: 'window'
             }))
-            .find(x => (x.urlToOpen === urlToOpen && 'focus' in x));
+            .find(x => (x.url.includes(urlToOpen) && 'focus' in x));
 
         if (client)
             client.focus();
