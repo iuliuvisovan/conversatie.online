@@ -5,5 +5,7 @@ exports.pushMessageSubscription = mongoose.model('pushMessageSubscription',
     new mongoose.Schema({
         userId: String,
         subscription: String,
-        currentRoom: String
+        currentRoom: String,
+        currentName: String,
+        currentColor: String
     }));

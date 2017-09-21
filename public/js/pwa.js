@@ -45,6 +45,8 @@ var initialiseUI = () => new Promise((resolve, reject) => {
     swRegistration.pushManager.getSubscription()
         .then(subscription => {
             isSubscribed = !(subscription === null);
+            if (subscription)
+                userId = subscription.endpoint;
             if (isMobileDevice()) {
                 resolve(true);
                 return;
@@ -64,26 +66,16 @@ var subscribeUser = () => {
         })
         .then(subscription => {
             console.log('User is subscribed.');
-            window.location.reload();
 
             socket.emit('subscribe', JSON.stringify({
                 pushMessageSubscription: subscription,
-                userId: userId
+                userId: subscription.endpoint
             }));
 
             isSubscribed = true;
+            window.location.reload();
         });
 }
-
-var getCurrentSubscriptionEndpoint = async() => {
-    var registration = await navigator.serviceWorker.getRegistration();
-    var subscription = await registration.pushManager.getSubscription();
-    if (subscription)
-        return subscription.endpoint;
-    else
-        return "-";
-}
-
 
 var urlB64ToUint8Array = (base64String) => {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);

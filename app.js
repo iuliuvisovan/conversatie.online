@@ -14,6 +14,7 @@ var app = express();
 
 var isProduction = credentialStore.getCredential("IS_PRODUCTION");
 
+mongoose.Promise = global.Promise;
 mongoose.connect(credentialStore.getCredential("MONGODB_URI"), {
   useMongoClient: true
 });

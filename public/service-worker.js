@@ -18,12 +18,12 @@ self.addEventListener('push', async function (event) {
         })).some(x => x.focused);
 
         // If has an active window or message is received by sender
-        if (anyWindowHasFocus || message.socketId == self.socketId) {
+        if (anyWindowHasFocus || message.userId == self.userId) {
             return;
         }
 
 
-        console.log('Everything is cool, showing notification!: ' + message.messageText);
+        // console.log('Everything is cool, showing notification!: ' + message.messageText);
         const title = message.name;
         const options = {
             body: message.messageText,
@@ -36,9 +36,9 @@ self.addEventListener('push', async function (event) {
 });
 
 self.onmessage = (msg) => {
-    if (msg.data.name == 'socketInit') {
-        console.log('Received new socket id: ' + msg.data.value);
-        self.socketId = msg.data.value;
+    if (msg.data.name == 'userInit') {
+        console.log('Received new userId: ' + msg.data.value);
+        self.userId = msg.data.value;
     }
 }
 

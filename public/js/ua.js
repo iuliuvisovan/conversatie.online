@@ -1,10 +1,7 @@
 //User action
 function changeUserName() {
     getUserName(true);
-    socket.emit('check in', JSON.stringify({
-        userName,
-        userRoom
-    }));
+    socket.emit('change name', userName);
     $('#inputMessage').focus();
     $(".users-who-saw").children().remove();
 }
@@ -26,7 +23,7 @@ function getUserName(isNameChange) {
     if (isNameChange)
         userName = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", userName).substr(0, 20);
     else if (!userName) {
-        userName = prompt("Cum te cheamă?", randomNames[new Date().getTime() % 38]).substr(0, 20);
+        userName = prompt("Cum te cheamă?").substr(0, 20);
     }
     if (userName)
         localStorage.userName = userName;
@@ -79,7 +76,7 @@ function sendMessage(message) {
     if (!message)
         var message = $('<div/>').html($("#inputMessage").val()).text().trim();
     if (message) {
-        if (message.length > 500 && !message.includes('image/'))
+        if (message.length > 800 && !message.includes('image/'))
             return;
         if (message.toLowerCase().trim().startsWith('play ')) {
             $(".progress").css('background-color', '#cc0404');

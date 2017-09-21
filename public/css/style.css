@@ -383,16 +383,21 @@ a {
 }
 
 #roomName {
-    font-size: 13px;
     display: inline-block;
     color: #999;
     position: absolute;
-    right: 6px;
+    left: 1px;
+    left: 0;
+    right: 0;
     top: 0;
+    bottom: 0;
+    margin: auto;
+    height: 10px;
     text-align: center;
     font-family: 'Consolas';
     margin-left: 5px;
-    font-size: 13px;
+    font-size: 35px;
+    opacity: 0.2;
 }
 
 .online-user {
@@ -417,10 +422,9 @@ a {
     cursor: default;
 }
 
-
-/* .online-user:hover {
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.32);
-} */
+.online-user.inactive {
+    opacity: 0.5;
+}
 
 @keyframes fresh-online {
     from {

@@ -96,8 +96,8 @@ function createYoutubeVideo(messageId, videoId, shouldAutoPlay, autoPlayStartSec
                     if (event.data != 1 && event.data != 2)
                         return;
 
-                    //Don't dispatch more frequently than once every 500ms
-                    if ((new Date() - lastMediaSyncDispatch) / 1000 < 0.5) {
+                    //Don't dispatch more frequently than once every second
+                    if ((new Date() - lastMediaSyncDispatch) / 1000 < 1) {
                         return;
                     }
                     lastMediaSyncDispatch = new Date();

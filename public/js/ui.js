@@ -1,15 +1,4 @@
 //UI
-
-function initUserId() {
-    userId = localStorage.userId;
-
-    //If never set
-    if (!userId) {
-        localStorage.userId = +new Date();
-        userId = localStorage.userId;
-    }
-}
-
 function handleWindowFocus() {
     $(window).focus(() => {
         if (unseenMessageCount) {
