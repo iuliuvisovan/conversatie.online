@@ -163,7 +163,7 @@ function handleConnection(socket, io) {
 
 
                 //Remove me from the list of last disconnected
-                recentlyDisconnected[me.room] = recentlyDisconnected[me.room].filter(x => x.userId != myUserId);
+                recentlyDisconnected[myRoom] = recentlyDisconnected[myRoom].filter(x => x.userId != myUserId);
                 emitMessage('leave', {
                     messageText: " s-a dus.",
                 });
