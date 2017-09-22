@@ -13,6 +13,204 @@ var credentialStore = require('./credentials/credential-store.js');
 var youTube = new YouTube();
 youTube.setKey(credentialStore.getCredential('YT_API_KEY'));
 
+function handleConnection(socket, io) {
+    var me = {};
+
+    //Triggered by the user when first entering the site / changing name / changing room
+    socket.on('check in', async(message) => {
+        message = JSON.parse(message);
+        var userName = message.userName.substr(0, 20);
+        var userId = message.userId;
+        var room = message.userRoom;
+
+        //Get me based on my userId
+        me = users[userId];
+
+        if (!me) {
+            //Instantiate the user object
+            users[userId] = {
+                socketsCount: 1
+            };
+            me = users[userId];
+            //If I already exist, increment the sockets count
+        } else {
+            me.socketsCount++;
+        }
+
+        //If user has no room, or it has changed it, trigger a join
+        if (me.room != room) {
+            //If already in another room, get out of there
+            if (me.room)
+                socket.leave(me.room);
+            socket.join(room);
+            me.room = room;
+        }
+
+
+        //Check for duplicate/not allowed (iuliu) names
+        userName = helper.validateUserName(userName, users, userId);
+
+        var message = {
+            isFemale: helper.isFemaleName(userName),
+            name: userName,
+            messageText: " Bun venit, "
+        };
+
+        me.userId = userId;
+        me.name = userName;
+        me.isFemale = message.isFemale;
+        message.color = helper.getUserColor(message.isFemale, room, users, userId);
+        me.color = message.color;
+        if (userId.includes('http')) {
+            updateUser(room, userName, me.color, userId);
+        }
+
+        message.userId = me.userId;
+        message.color = me.color;
+
+        emitMessage('i am active', {});
+
+        //Notify new room of join
+        emitMessage('online users update', await getOnlineUsers(me.room));
+
+        if (messageHistory[room])
+            socket.emit('room history', JSON.stringify(messageHistory[room]));
+
+        var recentlyDisconnectedMe;
+        if (recentlyDisconnected[me.room])
+            recentlyDisconnectedMe = recentlyDisconnected[me.room].some(x => x.userId == me.userId);
+
+        if (recentlyDisconnectedMe || me.socketsCount > 1) {
+            socket.emit('join', JSON.stringify(message));
+            if (recentlyDisconnected[me.room])
+                recentlyDisconnected[me.room] = recentlyDisconnected[me.room].filter(x => x.userId != userId);
+        } else
+            emitMessage('join', message);
+    });
+    socket.on('i am writing', () => {
+        emitMessage('writing', {
+            messageText: '...'
+        });
+    });
+    socket.on('chat message', msg => {
+        if (msg.length > 800 && !msg.includes('image/'))
+            return;
+
+        if (msg.toLowerCase().trim().startsWith("play ")) {
+            getYoutubeVideoBySearchTerm(msg.toLowerCase().trim().slice(5))
+                .then(ytLink => {
+                    if (ytLink) {
+                        msg = ytLink;
+                    }
+
+                    emitMessage('chat message', {
+                        messageText: helper.correctMessage(msg.trim()),
+                        messageUnixTime: +new Date()
+                    });
+
+                });
+        } else {
+            emitMessage('chat message', {
+                messageText: helper.correctMessage(msg.trim(), messageHistory[me.room], me.userId),
+                messageUnixTime: +new Date()
+            });
+        }
+    });
+    socket.on('sync media', message => {
+        message = JSON.parse(message);
+
+        emitMessage('sync media', message, undefined, true);
+    });
+    socket.on('i am active', () => {
+        emitMessage('i am active', {});
+    });
+    socket.on('change name', async(name) => {
+        var message = {
+            oldName: me.name,
+            name: name,
+            messageText: " ⇒ "
+        }
+        me.name = name;
+        emitMessage('join', message);
+        emitMessage('online users update', await getOnlineUsers(me.room));
+    });
+
+    handlePwaSubscription(socket);
+
+    socket.on('disconnect', () => {
+        try {
+            //If it had more windows open and just closed one of them => decrement the count and go home
+            me.socketsCount--;
+            if (me.socketsCount > 0 || !me.room) {
+                return;
+            }
+
+            //Defer leave event for after 10 seconds, and only if not reconnected
+
+            //Ensure list exists
+            if (!recentlyDisconnected[me.room])
+                recentlyDisconnected[me.room] = [];
+
+            recentlyDisconnected[me.room].push(me);
+            let myUserId = me.userId;
+            let myRoom = me.room;
+            setTimeout(async() => {
+                let me = recentlyDisconnected[myRoom].find(x => x.userId == myUserId);
+
+                //If removed from the list after less than 10 seconds, means he's reconnected
+                if (!me)
+                    return;
+
+
+                //Remove me from the list of last disconnected
+                recentlyDisconnected[me.room] = recentlyDisconnected[me.room].filter(x => x.userId != myUserId);
+                emitMessage('leave', {
+                    messageText: " s-a dus.",
+                });
+                var leftRoom = myRoom;
+                me.room = "someGarbageRoflmao";
+                var onlineUsers = await getOnlineUsers(myRoom);
+                me.room = leftRoom;
+                emitMessage('online users update', onlineUsers, myRoom);
+
+                delete users[myUserId];
+            }, 5000);
+
+        } catch (e) {
+            console.log(e);
+            delete users[me.userId];
+        }
+    });
+
+    var emitMessage = (eventName, message, requestedRoom, isYoutubeVideo) => {
+        message.userId = me.userId;
+        message.name = me.name;
+        message.color = me.color;
+        if (!isYoutubeVideo)
+            message.messageId = "chatMessage" + +new Date();
+        var room = me.room;
+        if (requestedRoom)
+            room = requestedRoom;
+        console.log(`#${room} - Emitting [${eventName}]`);
+        socket.join(room);
+        io.in(room).emit(eventName, JSON.stringify(message));
+
+        //Emit push notification if eventName is 'chat message'
+        if (eventName == 'chat message') {
+            //Find all subscriptions and send a message to them!
+            if (!message.messageText.includes('isCorrective')) {
+                sendNotificationsToRoom(room, message);
+            }
+
+            if (!messageHistory[room])
+                messageHistory[room] = [];
+            messageHistory[room].push(message);
+            messageHistory[room].slice(1, 100);
+        }
+    };
+}
+
+
 if (credentialStore.getCredential("IS_PRODUCTION")) {
     process.on('uncaughtException', err => {
         console.error(err.stack);
@@ -20,179 +218,6 @@ if (credentialStore.getCredential("IS_PRODUCTION")) {
     });
 }
 
-
-var handler = {
-    init: (io) => {
-        //Triggered automatically by the client framework
-        io.on('connection', (socket) => {
-            var me = {};
-
-            //Triggered by the user when first entering the site / changing name / changing room
-            socket.on('check in', async(message) => {
-                message = JSON.parse(message);
-                var userName = message.userName.substr(0, 20);
-                var userId = message.userId;
-                var room = message.userRoom;
-
-                //If user exists, check if it's in the same room. If yes, consider it a name change
-                me = users[userId];
-                if (!me) {
-                    //Instantiate the user object
-                    users[userId] = {};
-                    me = users[userId];
-                }
-
-                //If user has no room, or it has changed it, trigger a join
-                if (me.room != room) {
-                    //If already in another room, get out of there
-                    // if (me.room)
-                    //     socket.leave(me.room);
-                    socket.join(room);
-                    me.room = room;
-                }
-
-
-                //Check for duplicate/not allowed (iuliu) names
-                userName = helper.validateUserName(userName, users, userId);
-
-                var message = {
-                    isFemale: helper.isFemaleName(userName),
-                    name: userName,
-                    messageText: " Bun venit, "
-                };
-
-                me.userId = userId;
-                me.name = userName;
-                me.isFemale = message.isFemale;
-                message.color = helper.getUserColor(message.isFemale, room, users, userId);
-                me.color = message.color;
-                if (userId.includes('http')) {
-                    updateUser(room, userName, me.color, userId);
-                }
-
-                message.userId = me.userId;
-                message.color = me.color;
-
-                emitMessage('i am active', {});
-
-                //Notify new room of join
-                emitMessage('online users update', await getOnlineUsers(me.room));
-                const recentlyDisconnectedMe = recentlyDisconnected.some(x => x.userId == me.userId);
-                if (recentlyDisconnectedMe) {
-                    socket.emit('join', JSON.stringify(message));
-                    recentlyDisconnected = recentlyDisconnected.filter(x => x.userId != userId);
-                } else
-                    emitMessage('join', message);
-
-                if (messageHistory[room])
-                    socket.emit('room history', JSON.stringify(messageHistory[room]));
-            });
-            socket.on('i am writing', () => {
-                emitMessage('writing', {
-                    messageText: '...'
-                });
-            });
-            socket.on('chat message', msg => {
-                if (msg.length > 800 && !msg.includes('image/'))
-                    return;
-
-                if (msg.toLowerCase().trim().startsWith("play ")) {
-                    getYoutubeVideoBySearchTerm(msg.toLowerCase().trim().slice(5))
-                        .then(ytLink => {
-                            if (ytLink) {
-                                msg = ytLink;
-                            }
-
-                            emitMessage('chat message', {
-                                messageText: helper.correctMessage(msg.trim()),
-                                messageUnixTime: +new Date()
-                            });
-
-                        });
-                } else {
-                    emitMessage('chat message', {
-                        messageText: helper.correctMessage(msg.trim(), messageHistory[me.room], me.userId),
-                        messageUnixTime: +new Date()
-                    });
-                }
-            });
-            socket.on('sync media', message => {
-                message = JSON.parse(message);
-
-                emitMessage('sync media', message);
-            });
-            socket.on('i am active', () => {
-                emitMessage('i am active', {});
-            });
-            socket.on('change name', name => {
-                var message = {
-                    oldName: me.name,
-                    name: name,
-                    messageText: " ⇒ "
-                }
-                me.name = name;
-                emitMessage('join', message);
-            });
-
-            handlePwaSubscription(socket);
-
-            socket.on('disconnect', () => {
-                try {
-                    //Defer leave event for after 10 seconds, and only if not reconnected
-                    recentlyDisconnected.push(me);
-                    let myUserId = me.userId;
-                    let myRoom = me.room;
-                    setTimeout(async() => {
-                        let me = recentlyDisconnected.find(x => x.userId == myUserId);
-
-                        //If removed from the list after less than 10 seconds, means he's reconnected
-                        if (!myUserId || !me || (me.room != myRoom))
-                            return;
-
-                        emitMessage('leave', {
-                            messageText: " s-a dus.",
-                        });
-                        var leftRoom = me.room;
-                        me.room = "someGarbageRoflmao";
-                        var onlineUsers = await getOnlineUsers(leftRoom);
-                        me.room = leftRoom;
-                        emitMessage('online users update', onlineUsers);
-                        delete users[me.userId];
-                    }, 10000);
-
-                } catch (e) {
-                    delete users[me.userId];
-                }
-            });
-
-            var emitMessage = (eventName, message) => {
-                message.userId = me.userId;
-                message.name = me.name;
-                message.color = me.color;
-                message.messageId = "chatMessage" + +new Date();
-                var room = me.room;
-                console.log(`#${room} - Emitting [${eventName}]`);
-                socket.join(room);
-                io.in(room).emit(eventName, JSON.stringify(message));
-
-                //Emit push notification if eventName is 'chat message'
-                if (eventName == 'chat message') {
-                    //Find all subscriptions and send a message to them!
-                    if (!message.messageText.includes('isCorrective')) {
-                        if (message.messageText.includes(":image"))
-                            message.messageText = "[Imagine]";
-                        sendNotificationsToRoom(room, message);
-                    }
-
-                    if (!messageHistory[room])
-                        messageHistory[room] = [];
-                    messageHistory[room].push(message);
-                    messageHistory[room].slice(1, 100);
-                }
-            };
-        });
-    }
-};
 
 var cachedSubscriptions = [];
 
@@ -216,6 +241,9 @@ var getOnlineUsers = async(room) => {
 }
 
 function sendNotificationsToRoom(room, notification) {
+    if (notification.messageText.includes(":image"))
+        notification.messageText = "[Imagine]";
+
     //Use the cached ones if exist
     if (cachedSubscriptions.length)
         cachedSubscriptions.forEach(x => sendNotificationToSubscription(x, notification));
@@ -331,6 +359,13 @@ function getYoutubeVideoBySearchTerm(searchTerm) {
     });
 
 }
+
+var handler = {
+    init: (io) => {
+        //Triggered automatically by the client framework
+        io.on('connection', socket => handleConnection(socket, io));
+    }
+};
 
 function escapeRegExp(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
