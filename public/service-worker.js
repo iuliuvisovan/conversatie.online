@@ -1,7 +1,7 @@
-self.addEventListener('install', event => {
-    // The promise that skipWaiting() returns can be safely ignored.
-    self.skipWaiting();
-});
+// self.addEventListener('install', event => {
+//     // The promise that skipWaiting() returns can be safely ignored.
+//     self.skipWaiting();
+// });
 self.addEventListener('activate', event => {
     self.clients.claim();
 });
@@ -22,14 +22,13 @@ self.addEventListener('push', async function (event) {
             return;
         }
 
-
         // console.log('Everything is cool, showing notification!: ' + message.messageText);
         const title = message.name;
         const options = {
             body: message.messageText,
             tag: 'conversatie.online',
             icon: 'https://www.conversatie.online/img/logo_' + message.color.slice(1) + '.png?v=2',
-            badge: 'https://www.conversatie.online/img/logo_' + message.color.slice(1) + '.png?v=2'
+            badge: 'https://www.conversatie.online/img/badge.png'
         };
         return self.registration.showNotification(title, options);
     }());

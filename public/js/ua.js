@@ -3,7 +3,9 @@ function changeUserName() {
     getUserName(true);
     socket.emit('change name', userName);
     $('#inputMessage').focus();
-    $(".users-who-saw").children().remove();
+    $(".users-who-saw")
+        .children()
+        .remove();
 }
 
 function changeUserRoom() {
@@ -12,33 +14,36 @@ function changeUserRoom() {
     ga('send', 'event', 'Application', 'joinRoom', userRoom);
     window.onbeforeunload = $.noop;
     localStorage.room = userRoom;
-    if (userRoom == "start")
+    if (userRoom == "start") 
         window.location.href = window.location.origin;
-    else
+    else 
         window.location.hash = userRoom;
-}
+    }
 
 function getUserName(isNameChange) {
     userName = localStorage.userName;
-    if (isNameChange)
+    if (isNameChange) 
         userName = prompt("Cum te cheamă? (Cancel sau Esc pentru alt nume șmecher)", userName).substr(0, 20);
     else if (!userName) {
         userName = prompt("Cum te cheamă?").substr(0, 20);
     }
-    if (userName)
+    if (userName) 
         localStorage.userName = userName;
-    else
+    else 
         userName = localStorage.userName;
-}
+    }
 
 function getUserRoom() {
     var promptText = "Despre ce vrei sa vorbesti? (Lasă gol pentru a reveni la pagina de start.)";
     userRoom = prompt(promptText, userRoom);
 
-    if (!userRoom)
+    if (!userRoom) 
         userRoom = 'start';
-    else
-        userRoom = userRoom.toLowerCase().trim().replace(/[^\w]/g, '');
+    else 
+        userRoom = userRoom
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w]/g, '');
     updateUserRoom();
 }
 
@@ -73,10 +78,10 @@ function iAmWriting() {
 }
 
 function sendMessage(message) {
-    if (!message)
+    if (!message) 
         var message = $('<div/>').html($("#inputMessage").val()).text().trim();
     if (message) {
-        if (message.length > 800 && !message.includes('image/'))
+        if (message.length > 800 && !message.includes('image/')) 
             return;
         if (message.toLowerCase().trim().startsWith('play ')) {
             $(".progress").css('background-color', '#cc0404');
@@ -93,61 +98,88 @@ function sendMessage(message) {
 }
 
 function handleOptions() {
-    $("#options").change(function () {
-        switch (this.value) {
-            case 'change-name':
-                changeUserName();
-                break;
-            case 'change-topic':
-                changeUserRoom();
-                break;
-        }
-        $("#options").val(0);
-    });
+    $("#options")
+        .change(function () {
+            switch (this.value) {
+                case 'change-name':
+                    changeUserName();
+                    break;
+                case 'change-topic':
+                    changeUserRoom();
+                    break;
+            }
+            $("#options").val(0);
+        });
 }
 
 function setAsLargeVideo(element) {
-    var iframeWidth = (window.innerWidth > 675 ? 675 : window.innerWidth);
+    var iframeWidth = (window.innerWidth > 675
+        ? 675
+        : window.innerWidth);
     var iframeHeight = iframeWidth / 1.77;
 
-    $(".status-bar")
-        .addClass('with-preview');
+    $(".status-bar").addClass('with-preview');
 
-    $(element).addClass('expanded').attr('title', 'Mai mic');
-    $('.enlarge-video').addClass('expanded').attr('title', 'Mai mic');
+    $(element)
+        .addClass('expanded')
+        .attr('title', 'Mai mic');
+    $('.enlarge-video')
+        .addClass('expanded')
+        .attr('title', 'Mai mic');
 
     $(element)
         .find('iframe')
         .attr('width', iframeWidth)
         .attr('height', iframeHeight);
-    $(element).parent('li').addClass('previewed');
+    $(element)
+        .parent('li')
+        .addClass('previewed');
 }
 
 function unsetAsLargeVideo(element) {
     $('.with-preview').removeClass('with-preview');
-    $('.expanded').removeClass('expanded').attr('title', 'Mai mare');
+    $('.expanded')
+        .removeClass('expanded')
+        .attr('title', 'Mai mare');
     $('.previewed').removeClass('previewed');
     $('iframe')
         .attr('width', 320)
         .attr('height', 180);
 }
 
-
 function toggleAsLargeVideo(element) {
     if (!element) {
         var playBarVideo = getPlayingVideo() || lastPlayingPlayer;
-        var videoId = Object.keys(youtubePlayers).find(x => youtubePlayers[x] == playBarVideo);
+        var videoId = Object
+            .keys(youtubePlayers)
+            .find(x => youtubePlayers[x] == playBarVideo);
         element = $(`iframe[id='${videoId}']`).parent();
     }
 
     var iAmExpanded;
 
     //If clicked on the minimize/maximize button
-    if ($(element).hasClass('expanded'))
+    if ($(element).hasClass('expanded')) 
         iAmExpanded = true;
-
+    
     unsetAsLargeVideo(element);
 
-    if (!iAmExpanded)
+    if (!iAmExpanded) 
         setAsLargeVideo(element);
+    }
+
+function copyLink() {
+    if (navigator.share) {
+        share();
+    } else {
+        let α = document.createRange(),
+        ρ = window.getSelection();
+    α.selectNodeContents($(`#pageLink`)[0]);
+    ρ.removeAllRanges();
+    ρ.addRange(α);
+    document.execCommand('copy') && $(`#C span`).addClass('shown');
+    setTimeout(() => {
+        $(`#C span`).removeClass('shown');
+    }, 5000);
+    }
 }

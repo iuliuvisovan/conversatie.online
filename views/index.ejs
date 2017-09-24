@@ -94,17 +94,7 @@
                 <!-- <div id="buttonRequestFullScreen" onclick="toggleFullScreen()" title="Fullscreen">
                     <div>↕</div>
                 </div> -->
-                <div class="share-enabled">
-                    <div class="share-button" title="Trimite prietenilor" onclick="share(); $(this).addClass('copied'); setTimeout(() => $(this).removeClass('copied'), 3000)">
-                        <div class="bar two"></div>
-                        <div class="bar one"></div>
-                        <div class="circle one"></div>
-                        <div class="circle two"></div>
-                        <div class="circle three"></div>
-                        <img src="../img/heart.png" title="Share the <3" alt="Share the <3">
-                    </div>
-                </div>
-                <div class="share-disabled">
+                <div>
                     <div class="share-button" title="Trimite prietenilor" onclick="copyLink(); $(this).addClass('copied'); setTimeout(() => $(this).removeClass('copied'), 3000)">
                         <div class="bar two"></div>
                         <div class="bar one"></div>
@@ -157,7 +147,6 @@
                 </div>
             </div>
             <div id="aloneBar" class="no-video">
-                <span id="pageLink" style="opacity: 0; font-size: 0px">https://conversatie.online</span>
                 <span>
                     Cheamă un prieten, chat-ul ăsta e chiar fun. 
                     <span class="share-disabled">
@@ -197,7 +186,8 @@
             </button>
         </div>
     </div>
-
+    
+    <span id="pageLink" style="opacity: 0; font-size: 1px"></span>
     <script src="js/socket.io.js"></script>
     <script src="js/jquery-3.2.1.min.js"></script>
     <script src="js/emoji-list.js"></script>

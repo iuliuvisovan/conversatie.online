@@ -3,7 +3,7 @@ var share = async() => {
     await navigator.share({
         title: 'Conversează. Online!',
         text: 'Nu sta deoparte. Hai și tu în conversație!',
-        url: 'https://www.conversatie.online',
+        url: window.location.href,
     });
     console.log('Successful share');
 }
@@ -47,10 +47,6 @@ var initialiseUI = () => new Promise((resolve, reject) => {
             isSubscribed = !(subscription === null);
             if (subscription)
                 userId = subscription.endpoint;
-            if (isMobileDevice()) {
-                resolve(true);
-                return;
-            }
             if (!isSubscribed || Notification.permission === 'denied') {
                 $("#pwaBar").removeClass('no-video');
             }

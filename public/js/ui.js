@@ -47,13 +47,13 @@ function scrollToBottom() {
     }, 100);
 }
 
-function fixScroll(isChatMessage) {
+function fixScroll(isChatMessage, isMine) {
     var distanceFromBottom = $(".messages")[0].scrollHeight - ($(".messages")[0].clientHeight + $(".messages")[0].scrollTop);
 
-    if (distanceFromBottom > 250 && isChatMessage) {
+    if (distanceFromBottom > 250 && isChatMessage && !isMine) {
         $("#scrollToBottom").fadeIn();
     } else {
-        if (distanceFromBottom > 250)
+        if (distanceFromBottom > 250 && !isMine)
             return;
         $("#scrollToBottom").fadeOut();
         setTimeout(() => {
@@ -135,21 +135,8 @@ function handleImagePaste() {
     }
 }
 
-function copyLink() {
-    let α = document.createRange(),
-        ρ = window.getSelection();
-    α.selectNodeContents($(`#pageLink`)[0]);
-    ρ.removeAllRanges();
-    ρ.addRange(α);
-    document.execCommand('copy');
-}
-
 function setupShareMethod() {
-    if (navigator.share) {
-        $(".share-enabled").show();
-    } else {
-        $(".share-disabled").show();
-    }
+    $("#pageLink").text(window.location.href);
 }
 
 function isMobileDevice() {

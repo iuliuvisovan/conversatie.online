@@ -35,7 +35,7 @@ loadIframeApi();
 var onYouTubeIframeAPIReady = async() => {
     const isUserSubscribed = await initPwa();
 
-    //What happens not matter if subscribed or not?
+    //He should be able to share from the subscription prompt screen
     setupShareMethod();
 
     //What happens if he's not subscribed?
@@ -84,8 +84,8 @@ var initApp = () => {
     handleImagePaste();
     fixKeyboardOpen();
     handleAccessLastMessage();
-    setupShareMethod();
     handleHashChange();
+    setupShareMethod();
 
     //Tell the service worker who I am
     navigator.serviceWorker.ready.then(registration => {

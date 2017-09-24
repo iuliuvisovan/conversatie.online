@@ -128,7 +128,7 @@ function handleJoinEvent() {
             $joinLi.removeClass('just-sent');
         }, 0);
         chatJoinSound.play();
-        fixScroll(true);
+        fixScroll(true, true);
     });
 }
 
@@ -138,10 +138,6 @@ function handleActiveEvent() {
 
         //Don't treat me as a person who saw the message
         if (msg.userId == userId)
-            return;
-
-        //Only track seen for my messages
-        if (userId != lastMessageUserId)
             return;
 
         //Only add as user who saw if not already in the list
@@ -289,7 +285,7 @@ function onChatMessage(message) {
         $messageLi.removeClass('just-sent');
     }, 0);
 
-    fixScroll(true);
+    fixScroll(true, isMine);
     lastMessageUserId = message.userId;
 
     if (!isWindowFocused) {
